@@ -1,0 +1,32 @@
+:root {
+    scroll-behavior: smooth;
+    --primary-color: #237cd4;
+    --secondary-color: #79b7f6;
+    --background-color: #f8f9fa;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--background-color);
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+}
