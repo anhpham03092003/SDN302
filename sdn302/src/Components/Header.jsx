@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom'
 import { FaArrowRight, FaBell, FaNutritionix, FaPen, FaPlus, FaUser } from "react-icons/fa";
 function Header() {
     return (
-        <Container fluid className='d-flex justify-content-between header-background'>
+        <Container fluid className='d-flex justify-content-between background-color-primary vh-5'>
             <Nav className=''>
                 <Nav.Item className='ps-5 text-dark align-content-center'>
                     <Link to="/" className='fw-bolder text-decoration-none text-dark '><h5 className='fw-bolder m-0 '>COLOHURI</h5></Link>
