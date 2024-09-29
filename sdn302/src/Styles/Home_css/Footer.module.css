@@ -1,0 +1,59 @@
+/* Footer Styles */
+.footer {
+    background-color: #f0f0f0;
+    padding: 20px;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+
+.footer_info {
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer_width {
+    width: 30%;
+    padding: 0 20px;
+}
+
+.footer_width h3 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.footer_width p {
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.footer_width strong {
+    font-weight: bold;
+}
+
+.about_p {
+    padding-right: 14px;
+}
+
+.group_info {
+    padding-left: 90px;
+}
+
+/* Media query for footer */
+@media (max-width: 768px) {
+    .footer_info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer_width {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    .group_info {
+        padding-left: 0;
+    }
+}
