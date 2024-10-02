@@ -1,0 +1,8 @@
+.btn-membership {
+    background-color: #007bff; /* Màu nền cho nút */
+    color: white;
+}
+
+.project-list {
+    margin-top: auto; /* Đảm bảo phần Project List nằm ở cuối cùng */
+}
