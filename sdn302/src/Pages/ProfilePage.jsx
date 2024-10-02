@@ -1,8 +1,15 @@
 import React from 'react'
-
+import styles from '../../Styles/Profile/Profile.module.css';
 function ProfilePage() {
   return (
-    <div>ProfilePage</div>
+    <div>
+      {/* <Header /> */}
+      <div className={styles.mainContainer}>
+        <UserProfile />
+        <Outlet />
+      </div>
+      <Footer />
+    </div>
   )
 }
 

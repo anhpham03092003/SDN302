@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table } from 'react-bootstrap';
-import styles from '../Styles/Profile/Profile.module.css';
+import styles from '../../Styles/Profile/Profile.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ChangePassword() {
