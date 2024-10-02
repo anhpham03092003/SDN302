@@ -24,7 +24,7 @@ function GroupSideBar() {
             <Row className='py-2 sidebar-items'>
                 <Col className='align-content-center text-start' md={2}><FaGear/></Col>
                 <Col className='align-content-center text-start' md={10}>
-                    <p className='m-0'> Manage User</p>
+                    <p className='m-0'> Group Settings</p>
                 </Col>
             </Row>
             <Row className='py-2 sidebar-items'>

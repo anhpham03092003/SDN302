@@ -3,25 +3,19 @@ import './App.css';
 import Header from './Components/Header';
 import GroupSlideBar from './Components/GroupSideBar';
 import GroupSpace from './Components/GroupSpace';
+import GroupWorkSpace from './Pages/GroupWorkSpace';
+import CreateGroup from './Pages/CreateGroup';
+import { Route, Routes } from 'react-router-dom';
 
 
 function App() {
   return (
     <div className="App">
       <Header />
-      <Container fluid>
-        <Row>
-          <Col md={2} className='background-color-secondary vh-95'><GroupSlideBar /></Col>
-          <Col md={10} className=''>
-            <Row className='group-header background-color-third vh-12'>
-
-            </Row>
-            <Row>
-              <GroupSpace/>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
+      <Routes>
+          <Route path='/create-group' element={<CreateGroup />}></Route>
+          <Route path='/groupworkspace' element={<GroupWorkSpace />}></Route>
+      </Routes>
     </div>
   );
 }
