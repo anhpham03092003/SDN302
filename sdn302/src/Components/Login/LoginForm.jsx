@@ -3,7 +3,7 @@ import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Alert } from 'react-bootstrap';
-import styles from '../Styles/login.module.css';
+import styles from '../../Styles/Profile/login.module.css';
 
 function LoginForm() {
   const [username, setUsername] = useState('');

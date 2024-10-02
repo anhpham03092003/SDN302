@@ -3,7 +3,7 @@ import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Alert } from 'react-bootstrap';
-import styles from '../Styles/Forgot.module.css';
+import styles from '../../Styles/Profile/Forgot.module.css';
 
 // Create a new context for OTP
 const OTPContext = createContext();

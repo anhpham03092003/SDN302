@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import styles from '../Styles/otp.module.css'; // Import CSS module
+import styles from '../../Styles/Profile/otp.module.css'; // Import CSS module
 
 export default function OTPInput() {
   const location = useLocation();
