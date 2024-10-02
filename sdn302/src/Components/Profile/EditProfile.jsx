@@ -2,7 +2,7 @@ import React from 'react'
 import { FaAddressCard, FaUser, FaPhone } from 'react-icons/fa';
 import { IoMail } from 'react-icons/io5';
 import { Table, Button } from 'react-bootstrap';
-import styles from '../Styles/Profile/Profile.module.css';
+import styles from '../../Styles/Profile/Profile.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 function EditProfile() {
   return (
@@ -69,6 +69,7 @@ function EditProfile() {
                   name="email" 
                   defaultValue="john.doe@example.com" 
                   className={styles.inputField} 
+                  
                 />
               </td>
             </tr>
