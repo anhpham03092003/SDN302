@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import styles from '../../Styles/Profile/Forgot.module.css'; // Import CSS module
+import styles from '../../Styles/Login/Forgot.module.css'; // Import CSS module
 
 export default function Reset() {
   const location = useLocation();
