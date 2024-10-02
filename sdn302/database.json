@@ -1,0 +1,219 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "user1",
+      "password": "password1",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "phone": "123-456-7890",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-01T12:00:00Z"
+    },
+    {
+      "id": "2",
+      "username": "admin",
+      "password": "adminpassword",
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@example.com",
+      "phone": "987-654-3210",
+      "role": "admin",
+      "banned": false,
+      "createdAt": "2024-07-01T12:00:00Z"
+    },
+    {
+      "id": "3",
+      "username": "user2",
+      "password": "password2",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane.doe@example.com",
+      "phone": "987-654-3210",
+      "role": "user",
+      "banned": true,
+      "createdAt": "2024-07-02T12:00:00Z"
+    },
+    {
+      "id": "4",
+      "username": "user321",
+      "password": "password3",
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "email": "alice.smith@example.com",
+      "phone": "456-789-0123",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-03T12:00:00Z"
+    },
+    {
+      "id": "5",
+      "username": "user4",
+      "password": "password4",
+      "firstName": "Bob",
+      "lastName": "Johnson",
+      "email": "bob.johnson@example.com",
+      "phone": "567-890-1234",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-04T12:00:00Z"
+    },
+    {
+      "id": "6",
+      "username": "user5",
+      "password": "password5",
+      "firstName": "Carol",
+      "lastName": "Williams",
+      "email": "carol.williams@example.com",
+      "phone": "678-901-2345",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-05T12:00:00Z"
+    },
+    {
+      "id": "7",
+      "username": "user6",
+      "password": "password6",
+      "firstName": "David",
+      "lastName": "Brown",
+      "email": "david.brown@example.com",
+      "phone": "789-012-3456",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-06T12:00:00Z"
+    },
+    {
+      "id": "8",
+      "username": "user7",
+      "password": "password7",
+      "firstName": "Eva",
+      "lastName": "Jones",
+      "email": "eva.jones@example.com",
+      "phone": "890-123-4567",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-07T12:00:00Z"
+    },
+    {
+      "id": "9",
+      "username": "user8",
+      "password": "password8",
+      "firstName": "Frank",
+      "lastName": "Miller",
+      "email": "frank.miller@example.com",
+      "phone": "901-234-5678",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-08T12:00:00Z"
+    },
+    {
+      "id": "10",
+      "username": "user9",
+      "password": "password9",
+      "firstName": "Grace",
+      "lastName": "Wilson",
+      "email": "grace.wilson@example.com",
+      "phone": "012-345-6789",
+      "role": "user",
+      "banned": false,
+      "createdAt": "2024-07-09T12:00:00Z"
+    },
+    {
+      "username": "hoanganh",
+      "password": "123456789",
+      "firstName": "Nguyen",
+      "lastName": "Hoang Anh",
+      "email": "hoanganh@gmail.com",
+      "phone": "",
+      "role": "user",
+      "banned": false,
+      "id": "i4ogbyP"
+    },
+    {
+      "username": "Linh123",
+      "password": "987654321",
+      "firstName": "Nguyen",
+      "lastName": "Duc Linh",
+      "email": "linhndhe170256@fpt.edu.vn",
+      "phone": "",
+      "role": "user",
+      "banned": false,
+      "id": "kT1nMgB"
+    },
+    {
+      "id": "79de",
+      "username": "linh",
+      "password": "1234",
+      "firstName": "124",
+      "lastName": "444",
+      "email": "linh@gmail.com",
+      "phone": "",
+      "role": "user",
+      "banned": false
+    }
+  ],
+  "tokens": [
+    {
+      "userId": 1,
+      "token": "token1",
+      "id": "4462"
+    },
+    {
+      "userId": 2,
+      "token": "admintoken",
+      "id": "aa8a"
+    },
+    {
+      "userId": 3,
+      "token": "token2",
+      "id": "7e41"
+    },
+    {
+      "userId": 4,
+      "token": "token3",
+      "id": "b4f9"
+    },
+    {
+      "userId": 5,
+      "token": "token4",
+      "id": "c8d3"
+    },
+    {
+      "userId": 6,
+      "token": "token5",
+      "id": "e1a7"
+    },
+    {
+      "userId": 7,
+      "token": "token6",
+      "id": "f2b5"
+    },
+    {
+      "userId": 8,
+      "token": "token7",
+      "id": "g9c6"
+    },
+    {
+      "userId": 9,
+      "token": "token8",
+      "id": "h4d8"
+    },
+    {
+      "userId": 10,
+      "token": "token9",
+      "id": "i5e9"
+    },
+    {
+      "userId": "i4ogbyP",
+      "token": "token-i4ogbyP-1722694370197",
+      "id": "ah_qWVB"
+    },
+    {
+      "userId": "kT1nMgB",
+      "token": "token-kT1nMgB-1722696067554",
+      "id": "93TanTu"
+    }
+  ]
+}

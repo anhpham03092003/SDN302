@@ -1,39 +1,34 @@
-import { Col, Container, Row } from 'react-bootstrap';
-import './App.css';
-import Header from './Components/Header';
-import GroupSlideBar from './Components/GroupSideBar';
-import GroupSpace from './Components/GroupSpace';
-import AdminSideBar from './Components/AdminSideBar';
-import UserManagement from './Components/UserManagement';
-import GroupList from './Components/GroupList';
-import IndividualSideBar from './Components/IndividualSideBar';
-import IndividualSpace from './Components/IndividualSpace';
-import GroupCreate from './Components/GroupCreate';
 
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './Pages/Home';
+import Login from './Pages/Login';
+import LoginForm from './Components/Login/LoginForm';
+import RegisterForm from './Components/Login/RegisterForm';
+import ForgotPass from './Components/Login/ForgotPass'
+import OTPInput from './Components/Login/OTPInput';
+import Reset from './Components/Login/Reset'
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-      <Container fluid>
-        <Row>
-          <Col md={2} className='background-color-secondary vh-95'><GroupSlideBar/></Col>
-          <Col md={10} className=''>
-            {/* <Row className='group-header background-color-third vh-12'>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/login" element={<Login />}>
+            <Route path="loginForm" element={<LoginForm />} />
+            <Route path="registerForm" element={<RegisterForm />} />
+            <Route path="forgotPass" element={<ForgotPass />} />
+          </Route>
+          <Route path="otp" element={<OTPInput />} />
+          <Route path="resetPass" element={<Reset />} />
+        </Routes>
+      </div>
+    </Router>
 
-            </Row> */}
-            <Row>
-              {/* <GroupSpace /> */}
-              {/* <UserManagement/> */}
-              <GroupList/>
-              {/* <IndividualSpace/> */}
-             
-            </Row>
-            {/* <GroupCreate/> */}
-          </Col>
-        </Row>
-      </Container>
-    </div>
+
   );
 }
 
