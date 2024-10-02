@@ -1,0 +1,73 @@
+.header {
+    width: 100%;
+    background-color: #000000;
+    color: white;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.userSection {
+    display: flex;
+    align-items: center;
+}
+
+.logoutButton {
+    margin-left: 10px;
+}
+
+.signInText {
+    display: flex;
+    align-items: center;
+}
+
+.signInLink {
+    color: white;
+    padding: 7px 13px;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+.signInLink:hover {
+    background-color: #84d4e8;
+}
+
+.actionButtons {
+    margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .nav {
+        height: auto;
+        flex-direction: column; 
+        align-items: center;
+        justify-content: center; 
+        padding: 10px 20px; 
+    }
+
+    .userSection {
+        height: auto;
+        flex-direction: column; 
+        align-items: center;
+        justify-content: center; 
+        padding: 10px 20px; 
+    }
+
+    .label {
+        font-size: 25px;
+        margin-bottom: 10px;
+    }
+}
