@@ -3,11 +3,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
-import LoginForm from './Components/LoginForm';
-import RegisterForm from './Components/RegisterForm';
-import ForgotPass from './Components/ForgotPass'
-import OTPInput from './Components/OTPInput';
-import Reset from './Components/Reset'
+import LoginForm from './Components/Login/LoginForm';
+import RegisterForm from './Components/Login/RegisterForm';
+import ForgotPass from './Components/Login/ForgotPass'
+import OTPInput from './Components/Login/OTPInput';
+import Reset from './Components/Login/Reset'
 
 function App() {
   return (
