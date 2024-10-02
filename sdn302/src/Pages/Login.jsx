@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from '../Styles/login.module.css'
+import styles from '../Styles/Login/Login.module.css';
 import { Outlet } from 'react-router-dom'
 function Login() {
   return (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope, FaIdBadge } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import styles from '../../Styles/Profile/login.module.css';
+import styles from '../../Styles/Login/Login.module.css';
 import { Alert } from 'react-bootstrap';
 
 function RegisterForm() {
