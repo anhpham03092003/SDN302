@@ -1,0 +1,83 @@
+.login_bg {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../../Styles/images/background_login.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.wapper {
+    width: 500px;
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(40px);
+    color: #f0f2f5;
+    padding: 30px 40px;
+}
+
+/* Chỉnh chữ "Email Verification" lớn hơn và đậm hơn */
+.emailVerification {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Chỉnh giao diện OTP thành 4 ô nhỏ trên một hàng */
+.otpInputContainer {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.otpInputBox {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    outline: none;
+}
+
+.resendOTP {
+    text-align: center;
+    font-size: 14px;
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.resendOTP:disabled {
+    color: gray;
+    text-decoration: none;
+    cursor: not-allowed;
+}
+
+.verifyButton {
+    width: 80%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    justify-content: center;
+    margin: 20px auto;
+    display: block;
+}
+
+.verifyButton:hover {
+    background-color: #0056b3;
+}
