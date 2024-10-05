@@ -3,6 +3,9 @@ import { Col, Container, Row } from 'react-bootstrap'
 import GroupSpace from '../Components/GroupSpace'
 import GroupSideBar from '../Components/GroupSideBar'
 import BuyMembership from '../Components/BuyMembership'
+import {Outlet} from 'react-router-dom'
+import GroupTask from '../Components/GroupTask'
+import GroupTaskDetail from '../Components/GroupTaskDetail'
 
 function GroupWorkSpace() {
   return (
@@ -14,7 +17,7 @@ function GroupWorkSpace() {
 
             </Row>
             <Row>
-              <BuyMembership/>
+              <Outlet/>
             </Row>
           </Col>
         </Row>

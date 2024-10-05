@@ -6,6 +6,7 @@ import GroupSpace from './Components/GroupSpace';
 import GroupWorkSpace from './Pages/GroupWorkSpace';
 import CreateGroup from './Pages/CreateGroup';
 import { Route, Routes } from 'react-router-dom';
+import BuyMembership from './Components/BuyMembership';
 
 
 function App() {
@@ -14,7 +15,10 @@ function App() {
       <Header />
       <Routes>
           <Route path='/create-group' element={<CreateGroup />}></Route>
-          <Route path='/groupworkspace' element={<GroupWorkSpace />}></Route>
+          <Route path='/group' element={<GroupWorkSpace />}>
+              <Route index element={<GroupSpace />} />
+              <Route path="membership" element={<BuyMembership />} />
+          </Route>
       </Routes>
     </div>
   );
