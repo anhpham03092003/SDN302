@@ -4,11 +4,12 @@ import { Modal, Button, Form } from 'react-bootstrap';
 const AddMember = ({ show, handleClose }) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [role, setRole] = useState('Role 1'); // Default role
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle adding the member here
-    console.log('Member Added:', { email, name });
+    console.log('Member Added:', { email, name, role });
     handleClose(); // Close the modal after submission
   };
 
@@ -29,6 +30,7 @@ const AddMember = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
+
           <Form.Group controlId="formName">
             <Form.Label>Name (Optional)</Form.Label>
             <Form.Control
@@ -38,6 +40,19 @@ const AddMember = ({ show, handleClose }) => {
               onChange={(e) => setName(e.target.value)}
             />
           </Form.Group>
+
+          <Form.Group controlId="formRole">
+            <Form.Label>Choose Role</Form.Label>
+            <Form.Control
+              as="select"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option>Role 1</option>
+              <option>Role 2</option>
+            </Form.Control>
+          </Form.Group>
+
           <Button variant="primary" type="submit" style={{ marginTop: '10px' }}>
             Send Invitation
           </Button>

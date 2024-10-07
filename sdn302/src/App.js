@@ -32,6 +32,8 @@ import GroupSideBar from './Components/Group_Components/GroupSideBar';
 
 
 
+import AdminDashboard from './Pages/AdminDashboard';
+
 
 function App() {
   return (
@@ -71,7 +73,7 @@ function App() {
           </Route>
 
           <Route path="/admin" element={<Admin />}>
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="userManagement" element={<UserManagementPage />} />
           </Route>
 
