@@ -3,6 +3,7 @@ import { Button, Col, Container, Modal, Row } from 'react-bootstrap'
 import GroupColumn from './GroupColumn'
 import { FaCheck, FaPlus, FaStar } from 'react-icons/fa'
 import { FaRegTrashCan } from 'react-icons/fa6'
+import { Link } from 'react-router-dom';
 
 function BuyMembership() {
     return (
@@ -16,11 +17,11 @@ function BuyMembership() {
                         </Row>
 
                         <Row className='m-3 py-5'>
-                            
-                                <p className='py-2'> <FaCheck/> Limit 3 columns </p>
-                                <p className='py-2'> <FaCheck/> Limit 5 members </p>
-                                <p className='py-2'> <FaCheck/> Limit special functions</p>
-                            
+
+                            <p className='py-2'> <FaCheck /> Limit 3 columns </p>
+                            <p className='py-2'> <FaCheck /> Limit 5 members </p>
+                            <p className='py-2'> <FaCheck /> Limit special functions</p>
+
                         </Row>
 
                         <Row>
@@ -36,15 +37,17 @@ function BuyMembership() {
                         </Row>
 
                         <Row className='m-3 py-5'>
-                            
-                                <p className='py-2 text-success'> <FaCheck/> Unlimit columns </p>
-                                <p className='py-2 text-success'> <FaCheck/> Unlimit members </p>
-                                <p className='py-2 text-success'> <FaCheck/> Unrestrict special functions</p>
-                            
+
+                            <p className='py-2 text-success'> <FaCheck /> Unlimit columns </p>
+                            <p className='py-2 text-success'> <FaCheck /> Unlimit members </p>
+                            <p className='py-2 text-success'> <FaCheck /> Unrestrict special functions</p>
+
                         </Row>
 
                         <Row>
-                            <Button className='rounded-0 btn-membership border-0 py-3 fw-bolder'>Upgrade</Button>
+                            <Button className='rounded-0 btn-membership border-0 py-3 fw-bolder'>
+                                <Link to="/groups/name/checkOut">Upgrade</Link>
+                            </Button>
                         </Row>
                     </Container>
 

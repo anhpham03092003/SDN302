@@ -22,6 +22,7 @@ import GroupSideBar from './Components/Group_Components/GroupSideBar';
 import GroupSpace from './Components/Group_Components/GroupSpace';
 import BuyMembership from './Components/Group_Components/BuyMembership';
 import Header from './Components/Header';
+import Payment from './Components/CheckOut_Components/Payment';
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
               <Route index element={<GroupSpace />} />
               <Route path="membership" element={<BuyMembership />} />
               <Route path="memberList" element={<MemberList />} />
+              <Route path="checkOut" element={<Payment />} />
             </Route>
 
           </Route>
