@@ -27,7 +27,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Header/>
+        <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
@@ -39,18 +39,23 @@ function App() {
           <Route path="otp" element={<OTPInput />} />
           <Route path="resetPass" element={<Reset />} />
 
-          <Route path="/groups/name" element={<GroupWorkSpace/>}>
+          <Route path="/groups" >
+            <Route path="create" element={<CreateGroup />} />
+
+            <Route path="name" element={<GroupWorkSpace />} >
               <Route index element={<GroupSpace />} />
               <Route path="membership" element={<BuyMembership />} />
               <Route path="memberList" element={<MemberList />} />
+            </Route>
+
           </Route>
 
-          <Route path="/admin" element={<Admin/>}>
+          <Route path="/admin" element={<Admin />}>
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
-     
-          
-      
+
+
+
         </Routes>
       </div>
     </Router>

@@ -16,31 +16,31 @@ function GroupSideBar() {
                     <p>Vip / Basic</p>
                 </Col>
             </Row>
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}><MdWorkspaces/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'><Link to='   ' className='text-decoration-none text-dark'>Workspace</Link></p>
                 </Col>
             </Row>
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}><FaGear/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'> Group Settings</p>
                 </Col>
             </Row>
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}><FaUserGroup/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'><Link to='memberList' className='text-decoration-none text-dark'>Manage members</Link>  </p>
                 </Col>
             </Row>
-            <Row className='py-2 sidebar-items border-bottom border-3 border-white'>
+            <Row className='py-2 background-hover border-bottom border-3 border-white'>
                 <Col className='align-content-center text-start' md={2}><FaPlus/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'> Invite member</p>
                 </Col>
             </Row>
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}><IoChevronBackOutline/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'><Link to='/groups' className='text-decoration-none text-dark'>Back to groups list</Link> </p>

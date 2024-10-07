@@ -25,22 +25,19 @@
   cursor: pointer;
 }
   
-.sidebar-items:hover{
-  background-color: #8a8a8a !important;
-  cursor: pointer;
-}
 
 .sidebar-active{
   background-color: #8a8a8a !important;
 }
 
 .background-hover:hover{
-  background-color: #8a8a8a !important;
+  background-color: #F5F5F5 !important;
   cursor: pointer;
+  color: #FE964B !important;
 }
 
 .item-hover:hover{
-  color: #FE964B;
+  color: #FE964B !important;
   cursor: pointer;
 }
 

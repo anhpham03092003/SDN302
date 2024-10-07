@@ -17,9 +17,9 @@ function BuyMembership() {
 
                         <Row className='m-3 py-5'>
                             
-                                <p className='py-2'> <FaCheck/> okok </p>
-                                <p className='py-2'> <FaCheck/> okok </p>
-                                <p className='py-2'> <FaCheck/> okok </p>
+                                <p className='py-2'> <FaCheck/> Limit 3 columns </p>
+                                <p className='py-2'> <FaCheck/> Limit 5 members </p>
+                                <p className='py-2'> <FaCheck/> Limit special functions</p>
                             
                         </Row>
 
@@ -37,9 +37,9 @@ function BuyMembership() {
 
                         <Row className='m-3 py-5'>
                             
-                                <p className='py-2'> <FaCheck/> okok </p>
-                                <p className='py-2'> <FaCheck/> okok </p>
-                                <p className='py-2'> <FaCheck/> okok </p>
+                                <p className='py-2 text-success'> <FaCheck/> Unlimit columns </p>
+                                <p className='py-2 text-success'> <FaCheck/> Unlimit members </p>
+                                <p className='py-2 text-success'> <FaCheck/> Unrestrict special functions</p>
                             
                         </Row>
 
