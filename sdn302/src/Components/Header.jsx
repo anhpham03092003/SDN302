@@ -17,10 +17,10 @@ function Header() {
                     <Nav.Link href="/"><p className='m-0 text-dark fs-6'>Home</p></Nav.Link>
                 </Nav.Item>
                 <Nav.Item className='align-content-center'>
-                    <Nav.Link href="/"><p className='m-0 text-dark fs-6'>Groups</p></Nav.Link>
+                    <Nav.Link href="/group/groupList"><p className='m-0 text-dark fs-6'>Groups</p></Nav.Link>
                 </Nav.Item>
                 <Nav.Item className='align-content-center'>
-                    <Nav.Link href="/"><p className='m-0 text-dark fs-6'>Individual</p></Nav.Link>
+                    <Nav.Link href="/individualSpace"><p className='m-0 text-dark fs-6'>Individual</p></Nav.Link>
                 </Nav.Item> 
                 <Nav.Item className='text-dark align-content-center'>
                 <Button variant='primary' className='rounded-0 btn-sm' >

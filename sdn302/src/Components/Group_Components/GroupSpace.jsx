@@ -1,6 +1,6 @@
 import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import GroupColumn from './GroupColumn'
+import GroupColumn from '../Group_Components/GroupColumn'
 import { FaPlus } from 'react-icons/fa'
 
 function GroupSpace() {

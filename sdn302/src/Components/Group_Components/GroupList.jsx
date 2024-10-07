@@ -2,7 +2,8 @@ import React from "react";
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { MdTimelapse } from "react-icons/md";
 import { Link } from 'react-router-dom';
-import styles from '../Styles/GroupList.module.css';
+import styles from '../../Styles/Group_css/GroupList.module.css';
+import { FaRegListAlt } from "react-icons/fa";
 
 
 function GroupList() {
@@ -81,7 +82,7 @@ function GroupList() {
           </Col>
         ))}
       </Row>
-      <h4 className={styles.container}>All Groups</h4>
+      <h4 className={styles.container}><FaRegListAlt/> All Groups</h4>
       <div className={styles.allGroupsContainer}>
         <Row className="ms-2">
           {groups.map((group) => (

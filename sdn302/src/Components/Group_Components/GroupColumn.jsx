@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { FaPlus } from 'react-icons/fa';
 import { FaRegTrashCan } from 'react-icons/fa6';
 import { IoMdMore } from "react-icons/io";
-import GroupTask from './GroupTask';
+import GroupTask from '../Group_Components/GroupTask';
 function GroupColumn() {
     return (
         <Container fluid className='py-1'>
