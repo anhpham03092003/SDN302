@@ -3,7 +3,7 @@ import { Carousel } from 'react-bootstrap';
 import { FaLock, FaUsers, FaArrowRight, FaTruck, FaGlobe, FaHeart, FaRegClock, FaClipboardCheck } from "react-icons/fa";
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import Header from './Header';
+
 import Footer from './Footer';
 import FAQ from './FAQ';
 import styles from '../../Styles/Home_css/Layout.module.css';
@@ -31,7 +31,7 @@ function Layout() {
 
   return (
     <div>
-      <Header user={user} setUser={setUser} />
+  
       <Container className={styles.firstContainer}>
         <Carousel className={styles.carousel}>
           <Carousel.Item>
