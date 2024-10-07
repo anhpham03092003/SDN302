@@ -69,7 +69,6 @@ function App() {
               <Route path="memberList" element={<MemberList />} />
               <Route path="checkOut" element={<Payment />} />
             </Route>
-
           </Route>
 
           <Route path="/admin" element={<Admin />}>
