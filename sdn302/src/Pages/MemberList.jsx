@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Table, Button, InputGroup, FormControl, Pagination } from 'react-bootstrap';
-import { BsEyeFill, BsPencilFill, BsTrashFill } from 'react-icons/bs';
-import AddMemberModal from '../Components/Group_Components/AddMember'; // Import the new modal component
+import { BsEyeFill, BsPencilFill, BsTrashFill } from 'react-icons/bs'; 
 
 function MemberList() {
   const members = [
-    { id: 1, name: 'Thomas Hardy', role: 'Manager', tasks: 12 },
-    { id: 2, name: 'Maria Anders', role: 'Developer', tasks: 10 },
-    { id: 3, name: 'Fran Wilson', role: 'Designer', tasks: 7 },
-    { id: 4, name: 'Dominique Perrier', role: 'Tester', tasks: 5 },
-    { id: 5, name: 'Martin Blank', role: 'Admin', tasks: 9 },
+    { id: 1, name: 'Thomas Hardy', role: 'Group Owner', tasks: 12 },
+    { id: 2, name: 'Maria Anders', role: 'Member', tasks: 10 },
+    { id: 3, name: 'Fran Wilson', role: 'Viewer', tasks: 7 },
+    { id: 4, name: 'Dominique Perrier', role: 'Member', tasks: 5 },
+    { id: 5, name: 'Martin Blank', role: 'Member', tasks: 9 },
   ];
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,9 +29,6 @@ function MemberList() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button variant="primary" onClick={() => setModalShow(true)}>
-          Add New Member
-        </Button>
       </InputGroup>
 
       {/* Table */}
@@ -85,9 +81,6 @@ function MemberList() {
       <div className="text-right mt-3">
         Showing {filteredMembers.length} out of 25 entries
       </div>
-
-      {/* Add Member Modal */}
-      <AddMemberModal show={modalShow} handleClose={() => setModalShow(false)} />
     </div>
   );
 }

@@ -28,18 +28,18 @@ function GroupSideBar() {
                     <p className='m-0'> Group Settings</p>
                 </Col>
             </Row>
-            <Row className='py-2 background-hover'>
+            <Row className='py-2 background-hover border-bottom border-3 border-white'>
                 <Col className='align-content-center text-start' md={2}><FaUserGroup/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'><Link to='memberList' className='text-decoration-none text-dark'>Manage members</Link>  </p>
                 </Col>
             </Row>
-            <Row className='py-2 background-hover border-bottom border-3 border-white'>
+            {/* <Row className='py-2 background-hover border-bottom border-3 border-white'>
                 <Col className='align-content-center text-start' md={2}><FaPlus/></Col>
                 <Col className='align-content-center text-start' md={10}>
                     <p className='m-0'> Invite member</p>
                 </Col>
-            </Row>
+            </Row> */}
             <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}><IoChevronBackOutline/></Col>
                 <Col className='align-content-center text-start' md={10}>
