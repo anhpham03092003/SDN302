@@ -15,6 +15,10 @@ import ForgotPass from './Components/Login/ForgotPass'
 import OTPInput from './Components/Login/OTPInput';
 import Reset from './Components/Login/Reset'
 import Dashboard from './Components/Admin_Components/Dashboard'
+import ProfilePage from './Pages/ProfilePage';
+import ProfileInfo from './Components/Profile/ProfileInfo';
+import EditProfile from './Components/Profile/EditProfile';
+import ChangePassword from './Components/Profile/ChangePassword';
 
 function App() {
   return (
@@ -31,13 +35,20 @@ function App() {
           <Route path="otp" element={<OTPInput />} />
           <Route path="resetPass" element={<Reset />} />
 
-          <Route path="/group" element={<Group/>}>
+          <Route path="/profile" element={<ProfilePage />}>
+            <Route path="profileInfo" element={<ProfileInfo />} />
+            <Route path="editProfile" element={<EditProfile />} />
+            <Route path="changePassword" element={<ChangePassword />} />
+          </Route>
+
+          <Route path="/group" element={<Group />}>
             <Route path="memberList" element={<MemberList />} />
           </Route>
 
-          <Route path="/admin" element={<Admin/>}>
+          <Route path="/admin" element={<Admin />}>
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
+
 
         </Routes>
       </div>
