@@ -1,8 +1,12 @@
-import React from 'react'
+import React  from 'react'
 import { Button, Col, Container, Dropdown, Nav, NavDropdown, Row } from 'react-bootstrap'
 import {Link} from 'react-router-dom'
 import { FaArrowRight, FaBell, FaNutritionix, FaPen, FaPlus, FaUser } from "react-icons/fa";
 function Header() {
+
+  
+
+
     return (
         <Container fluid className='d-flex justify-content-between background-color-primary vh-5'>
             <Nav className=''>
@@ -16,7 +20,7 @@ function Header() {
                     <Nav.Link href="/groups"><p className='m-0 text-dark fs-6'>Groups</p></Nav.Link>
                 </Nav.Item>
                 <Nav.Item className='align-content-center background-hover'>
-                    <Nav.Link href="/"><p className='m-0 text-dark fs-6'>Individual</p></Nav.Link>
+                    <Nav.Link href="/individualSpace"><p className='m-0 text-dark fs-6'>Individual</p></Nav.Link>
                 </Nav.Item> 
                 <Nav.Item className='text-dark align-content-center'>
                     <Link to="/groups/create" className=' btn btn-primary btn-sm rounded-0  '><FaPlus></FaPlus> Create</Link>
