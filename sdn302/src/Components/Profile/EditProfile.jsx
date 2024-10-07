@@ -4,6 +4,7 @@ import { IoMail } from 'react-icons/io5';
 import { Table, Button } from 'react-bootstrap';
 import styles from '../../Styles/Profile/Profile.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom';
 function EditProfile() {
   return (
     <div>
@@ -88,8 +89,8 @@ function EditProfile() {
         </Table>
 
         <div style={{ marginTop: '10px' }}>
-          <Button variant="primary" style={{ marginRight: 5 }}>Save</Button>
-          <Button variant="secondary">Cancel</Button>
+          <Link to="/profile/profileinfo"><Button variant="primary" style={{ marginRight: 5 }}>Save</Button></Link>
+          <Button variant="secondary" style={{ marginRight: 5 }} type='reset'>Clear</Button>
         </div>
       </form>
     </div>

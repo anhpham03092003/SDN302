@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter ,Router, Routes, Route } from 'react-router-dom';
-//For pages import
+import { BrowserRouter , Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Group from './Pages/Group';
@@ -8,7 +7,6 @@ import Admin from './Pages/Admin';
 import MemberList from './Pages/MemberList';
 import GroupWorkSpace from './Pages/GroupWorkSpace';
 import CreateGroup from './Pages/CreateGroup';
-//For components import
 import LoginForm from './Components/Login/LoginForm';
 import RegisterForm from './Components/Login/RegisterForm';
 import ForgotPass from './Components/Login/ForgotPass'
@@ -26,6 +24,10 @@ import GroupSideBar from './Components/Group_Components/GroupSideBar';
 
 import BuyMembership from './Components/Group_Components/BuyMembership';
 import Header from './Components/Header';
+import ProfilePage from './Pages/ProfilePage';
+import ProfileInfo from './Components/Profile/ProfileInfo';
+import EditProfile from './Components/Profile/EditProfile';
+import ChangePassword from './Components/Profile/ChangePassword';
 
 
 function App() {
@@ -44,7 +46,16 @@ function App() {
           <Route path="otp" element={<OTPInput />} />
           <Route path="resetPass" element={<Reset />} />
 
-          <Route path="/groups" element={<GroupListPage />} >
+          <Route path="/profile" element={<ProfilePage/>}>
+            <Route path="profileInfo" element={<ProfileInfo/>} />
+            <Route path="editProfile" element={<EditProfile />} />
+            <Route path="changePassword" element={<ChangePassword />} />
+          </Route>
+
+          
+
+          <Route path="/groups"  >
+          <Route index element={<GroupListPage />} />
             <Route path="create" element={<CreateGroup />} />
 
             <Route path="name" element={<GroupWorkSpace />} >
