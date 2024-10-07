@@ -4,7 +4,7 @@ import { FaCheckSquare, FaPen, FaRegCheckSquare } from 'react-icons/fa'
 
 function GroupTask() {
     return (
-        <Container className='bg-white p-3 cursor-pointer'>
+        <Container className='bg-white p-3 cursor-pointer shadow'>
             <Row>
                 <Col md={9} className='text-start'><p className='m-0'>Task Name</p></Col>
                 <Col md={3} className='text-end'><FaPen className='item-hover'/></Col>

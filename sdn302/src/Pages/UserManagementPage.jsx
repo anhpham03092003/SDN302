@@ -8,7 +8,7 @@ import '../App.css';
 function UserManagementPage() {
     return (
         <div className="App">
-             <Header />
+  
       <Container fluid>
         <Row>
           <Col md={2} className='background-color-secondary vh-95'><AdminSideBar/></Col>

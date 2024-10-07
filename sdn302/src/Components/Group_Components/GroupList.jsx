@@ -72,7 +72,7 @@ function GroupList() {
       <Row>
         {groups.slice(0, 4).map((group) => ( 
           <Col md={3} className="mb-3" key={group.id}>
-            <Link to={`/group/${group.id}`} className={styles.card}>
+            <Link to={`/groups/name`} className={styles.card}>
               <Card className="text-center" style={{ position: 'relative' }}>
                 <Card.Img src={group.image} alt={group.title} className={styles.cardImage} />
                 

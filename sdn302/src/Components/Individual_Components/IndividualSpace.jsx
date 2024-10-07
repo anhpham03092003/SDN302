@@ -5,7 +5,7 @@ import { FaPlus } from 'react-icons/fa'
 
 function IndividualSpace() {
     return (
-        <Container fluid className='overflow-auto vh-83'>
+        <Container fluid className='vh-83'>
             
             <Row className='flex-nowrap mt-3 ms-2'>
                 <Col md={3} className='mx-2 background-color-secondary'><GroupColumn /></Col>
