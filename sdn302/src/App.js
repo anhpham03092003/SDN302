@@ -17,17 +17,20 @@ import GroupListPage from './Pages/GroupListPage';
 import UserManagementPage from './Pages/UserManagementPage';
 import IndividualSpacePage from './Pages/IndividualSpacePage';
 import GroupSpace from './Components/Group_Components/GroupSpace';
+import BuyMembership from './Components/Group_Components/BuyMembership';
+import Header from './Components/Header';
+import Payment from './Components/CheckOut_Components/Payment';
+import ProfilePage from './Pages/ProfilePage';
+import ProfileInfo from './Components/Profile/ProfileInfo';
+import EditProfile from './Components/Profile/EditProfile';
+import ChangePassword from './Components/Profile/ChangePassword';
+
 
 import './App.css';
 import GroupSideBar from './Components/Group_Components/GroupSideBar';
 
 
-import BuyMembership from './Components/Group_Components/BuyMembership';
-import Header from './Components/Header';
-import ProfilePage from './Pages/ProfilePage';
-import ProfileInfo from './Components/Profile/ProfileInfo';
-import EditProfile from './Components/Profile/EditProfile';
-import ChangePassword from './Components/Profile/ChangePassword';
+
 
 
 function App() {
@@ -62,6 +65,7 @@ function App() {
               <Route index element={<GroupSpace />} />
               <Route path="membership" element={<BuyMembership />} />
               <Route path="memberList" element={<MemberList />} />
+              <Route path="checkOut" element={<Payment />} />
             </Route>
 
           </Route>
