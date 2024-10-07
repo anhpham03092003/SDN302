@@ -16,10 +16,10 @@ import OTPInput from './Components/Login/OTPInput';
 import Reset from './Components/Login/Reset'
 import Dashboard from './Components/Admin_Components/Dashboard';
 import './App.css';
-import GroupSideBar from './Components/GroupSideBar';
-import GroupSpace from './Components/GroupSpace';
+import GroupSideBar from './Components/Group_Components/GroupSideBar';
+import GroupSpace from './Components/Group_Components/GroupSpace';
 
-import BuyMembership from './Components/BuyMembership';
+import BuyMembership from './Components/Group_Components/BuyMembership';
 import Header from './Components/Header';
 
 
