@@ -39,7 +39,7 @@ function App() {
           <Route path="otp" element={<OTPInput />} />
           <Route path="resetPass" element={<Reset />} />
 
-          <Route path="/groups" element={<GroupWorkSpace/>}>
+          <Route path="/groups/name" element={<GroupWorkSpace/>}>
               <Route index element={<GroupSpace />} />
               <Route path="membership" element={<BuyMembership />} />
               <Route path="memberList" element={<MemberList />} />
@@ -49,7 +49,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
      
-          <Route path='/create-group' element={<CreateGroup />}></Route>
+          
       
         </Routes>
       </div>

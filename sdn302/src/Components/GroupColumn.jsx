@@ -1,10 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { FaPlus } from 'react-icons/fa';
 import { FaRegTrashCan } from 'react-icons/fa6';
 import { IoMdMore } from "react-icons/io";
 import GroupTask from './GroupTask';
+import GroupTaskDetail from './GroupTaskDetail';
 function GroupColumn() {
+    const [show,setShow] = useState(false);
+    const handleRemoveTask =()=>{
+        if(window.confirm("Remove this column?")){
+
+        }
+    }
     return (
         <Container fluid className='py-1'>
             <Row className='my-2'>
@@ -12,17 +19,15 @@ function GroupColumn() {
                 <Col md={3} className='text-end item-hover'><IoMdMore/></Col>
             </Row>
 
-            <Row className='my-2'>
-                <GroupTask/>
-            </Row>  
-            <Row className='my-2'>
-                <GroupTask/>
+            <Row className='my-2' onClick={()=>{setShow(true)}}>
+                <GroupTask />
             </Row>
 
             <Row className='my-2'>
                 <Col md={9} className='text-start background-hover p-1'><p className='m-0'> <FaPlus/>  Create task</p></Col>
-                <Col md={3} className='text-end'><FaRegTrashCan className='item-hover' /></Col>
+                <Col md={3} className='text-end'><FaRegTrashCan className='item-hover' onClick={handleRemoveTask}/></Col>
             </Row>
+            <GroupTaskDetail show={show} setShow={setShow}/>
         </Container>
     )
 }

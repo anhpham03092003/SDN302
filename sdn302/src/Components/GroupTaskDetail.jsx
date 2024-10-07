@@ -5,16 +5,16 @@ import { IoMenu } from 'react-icons/io5'
 import GroupSubTask from './GroupSubTask'
 import { IoMdMenu } from 'react-icons/io'
 
-function GroupTaskDetail() {
+function GroupTaskDetail({show,setShow}) {
     return (
         <Modal
-            show={true}
+            show={show}
             size="xl"
             aria-labelledby="contained-modal-title-vcenter"
             centered
 
         >
-            <Modal.Header closeButton>
+            <Modal.Header closeButton onHide={()=>{setShow(false)}}>
                 <Modal.Title id="contained-modal-title-vcenter">
                     Task Name
                 </Modal.Title>
