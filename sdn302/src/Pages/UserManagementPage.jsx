@@ -18,7 +18,6 @@ function UserManagementPage() {
             </Row> */}
             <Row>
               <UserManagement/>
-             
             </Row>
           </Col>
         </Row>
