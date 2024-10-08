@@ -9,15 +9,15 @@ function Footer() {
         <div className={styles.footer_width}>
           <h3>About</h3>
           <p className={styles.about_p}>
-            Welcome to TaskSnap! Stay organized, boost productivity, and conquer your day with our intuitive to-do list app.
+            Welcome to Colohuri! Stay organized, boost productivity, and conquer your day with our intuitive to-do list app.
             Add tasks, set deadlines, and track your progress effortlessly. Let’s get things done together!
           </p>
         </div>
         <div className={`${styles.footer_width} ${styles.group_info}`}>
-          <h3>Group Info</h3>
-          <p><strong>Leader:</strong> Nguyen Duy Anh </p>
-          <p><strong>Developer:</strong> Nguyen Hoang Anh </p>
-          <p><strong>Developer:</strong> Nguyen Van Quyen </p>
+          <h3>Services</h3>
+          <p><strong>Todo list</strong></p>
+          <p><strong>Group Creation</strong></p>
+          <p><strong>Feedback</strong></p>
         </div>
         <div className={styles.footer_width}>
           <h3>Contact</h3>
