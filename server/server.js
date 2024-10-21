@@ -5,13 +5,16 @@ const httpsErrors = require("http-errors");
 require("dotenv").config();
 const app = express();
 const db = require("./models/index");
-const { } = require("./routes");
+const { groupRouter, userRouter } = require("./routes");
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.get("/", async (req, res, next) => {
   res.status(200).json({ message: "Server is running" });
 });
 //dinh tuyen theo cac chuc nang thuc te
+
+app.use("/group", groupRouter);
+app.use("/user", userRouter);
 
 app.use(async (req, res, next) => {
   next(httpsErrors(404, "Bad Request"));
