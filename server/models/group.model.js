@@ -78,7 +78,11 @@ const groupSchema = new mongoose.Schema({
                 enum: ['inprogress', 'done'],
                 default: 'inprogress'
             }
+        }, {
+            timestamps: true
         }]
+    }, {
+        timestamps: true
     }],
     members: [{
         _id: mongoose.Schema.Types.ObjectId,
