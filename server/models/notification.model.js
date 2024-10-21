@@ -31,6 +31,8 @@ const notificationSchema = new mongoose.Schema({
         type: Boolean,
         default: false // Default false for unseen notifications
     }
+}, {
+    timestamps: true
 });
 
 const Notification = mongoose.model('notification', notificationSchema);
