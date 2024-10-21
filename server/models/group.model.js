@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { create } = require('./notification.model');
 
 const groupSchema = new mongoose.Schema({
     groupName: {
@@ -42,6 +43,14 @@ const groupSchema = new mongoose.Schema({
             enum: ['todo', 'inprogress', 'done'],
             required: true
         },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        },
+        updateAt: {
+            type: Date,
+            default: Date.now
+        },
         comments: [{ // Added comments to the task
             user: {
                 type: mongoose.Schema.Types.ObjectId,
@@ -56,6 +65,14 @@ const groupSchema = new mongoose.Schema({
             status: {
                 type: String,
                 required: true
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            },
+            updateAt: {
+                type: Date,
+                default: Date.now
             }
         }],
         subTasks: [{
@@ -77,12 +94,17 @@ const groupSchema = new mongoose.Schema({
                 type: String,
                 enum: ['inprogress', 'done'],
                 default: 'inprogress'
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            },
+            updateAt: {
+                type: Date,
+                default: Date.now
             }
-        }, {
-            timestamps: true
+
         }]
-    }, {
-        timestamps: true
     }],
     members: [{
         _id: mongoose.Schema.Types.ObjectId,
