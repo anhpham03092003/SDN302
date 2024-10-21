@@ -85,9 +85,15 @@ const userSchema = new mongoose.Schema({
                 type: String,
                 enum: ['inprogress', 'done'],
                 default: 'inprogress'
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            },
+            updateAt: {
+                type: Date,
+                default: Date.now
             }          
-        }, {
-            timestamps: true
         }],
         
     }]
