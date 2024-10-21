@@ -98,6 +98,8 @@ const groupSchema = new mongoose.Schema({
         default: 'active',
         required: true // Only for group owner
     }
+}, {
+    timestamps: true
 });
 
 const Group = mongoose.model('group', groupSchema);
