@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
+const Group = require("./group.model");
+const User = require("./user.model");
+const Notification = require("./notification.model");
 
 const db = {};
+
+db.Groups = Group;
+db.Users = User;
+db.Notifications = Notification;
+
 
 db.connectDB = async () => {
   try {
