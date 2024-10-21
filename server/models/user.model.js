@@ -39,9 +39,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'notification'
     }],
-    admin: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
     },
     status: {
         type: String,
@@ -59,8 +60,8 @@ const userSchema = new mongoose.Schema({
         deadline: {
             type: Date, // Date type
             validate: {
-                validator: function(value) {
-                    return value > Date.now(); // Deadline must be a future date
+                validator: function (value) {
+                    return value > Date.now(); // Deadline must be in the future
                 },
                 message: 'Deadline must be in the future.'
             }
@@ -84,8 +85,24 @@ const userSchema = new mongoose.Schema({
                 type: String,
                 enum: ['inprogress', 'done'],
                 default: 'inprogress'
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            },
+            updatedAt: {
+                type: Date,
+                default: Date.now
             }
-        }]
+        }],
+        createdAt: {
+            type: Date,
+            default: Date.now 
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now 
+        }
     }]
 }, {
     timestamps: true
