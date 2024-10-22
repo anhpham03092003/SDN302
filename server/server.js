@@ -5,7 +5,7 @@ const httpsErrors = require("http-errors");
 require("dotenv").config();
 const app = express();
 const db = require("./models/index");
-const { groupRouter, userRouter } = require("./routes");
+const { groupRouter, userRouter, authenticationRouter } = require("./routes");
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.get("/", async (req, res, next) => {
@@ -15,6 +15,7 @@ app.get("/", async (req, res, next) => {
 
 app.use("/group", groupRouter);
 app.use("/user", userRouter);
+app.use("/authentication", authenticationRouter);
 
 app.use(async (req, res, next) => {
   next(httpsErrors(404, "Bad Request"));
