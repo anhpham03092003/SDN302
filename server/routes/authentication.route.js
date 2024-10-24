@@ -69,16 +69,16 @@ authRouter.post("/register", async (req, res, next) => {
 
 // gửi link reser
 authRouter.post("/forgot-password", async (req, res) => {
-    const { email } = req.body;
+    const { username, email } = req.body;
     try {
-        const oldUser = await db.Users.findOne({ 'account.email': email });
+        const oldUser = await User.findOne({ username: username, 'account.email': email });
         if (!oldUser) {
-            return res.status(404).json({ status: "User Not Exists!!" });
+            return res.status(404).json({ status: "User or Email not found!" });
         }
 
         const secret = process.env.JWT_SECRET + oldUser.account.password;
         const token = jwt.sign({ email: oldUser.account.email, id: oldUser._id }, secret, {
-            expiresIn: "5m",
+            expiresIn: "10m",  // 10 phút
         });
 
         const link = `http://localhost:9999/authentication/reset-password/${oldUser._id}/${token}`;
@@ -86,8 +86,8 @@ authRouter.post("/forgot-password", async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
+                user: process.env.EMAIL_USER, // Email của bạn
+                pass: process.env.EMAIL_PASS, // Mật khẩu email của bạn
             },
         });
 
@@ -111,6 +111,7 @@ authRouter.post("/forgot-password", async (req, res) => {
         return res.status(500).json({ status: "Something went wrong!" });
     }
 });
+
 
 //reset password
 authRouter.post("/reset-password/:id/:token", async (req, res) => {
