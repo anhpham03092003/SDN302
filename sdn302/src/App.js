@@ -10,7 +10,6 @@ import CreateGroup from './Pages/CreateGroup';
 import LoginForm from './Components/Login/LoginForm';
 import RegisterForm from './Components/Login/RegisterForm';
 import ForgotPass from './Components/Login/ForgotPass'
-import OTPInput from './Components/Login/OTPInput';
 import Reset from './Components/Login/Reset'
 import Dashboard from './Components/Admin_Components/Dashboard'
 import GroupListPage from './Pages/GroupListPage';
@@ -50,7 +49,6 @@ function App() {
               <Route path="registerForm" element={<RegisterForm />} />
               <Route path="forgotPass" element={<ForgotPass />} />
             </Route>
-            <Route path="otp" element={<OTPInput />} />
             <Route path="resetPass" element={<Reset />} />
 
             <Route path="/profile" element={<ProfilePage />}>

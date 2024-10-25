@@ -1,51 +1,32 @@
-import React, { useState, createContext, useContext } from 'react';
-import { FaUser, FaLock } from 'react-icons/fa';
+import React, { useState, useContext } from 'react';
+import { FaUser } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import { Alert } from 'react-bootstrap';
 import styles from '../../Styles/Login/Forgot.module.css';
-
-// Create a new context for OTP
-const OTPContext = createContext();
+import { AppContext } from '../../Context/AppContext'; // Import AppContext
 
 export default function ForgotPass() {
-    const [otp, setOTP] = useState(null); // Store OTP
     const [username, setUsername] = useState('');
-    const [message, setMessage] = useState('');
     const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
     const navigate = useNavigate();
+
+    const { forgotPassword } = useContext(AppContext); // Sử dụng forgotPassword từ AppContext
 
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.get(`http://localhost:9999/users?username=${username}`);
-            if (response.data.length > 0) {
-                const user = response.data[0];
-                if (user.banned) {
-                    setMessage('Your account has been banned by admin!');
-                    return;
-                }
-                // Check if email matches
-                if (user.email === email) {
-                    const OTP = Math.floor(Math.random() * 9000 + 1000);
-                    setOTP(OTP);
-                    await axios.post("http://localhost:5000/send_recovery_email", {
-                        OTP,
-                        recipient_email: user.email,
-                    });
-                    navigate("/otp", { state: { email: user.email, otp: OTP } });
-                } else {
-                    setMessage('Email does not match with username.');
-                }
-            } else {
-                setMessage('User does not exist');
+            const response = await forgotPassword(email, username); // Gọi hàm forgotPassword
+            if (response) {
+                setMessage('Recovery email sent successfully!'); // Thông báo thành công
             }
         } catch (error) {
-            setMessage('Something went wrong. Please try again.');
+            setMessage('Error sending recovery email. Please try again.'); // Thông báo lỗi
         }
     };
+
     return (
-        <div className={styles.login_bg}> {/* Sử dụng class cho background */}
+        <div className={styles.login_bg}>
             <div className={styles.wapper}>
                 <h1>Forgot Password</h1>
                 {message && <Alert variant="danger" className={styles.message}>{message}</Alert>}
@@ -53,7 +34,7 @@ export default function ForgotPass() {
                     <div className={styles.formGroup}>
                         <input
                             type="text"
-                            placeholder="username"
+                            placeholder="Username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             className={styles.formInput}

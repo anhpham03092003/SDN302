@@ -222,7 +222,7 @@ async function editSubTask(req, res, next) {
 
 async function deleteSubTask(req, res, next) {
     try {
-        const { groupId, taskId,subTaskId } = req.params;
+        const { groupId, taskId, subTaskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
             throw createHttpErrors(404, "Group not found")
@@ -238,7 +238,7 @@ async function deleteSubTask(req, res, next) {
 
         await db.Groups.updateOne(
             {
-                _id: groupId , "tasks._id": taskId
+                _id: groupId, "tasks._id": taskId
             }
             , {
                 $pull: { "tasks.$.subTasks": { _id: subTaskId } }
