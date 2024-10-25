@@ -2,6 +2,42 @@ const db = require('../models');
 const bcrypt = require("bcrypt")
 const createHttpErrors = require("http-errors");
 
+
+
+
+// Create new group
+
+async  function createGroup(req, res, next) {
+    try {
+        const { groupName, groupCode} = req.body;
+
+        const defaultClassifications = ['todo','inprogress','done'];
+        
+
+        const newGroup = new db.Groups({ 
+            groupName,
+            groupCode,
+            classifications:  defaultClassifications,
+            
+
+        })
+
+        await newGroup.save();
+        res.status(201).json({message:"Group created successfully", group:  newGroup});
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+
+// Get all groups by user id
+
+
+
+
+
+
 async function getAllTask(req, res, next) {
     try {
         const { groupId } = req.params;
@@ -211,7 +247,8 @@ const GroupController = {
     deleteTask,
     addSubTask,
     getAllSubTask,
-    editSubTask
+    editSubTask,
+    createGroup
 }
 
 module.exports = GroupController;

@@ -6,6 +6,9 @@ const { GroupController } = require("../controllers");
 
 groupRouter.use(bodyParser.json());
 
+// Groups
+groupRouter.post("/create",GroupController.createGroup)
+
 groupRouter.get("/:groupId/tasks/get-all",GroupController.getAllTask)
 groupRouter.post("/:groupId/tasks/create",GroupController.createTask)
 groupRouter.put("/:groupId/tasks/:taskId/edit",GroupController.editTask)
