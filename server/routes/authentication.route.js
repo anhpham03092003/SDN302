@@ -9,23 +9,31 @@ const db = require("../models/index");
 authRouter.use(bodyParser.json());
 
 authRouter.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-
+    const { username, password } = req.body;
     try {
-        const user = await db.Users.findOne({ "account.email": email });
+        //kiểm tra user name
+        const user = await db.Users.findOne({ username });
         if (!user) {
             return res.status(404).json({ status: "User not found!" });
         }
 
+        // kiểm tra password
         const isMatch = await bcrypt.compare(password, user.account.password);
         if (!isMatch) {
             return res.status(401).json({ status: "Invalid password!" });
         }
 
-        res.json({ status: "Login successful!", user });
+        //tạo token
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" } //t để tạm 1h
+        )
+
+        res.json({ status: "Login successful!", user, token });
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).json({ status: "Something went wrong!", error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -42,7 +50,6 @@ authRouter.post("/register", async (req, res, next) => {
         if (existingUser) {
             return res.status(409).json({ message: "Email already in use" });
         }
-
         // hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -71,6 +78,7 @@ authRouter.post("/register", async (req, res, next) => {
 authRouter.post("/forgot-password", async (req, res) => {
     const { username, email } = req.body;
     try {
+        // kiểm tra cả username lẫn email
         const oldUser = await User.findOne({ username: username, 'account.email': email });
         if (!oldUser) {
             return res.status(404).json({ status: "User or Email not found!" });
@@ -81,21 +89,22 @@ authRouter.post("/forgot-password", async (req, res) => {
             expiresIn: "10m",  // 10 phút
         });
 
+        //link change password
         const link = `http://localhost:9999/authentication/reset-password/${oldUser._id}/${token}`;
 
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: process.env.EMAIL_USER, // Email của bạn
-                pass: process.env.EMAIL_PASS, // Mật khẩu email của bạn
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
             },
         });
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
-            subject: "Password Reset",
-            text: `Click this link to reset your password: ${link}`,
+            subject: "Change your password", //tên email
+            text: `Click this link to change your password: ${link}`, //nội dung email
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -137,7 +146,7 @@ authRouter.post("/reset-password/:id/:token", async (req, res) => {
             { $set: { 'account.password': encryptedPassword } }
         );
 
-        return res.json({ status: "Password reset successful!" });
+        return res.json({ status: "Password change successful!" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ status: "Something went wrong!" });
