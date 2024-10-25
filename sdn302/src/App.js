@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter , Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Group from './Pages/Group';
@@ -33,55 +33,58 @@ import GroupSideBar from './Components/Group_Components/GroupSideBar';
 
 
 import AdminDashboard from './Pages/AdminDashboard';
+import AppProvider from './Context/AppContext';
 
 
 function App() {
   return (
-    <BrowserRouter> 
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<Login />}>
-            <Route path="loginForm" element={<LoginForm />} />
-            <Route path="registerForm" element={<RegisterForm />} />
-            <Route path="forgotPass" element={<ForgotPass />} />
-          </Route>
-          <Route path="otp" element={<OTPInput />} />
-          <Route path="resetPass" element={<Reset />} />
-
-          <Route path="/profile" element={<ProfilePage/>}>
-            <Route path="profileInfo" element={<ProfileInfo/>} />
-            <Route path="editProfile" element={<EditProfile />} />
-            <Route path="changePassword" element={<ChangePassword />} />
-          </Route>
-
-          
-
-          <Route path="/groups"  >
-          <Route index element={<GroupListPage />} />
-            <Route path="create" element={<CreateGroup />} />
-
-            <Route path="name" element={<GroupWorkSpace />} >
-              <Route index element={<GroupSpace />} />
-              <Route path="membership" element={<BuyMembership />} />
-              <Route path="memberList" element={<MemberList />} />
-              <Route path="checkOut" element={<Payment />} />
+    <BrowserRouter>
+      <AppProvider>
+        <div className="App">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/login" element={<Login />}>
+              <Route path="loginForm" element={<LoginForm />} />
+              <Route path="registerForm" element={<RegisterForm />} />
+              <Route path="forgotPass" element={<ForgotPass />} />
             </Route>
-          </Route>
+            <Route path="otp" element={<OTPInput />} />
+            <Route path="resetPass" element={<Reset />} />
 
-          <Route path="/admin" element={<Admin />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="userManagement" element={<UserManagementPage />} />
-          </Route>
+            <Route path="/profile" element={<ProfilePage />}>
+              <Route path="profileInfo" element={<ProfileInfo />} />
+              <Route path="editProfile" element={<EditProfile />} />
+              <Route path="changePassword" element={<ChangePassword />} />
+            </Route>
 
-          <Route path="/individualSpace" element={<IndividualSpacePage /> }> 
-          </Route>
 
-        </Routes>
-      </div>
-      </BrowserRouter> 
+
+            <Route path="/groups"  >
+              <Route index element={<GroupListPage />} />
+              <Route path="create" element={<CreateGroup />} />
+
+              <Route path="name" element={<GroupWorkSpace />} >
+                <Route index element={<GroupSpace />} />
+                <Route path="membership" element={<BuyMembership />} />
+                <Route path="memberList" element={<MemberList />} />
+                <Route path="checkOut" element={<Payment />} />
+              </Route>
+            </Route>
+
+            <Route path="/admin" element={<Admin />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="userManagement" element={<UserManagementPage />} />
+            </Route>
+
+            <Route path="/individualSpace" element={<IndividualSpacePage />}>
+            </Route>
+
+          </Routes>
+        </div>
+      </AppProvider>
+    </BrowserRouter>
 
 
   );
