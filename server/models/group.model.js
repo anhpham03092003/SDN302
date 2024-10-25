@@ -4,13 +4,14 @@ const { create } = require('./notification.model');
 const groupSchema = new mongoose.Schema({
     groupName: {
         type: String,
-        unique: true,
-        required: true,
+        unique: [true,"Group name existed"],
+        required: [true,"Group name is required"],
         maxlength: 10 // Limit group name to 10 characters
     },
     groupCode: {
         type: String,
-        unique: true,
+        unique: [true,"Group code existed"],
+        required: [true,"Group code is required"],
         maxlength: 6 // Group code should be unique and max 6 characters
     },
     classifications: [{
@@ -19,7 +20,7 @@ const groupSchema = new mongoose.Schema({
     tasks: [{
         taskName: {
             type: String,
-            required: true,
+            required: [true,"Task name is required"],
             maxlength: 50 // Limit task name to 50 characters
         },
         description: {
@@ -28,8 +29,7 @@ const groupSchema = new mongoose.Schema({
         },
         assignee: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
-            required: true // Assignee is required
+            ref: 'user'
         },
         reviewer: {
             type: mongoose.Schema.Types.ObjectId,
@@ -76,7 +76,7 @@ const groupSchema = new mongoose.Schema({
             }
         }],
         subTasks: [{
-            subtaskName: {
+            subTaskName: {
                 type: String,
                 required: true,
                 maxlength: 200
@@ -111,12 +111,15 @@ const groupSchema = new mongoose.Schema({
         groupRole: {
             type: String,
             enum: ['owner', 'member', 'viewer'],
-            required: true
+            default:"member",
+            required: [true,"Role is required"]
         }
     }],
     isPremium: {
         type: Boolean,
-        default: false
+        default: false,
+        required: [true,"Role is required"]
+        
     },
     status: {
         type: String,

@@ -13,8 +13,8 @@ app.get("/", async (req, res, next) => {
 });
 //dinh tuyen theo cac chuc nang thuc te
 
-app.use("/group", groupRouter);
-app.use("/user", userRouter);
+app.use("/groups", groupRouter);
+app.use("/users", userRouter);
 app.use("/authentication", authenticationRouter);
 
 app.use(async (req, res, next) => {
