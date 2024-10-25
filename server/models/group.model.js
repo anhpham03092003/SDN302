@@ -47,7 +47,7 @@ const groupSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         },
-        updateAt: {
+        updatedAt: {
             type: Date,
             default: Date.now
         },
@@ -70,7 +70,7 @@ const groupSchema = new mongoose.Schema({
                 type: Date,
                 default: Date.now
             },
-            updateAt: {
+            updatedAt: {
                 type: Date,
                 default: Date.now
             }
@@ -99,7 +99,7 @@ const groupSchema = new mongoose.Schema({
                 type: Date,
                 default: Date.now
             },
-            updateAt: {
+            updatedAt: {
                 type: Date,
                 default: Date.now
             }

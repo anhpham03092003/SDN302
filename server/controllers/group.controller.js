@@ -52,13 +52,14 @@ async function editTask(req, res, next) {
             throw createHttpErrors(404, "Task not found")
         }
         const updateTask = {
+            ...task,
             taskName: req.body.taskName ? req.body.taskName : task.name,
             description: req.body.description ? req.body.description : task.description,
             assignee: req.body.assignee ? req.body.assignee : task.assignee,
             reviewer: req.body.reviewer ? req.body.reviewer : task.reviewer,
             deadline: req.body.deadline ? req.body.deadline : task.deadline,
             status: req.body.status ? req.body.status : task.status,
-            updateAt: new Date()
+            updatedAt: new Date()
         }
 
         await db.Groups.updateOne(
@@ -138,13 +139,79 @@ async function addSubTask(req, res, next) {
         // new khong co next : throw httpError.400 
     }
 }
+async function getAllSubTask(req, res, next) {
+    try {
+        const { groupId,taskId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if(!task){
+            throw createHttpErrors(404, "Task not found")
+        }
+        
+        const { subTasks } = task;
+        res.status(200).json(subTasks)
+
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
+
+async function editSubTask(req, res, next) {
+    try {
+        const { groupId, taskId,subTaskId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if(!task){
+            throw createHttpErrors(404, "Task not found")
+        }
+        const subTask = task.subTasks.find(st => st._id == subTaskId)
+        if(!subTask){
+            throw createHttpErrors(404, "Subtask not found")
+        }
+        const updateSubTask = {
+            ...subTask,
+            subTaskName: req.body.subTaskName ? req.body.subTaskName : subTask.subTaskName,
+            assignee: req.body.assignee ? req.body.assignee : subTask.assignee,
+            priority: req.body.priority ? req.body.priority : subTask.priority,
+            status: req.body.status ? req.body.status : subTask.status,
+            updatedAt: new Date()
+        }
+
+        await db.Groups.updateOne(
+            {
+                _id: groupId, 
+                "tasks._id": taskId, 
+                "tasks.subTasks._id": subTaskId 
+            },
+            {
+                 $set: {  "tasks.$.subTasks.$[subtask]": updateSubTask } 
+            },
+            { 
+                arrayFilters: [{ "subtask._id": subTaskId }],
+                runValidators: true 
+            })
+            .then((rs) => res.status(200).json("Edit subtask successfully"));
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
 
 const GroupController = {
     getAllTask,
     createTask,
     editTask,
     deleteTask,
-    addSubTask
+    addSubTask,
+    getAllSubTask,
+    editSubTask
 }
 
 module.exports = GroupController;
