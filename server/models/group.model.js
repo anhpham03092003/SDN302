@@ -131,5 +131,11 @@ const groupSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// groupSchema.methods = {
+//     memberRole: function (userId){
+//         return this.members.find(m=>m._id == userId)
+//     }
+// }
+
 const Group = mongoose.model('group', groupSchema);
 module.exports = Group;
