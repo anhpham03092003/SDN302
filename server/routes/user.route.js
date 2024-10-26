@@ -18,6 +18,7 @@ const { getProfile,
     updateSubTask,
     deleteSubTask } = require("../controllers/user.controller");
 
+
 userRouter.get("/get-profile/:id",AuthMiddleware.verifyAccessToken, getProfile);
 
 userRouter.put("/update-profile/:id",AuthMiddleware.verifyAccessToken, updateProfile);
@@ -39,6 +40,7 @@ userRouter.post("/individual-task/:id/task/:taskId/sub-task/add",AuthMiddleware.
 userRouter.put("/individual-task/:id/task/:taskId/sub-task/:subTaskId/edit",AuthMiddleware.verifyAccessToken, updateSubTask);
 
 userRouter.delete("/individual-task/:id/task/:taskId/sub-task/:subTaskId/delete",AuthMiddleware.verifyAccessToken, deleteSubTask);
+
 
 
 userRouter.post("/add", async (req, res, next) => {
