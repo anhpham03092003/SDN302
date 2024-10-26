@@ -8,8 +8,7 @@ const AppProvider = ({ children }) => {
     const login_API = `http://localhost:9999/authentication/login`;
     const register_API = `http://localhost:9999/authentication/register`;
     const forrgot_API = `http://localhost:9999/authentication/forgot-password`;
-    const changePassword_API = `#`;
-    //const changePassword_API = `http://localhost:9999/authentication/reset-password/${id}/${token}`;
+    const changePassword_API = `http://localhost:9999/authentication/reset-password`;
 
     //login
     const loginUser = async (username, password) => {
@@ -44,13 +43,13 @@ const AppProvider = ({ children }) => {
         }
     };
 
-    //t chưa fix dc cái này
+    // Change password function
     const changePassword = async (id, token, password, confirmPassword) => {
         try {
-            const response = await axios.post(changePassword_API, { id, token, password, confirmPassword });
+            const response = await axios.post(`${changePassword_API}/${id}/${token}`, { password, confirmPassword });
             return response.data;
         } catch (error) {
-            console.error("Register error:", error);
+            console.error("Change password error:", error);
             throw error;
         }
     };

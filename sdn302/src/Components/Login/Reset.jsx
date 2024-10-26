@@ -1,24 +1,18 @@
 import React, { useContext, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styles from '../../Styles/Login/Forgot.module.css';
 import { AppContext } from '../../Context/AppContext';
 
 export default function Reset() {
-  const location = useLocation();
+  const { id, token } = useParams(); // Lấy id và token từ URL
   const navigate = useNavigate();
-  const { email } = location.state || {};
-  const { resetPassword } = useContext(AppContext); // Sử dụng context
+  const { changePassword } = useContext(AppContext); // Sử dụng context
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  const changePassword = async (e) => {
-    e.preventDefault(); // Ngăn chặn reload trang
-
-    // Lấy ID và token từ URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    const token = urlParams.get('token');
+  const changePasswordHandler = async (e) => {
+    e.preventDefault();
 
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
@@ -26,10 +20,10 @@ export default function Reset() {
     }
 
     try {
-      const response = await resetPassword(id, token, password, confirmPassword);
+      const response = await changePassword(id, token, password, confirmPassword);
       alert(response.status);
       if (response.status === "Password change successful!") {
-        navigate('/login'); // Điều hướng đến trang login
+        navigate('/login/loginForm'); // Điều hướng đến trang login
       }
     } catch (error) {
       setError("An error occurred while resetting the password.");
@@ -40,7 +34,7 @@ export default function Reset() {
     <div className={styles.login_bg}>
       <div className={styles.wapper}>
         <h1>Change Password</h1>
-        <form onSubmit={changePassword}>
+        <form onSubmit={changePasswordHandler}>
           <div className={styles.formGroup}>
             <input
               type="password"

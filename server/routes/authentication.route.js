@@ -14,4 +14,7 @@ authRouter.post("/forgot-password", authenticationController.forgotPassword);
 // đổi mật khẩu
 authRouter.post("/reset-password/:id/:token", authenticationController.resetPassword);
 
+// xác minh
+authRouter.get("/verify/:id/:token", authenticationController.verifyAccount);
+
 module.exports = authRouter;

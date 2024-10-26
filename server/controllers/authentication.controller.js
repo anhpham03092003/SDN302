@@ -4,7 +4,7 @@ const nodemailer = require("nodemailer");
 const db = require("../models/index");
 
 // Hàm gửi email
-async function sendEmail(email, link) {
+async function sendEmail(type, email, link) {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -13,11 +13,24 @@ async function sendEmail(email, link) {
         },
     });
 
+    let subject;
+    let text;
+
+    if (type == "verify") {
+        subject = "Verify your account";
+        text = `Click this link to verify your account: ${link}`;
+    } else if (type == "reset") {
+        subject = "Change your password";
+        text = `Click this link to change your password: ${link}`;
+    } else {
+        throw new Error("Invalid email type");
+    }
+
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: "Change your password",
-        text: `Click this link to change your password: ${link}`,
+        subject: subject,
+        text: text,
     };
 
     return transporter.sendMail(mailOptions);
@@ -30,6 +43,10 @@ async function login(req, res) {
         const user = await db.Users.findOne({ username });
         if (!user) {
             return res.status(404).json({ status: "User not found!" });
+        }
+
+        if (user.status !== "active") {
+            return res.status(401).json({ status: "Please verify your account!" });
         }
 
         const isMatch = await bcrypt.compare(password, user.account.password);
@@ -54,6 +71,7 @@ async function login(req, res) {
 async function register(req, res, next) {
     try {
         const { username, email, password, rePassword, phoneNumber } = req.body;
+
         if (!username || !email || !password || !rePassword || !phoneNumber) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -61,8 +79,13 @@ async function register(req, res, next) {
         if (password !== rePassword) {
             return res.status(400).json({ message: "Passwords do not match" });
         }
-        const existingUser = await db.Users.findOne({ "account.email": email });
-        if (existingUser) {
+        const existingUserName = await db.Users.findOne({ username });
+        if (existingUserName) {
+            return res.status(409).json({ message: "Username already in use" });
+        }
+
+        const existingUserEmail = await db.Users.findOne({ "account.email": email });
+        if (existingUserEmail) {
             return res.status(409).json({ message: "Email already in use" });
         }
 
@@ -75,16 +98,50 @@ async function register(req, res, next) {
             },
             profile: {
                 phoneNumber,
-            }
+            },
+            status: "inactive",
         });
 
         await newUser.save();
-        res.status(201).json({ message: "User registered successfully", user: newUser });
+
+        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const verificationLink = `http://localhost:9999/authentication/verify/${newUser._id}/${token}`;
+
+        // Gửi email 
+        await sendEmail("verify", email, verificationLink);
+
+        res.status(201).json({ message: "User registered successfully. Check your email for verification link!" });
 
     } catch (error) {
         next(error);
     }
 }
+
+
+//hàm xác minh
+async function verifyAccount(req, res) {
+    const { id, token } = req.params;
+
+    try {
+        const user = await db.Users.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const secret = process.env.JWT_SECRET;
+        jwt.verify(token, secret);
+
+        // Cập nhật trạng thái thành active
+        user.status = "active";
+        await user.save();
+
+        res.json({ message: "Account verified successfully!" });
+    } catch (error) {
+        console.error("Verification error:", error);
+        res.status(400).json({ message: "Invalid or expired token" });
+    }
+}
+
 
 // Hàm quên mật khẩu
 async function forgotPassword(req, res) {
@@ -100,9 +157,10 @@ async function forgotPassword(req, res) {
             expiresIn: "10m",
         });
 
-        const link = `http://localhost:9999/authentication/reset-password/${oldUser._id}/${token}`;
+        const link = `http://localhost:3000/changePassword/${oldUser._id}/${token}`;
 
-        await sendEmail(email, link);
+        // Gửi email thay đổi mật khẩu
+        await sendEmail("reset", email, link);
         res.json({ status: "Email sent, check your inbox!" });
 
     } catch (error) {
@@ -146,7 +204,8 @@ const authenticationController = {
     login,
     register,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    verifyAccount
 };
 
 module.exports = authenticationController

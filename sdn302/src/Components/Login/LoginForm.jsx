@@ -15,7 +15,6 @@ function LoginForm() {
   const onSubmit = async (event) => {
     event.preventDefault();
     try {
-      // Gọi hàm đăng nhập với username và password
       const result = await loginUser(username, password);
       if (result.token) {
         // Đẩy token lên local storage
@@ -26,7 +25,15 @@ function LoginForm() {
         setMessage('Login failed');
       }
     } catch (error) {
-      setMessage('Username or password is incorrect');
+      if (error.response && error.response.data) {
+        if (error.response.data.status == "Please verify your account!") {
+          setMessage("Please verify your account! Check your email for the verification link.");
+        } else {
+          setMessage('Username or password is incorrect');
+        }
+      } else {
+        setMessage('An unexpected error occurred');
+      }
       console.log('Login Failed:', error);
     }
   };
