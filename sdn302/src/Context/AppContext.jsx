@@ -1,9 +1,27 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
+    //token
+        const accessToken = localStorage.getItem('token');
+    // api
+        const groups_API= "http://localhost:9999/groups"
+    //parameter
+        const [groups,setGroups] = useState([]);
+        const [group,setGroup]=useState()
+    //call api
+        useEffect(()=>{
+            axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
+            .then((res)=>{setGroups(res.data)})
+        },[])
+    //fuction
+
+
+
+
+
     //api athentication
     const login_API = `http://localhost:9999/authentication/login`;
     const register_API = `http://localhost:9999/authentication/register`;
@@ -63,6 +81,10 @@ const AppProvider = ({ children }) => {
 
     return (
         <AppContext.Provider value={{
+            groups_API,
+            accessToken,
+            groups,setGroups,
+            group,setGroup,
             loginUser,
             registerUser,
             forgotPassword,
