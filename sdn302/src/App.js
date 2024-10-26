@@ -65,7 +65,7 @@ function App() {
               <Route index element={<GroupListPage />} />
               <Route path="create" element={<CreateGroup />} />
 
-              <Route path="name" element={<GroupWorkSpace />} >
+              <Route path=":groupId" element={<GroupWorkSpace />} >
                 <Route index element={<GroupSpace />} />
                 <Route path="membership" element={<BuyMembership />} />
                 <Route path="memberList" element={<MemberList />} />
