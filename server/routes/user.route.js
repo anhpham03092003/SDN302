@@ -3,7 +3,7 @@ const userRouter = express.Router();
 const bodyParser = require("body-parser");
 
 const db = require("../models/index");
-
+const { AuthMiddleware } = require("../middlewares");
 userRouter.use(bodyParser.json());
 
 const { getProfile,
