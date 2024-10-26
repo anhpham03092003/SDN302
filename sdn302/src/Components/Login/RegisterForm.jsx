@@ -13,14 +13,19 @@ function RegisterForm() {
   const [rePassword, setRePassword] = useState(''); // Trường rePassword
   const [phoneNumber, setPhoneNumber] = useState(''); // Thêm trường phoneNumber
   const [message, setMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (event) => {
+
     event.preventDefault();
     try {
-      const response = await registerUser(username, password, email, rePassword, phoneNumber); // Gọi hàm registerUser
+      const response = await registerUser(username, password, email, rePassword, phoneNumber);
       console.log('Registration successful', response);
-      navigate('/home');
+      setAlertMessage("A verification email has been sent. Please check your inbox.");
+      setTimeout(() => {
+        navigate('/login/loginForm');
+      }, 3000);
     } catch (error) {
       console.error('Registration failed', error);
       if (error.response && error.response.data) {

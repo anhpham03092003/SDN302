@@ -8,6 +8,7 @@ import MemberList from './Pages/MemberList';
 import GroupWorkSpace from './Pages/GroupWorkSpace';
 import CreateGroup from './Pages/CreateGroup';
 import LoginForm from './Components/Login/LoginForm';
+import VerifyAccount from './Components/Login/VerifyAccount';
 import RegisterForm from './Components/Login/RegisterForm';
 import ForgotPass from './Components/Login/ForgotPass'
 import Reset from './Components/Login/Reset'
@@ -48,8 +49,9 @@ function App() {
               <Route path="loginForm" element={<LoginForm />} />
               <Route path="registerForm" element={<RegisterForm />} />
               <Route path="forgotPass" element={<ForgotPass />} />
+              <Route path="verifyAccount/:id/:token" element={<VerifyAccount />} />
             </Route>
-            <Route path="resetPass" element={<Reset />} />
+            <Route path="changePassword/:id/:token" element={<Reset />} />
 
             <Route path="/profile" element={<ProfilePage />}>
               <Route path="profileInfo" element={<ProfileInfo />} />
