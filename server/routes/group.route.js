@@ -8,9 +8,43 @@ const { AuthMiddleware } = require("../middlewares");
 groupRouter.use(bodyParser.json());
 
 // Groups
-groupRouter.post("/create",GroupController.createGroup)
+groupRouter.post("/create",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.createGroup
+)
 
+groupRouter.get("/get-group",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.getAllGroup
+)
 
+groupRouter.get("/:groupId/get-group",
+    GroupController.getGroupDetail
+)
+
+groupRouter.put("/:groupId/edit",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.editGroupDetail
+)
+
+groupRouter.delete("/:groupId/delete",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.deleteGroup
+)
+
+// join group by code
+groupRouter.post("/join-by-code",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.joinGroupByCode
+)
+
+// out group
+groupRouter.delete("/:groupId/out",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.outGroup
+)
+
+// Tasks
 groupRouter.get(
     "/:groupId/tasks/get-all",
     AuthMiddleware.verifyAccessToken,

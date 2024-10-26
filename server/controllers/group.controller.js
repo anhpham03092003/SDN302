@@ -10,21 +10,26 @@ const createHttpErrors = require("http-errors");
 async  function createGroup(req, res, next) {
     try {
         const { groupName, groupCode} = req.body;
-
+        const {id} = req.payload;
+        const existingGroup = await db.Groups.findOne({groupName,groupCode});
+        if (existingGroup) {
+            throw createHttpErrors(400, "Group already exists")
+        }
         const defaultClassifications = ['todo','inprogress','done'];
-        
-
+        const members = [
+            {
+                _id: id, 
+                groupRole: 'owner' 
+            }
+        ];
         const newGroup = new db.Groups({ 
             groupName,
             groupCode,
             classifications:  defaultClassifications,
-            
-
+            members,
         })
-
         await newGroup.save();
         res.status(201).json({message:"Group created successfully", group:  newGroup});
-
     } catch(error) {
         next(error);
     }
@@ -32,10 +37,188 @@ async  function createGroup(req, res, next) {
 
 
 // Get all groups by user id
+ 
+async function getAllGroup(req, res, next) {
+    try {
+        const {id} = req.payload;
+        const groups = await db.Groups.find({ members: { $elemMatch: { _id: id } } });
+        if (!groups) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const newGroups = groups.map(group => {
+            return {
+            _id: group._id,
+            groupName : group.groupName,
+         
+            }
+        })
+    
+        res.status(200).json(newGroups)
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+// get group detail by group id
+
+async function getGroupDetail(req, res, next) {
+    try{
+        const { groupId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        res.status(200).json(group)
+
+    }catch(error){
+        next(error)
+    }
+
+    }
+
+// edit group detail by group id
+
+async function editGroupDetail(req, res, next) {
+    try {
+        const { groupId } = req.params;
+        const { id } = req.payload;
+        const { groupName, groupCode, classifications, groupRole } = req.body;
+
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+
+        const member = group.members.find(member => member._id.toString() === id);
+        if (!member) {
+            throw createHttpErrors(403, "You don't have permission to edit this group");
+        }
+
+        const updateGroup = {};
+
+        // Nếu thành viên là 'owner', cho phép chỉnh sửa tất cả các thuộc tính
+        if (member.groupRole === 'owner') {
+            if (groupName) updateGroup.groupName = groupName;
+            
+            if (groupCode) {
+                // Check if the groupCode already exists (excluding the current group)
+                const existingGroupByCode = await db.Groups.findOne({ 
+                    groupCode, 
+                    _id: { $ne: groupId } 
+                });
+                if (existingGroupByCode) {
+                    throw createHttpErrors(409, "Group code already exists");
+                }
+                updateGroup.groupCode = groupCode;
+            }
+            if (classifications) updateGroup.classifications = classifications;
 
 
+    }
+        // Nếu thành viên là 'member', chỉ cho phép chỉnh sửa classifications
+        else if (member.groupRole === 'member') {
+            if (groupName && groupCode) {
+                throw createHttpErrors(403, "Only the group owner can edit both the group name and group code");
+            } else if (groupName) {
+                throw createHttpErrors(403, "Only the group owner can edit the group name");
+            } else if (groupCode) {
+                throw createHttpErrors(403, "Only the group owner can edit the group code");
+            }
+            if (classifications) updateGroup.classifications = classifications;
+        }
+
+        await db.Groups.updateOne({ _id: groupId }, { $set: updateGroup }, { runValidators: true });
+
+        res.status(200).json("Update group successfully");
+    } catch (error) {
+        next(error);
+    }
+}
 
 
+// delete group by group id
+
+async function deleteGroup(req, res, next) {
+    try {
+        const { groupId } = req.params; 
+        const { id } = req.payload; 
+        const group = await db.Groups.findOne({ _id: groupId });
+
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+        const isOwner = group.members.some(member => member._id.toString() === id && member.groupRole === 'owner');
+        if (!isOwner) {
+            throw createHttpErrors(403, "Only the group owner can delete this group");
+        }
+        await db.Groups.deleteOne({ _id: groupId });
+        res.status(200).json({ message: "Group deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// join group by code
+async function joinGroupByCode(req, res, next) {
+    try {
+        const { groupCode } = req.body;
+        const { id } = req.payload;
+        const group = await db.Groups.findOne({ groupCode });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+        const isMember = group.members.some(member => member._id.toString() === id);
+        if (isMember) {
+            throw createHttpErrors(400, "You are already a member of this group");
+        }
+        group.members.push({
+            _id: id,
+            groupRole: 'member'
+        });
+
+        await group.save();
+        const user = await db.Users.findById(id);
+        if (!user) {
+            throw createHttpErrors(404, "User not found");
+        }
+        user.groups.push(group._id);
+        await user.save();
+
+        res.status(200).json({ message: "Joined the group successfully", group });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// out group for member
+async function outGroup(req, res, next) {
+    try {
+        const { groupId } = req.params;
+        const { id } = req.payload; 
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+
+        const member = group.members.find(member => member._id.toString() === id);
+        if (!member) {
+            throw createHttpErrors(403, "You are not a member of this group");
+        }
+
+        // Nếu thành viên là owner, không cho phép rời nhóm
+        if (member.groupRole === 'owner') {
+            throw createHttpErrors(403, "The group owner cannot leave the group");
+        }
+        // Xóa thành viên khỏi danh sách
+        group.members = group.members.filter(member => member._id.toString() !== id);
+        await group.save();
+        res.status(200).json("You have successfully left the group");
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 async function getAllTask(req, res, next) {
@@ -262,7 +445,13 @@ const GroupController = {
     addSubTask,
     getAllSubTask,
     editSubTask,
-    createGroup
+    createGroup,
+    getAllGroup,
+    getGroupDetail,
+    editGroupDetail,
+    deleteGroup,
+    joinGroupByCode,
+    outGroup
 }
 
 module.exports = GroupController;
