@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['inactive', 'active', 'banned'],
-        default: 'active'
+        default: 'inactive'
     },
     individualTasks: [{
         taskName: {
@@ -93,9 +93,9 @@ const userSchema = new mongoose.Schema({
             updateAt: {
                 type: Date,
                 default: Date.now
-            }          
+            }
         }],
-        
+
     }]
 }, {
     timestamps: true
