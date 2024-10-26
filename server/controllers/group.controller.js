@@ -239,9 +239,11 @@ async function getAllTask(req, res, next) {
 
 async function createTask(req, res, next) {
     try {
-        const {id} = req.payload;
+        const { id } = req.payload;
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
+        // const role = group.memberRole(id);
+        // console.log(role);
         if (!group) {
             throw createHttpErrors(404, "Group not found")
         }
@@ -286,7 +288,7 @@ async function editTask(req, res, next) {
                 _id: groupId, "tasks._id": taskId
             },
             {
-                $set: { 
+                $set: {
                     "tasks.$.taskName": updateTask.taskName,
                     "tasks.$.description": updateTask.description,
                     "tasks.$.assignee": updateTask.assignee,
@@ -294,7 +296,7 @@ async function editTask(req, res, next) {
                     "tasks.$.deadline": updateTask.deadline,
                     "tasks.$.status": updateTask.status,
                     "tasks.$.updatedAt": updateTask.updatedAt
-                 }
+                }
             },
             {
                 runValidators: true,
@@ -418,13 +420,13 @@ async function editSubTask(req, res, next) {
                 "tasks.subTasks._id": subTaskId
             },
             {
-                $set: { 
+                $set: {
                     "tasks.$.subTasks.$[subtask].subTaskName": updateSubTask.subTaskName,
                     "tasks.$.subTasks.$[subtask].assignee": updateSubTask.assignee,
                     "tasks.$.subTasks.$[subtask].priority": updateSubTask.priority,
                     "tasks.$.subTasks.$[subtask].status": updateSubTask.status,
                     "tasks.$.subTasks.$[subtask].updatedAt": updateSubTask.updatedAt
-                 }
+                }
             },
             {
                 arrayFilters: [{ "subtask._id": subTaskId }],
@@ -437,6 +439,37 @@ async function editSubTask(req, res, next) {
     }
 }
 
+async function deleteSubTask(req, res, next) {
+    try {
+        const { groupId, taskId, subTaskId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if (!task) {
+            throw createHttpErrors(404, "Task not found")
+        }
+        const subTask = task.subTasks.find(st => st._id == subTaskId)
+        if (!subTask) {
+            throw createHttpErrors(404, "Subtask not found")
+        }
+
+        await db.Groups.updateOne(
+            {
+                _id: groupId, "tasks._id": taskId
+            }
+            , {
+                $pull: { "tasks.$.subTasks": { _id: subTaskId } }
+            }
+        )
+
+        res.status(200).json("Delete subtask successfully")
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
 const GroupController = {
     getAllTask,
     createTask,
@@ -451,7 +484,8 @@ const GroupController = {
     editGroupDetail,
     deleteGroup,
     joinGroupByCode,
-    outGroup
+    outGroup,
+    deleteSubTask
 }
 
 module.exports = GroupController;
