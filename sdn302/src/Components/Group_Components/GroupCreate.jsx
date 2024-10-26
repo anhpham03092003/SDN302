@@ -21,10 +21,6 @@ function GroupCreate() {
                         <Form.Label>Project Code</Form.Label>
                         <Form.Control type="text" placeholder="Enter project code" />
                     </Form.Group>
-                    <Form.Group controlId="formProjectPassword">
-                        <Form.Label>Project Password</Form.Label>
-                        <Form.Control type="password" placeholder="Enter project password" />
-                    </Form.Group>
                 </Form>
              
                 <Button variant="primary" >

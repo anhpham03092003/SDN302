@@ -10,6 +10,23 @@ const AppProvider = ({ children }) => {
     const forrgot_API = `http://localhost:9999/authentication/forgot-password`;
     const changePassword_API = `http://localhost:9999/authentication/reset-password`;
 
+    // api groups
+    const createGroup_API = `http://localhost:9999/groups/create`;
+
+    const createGroup = async (group) => {
+        try {
+            const response = await axios.post(createGroup_API, group, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Thêm token vào header
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+
     //login
     const loginUser = async (username, password) => {
         try {
@@ -60,7 +77,8 @@ const AppProvider = ({ children }) => {
             loginUser,
             registerUser,
             forgotPassword,
-            changePassword
+            changePassword,
+            createGroup
         }}>
             {children}
         </AppContext.Provider>
