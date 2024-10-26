@@ -18,27 +18,29 @@ const { getProfile,
     updateSubTask,
     deleteSubTask } = require("../controllers/user.controller");
 
-userRouter.get("/get-profile/:id", getProfile);
 
-userRouter.put("/update-profile/:id", updateProfile);
+userRouter.get("/get-profile/:id",AuthMiddleware.verifyAccessToken, getProfile);
 
-userRouter.put("/change-password/:id", changePassword);
+userRouter.put("/update-profile/:id",AuthMiddleware.verifyAccessToken, updateProfile);
 
-userRouter.get("/individual-task/:id/task/:taskId/get", getTask);
+userRouter.put("/change-password/:id",AuthMiddleware.verifyAccessToken, changePassword);
 
-userRouter.post("/individual-task/:id/add", addTask);
+userRouter.get("/individual-task/:id/task/:taskId/get",AuthMiddleware.verifyAccessToken, getTask);
 
-userRouter.put("/individual-task/:id/task/:taskId/edit", updateTask);
+userRouter.post("/individual-task/:id/add",AuthMiddleware.verifyAccessToken, addTask);
 
-userRouter.delete("/individual-task/:id/task/:taskId/delete", deleteTask);
+userRouter.put("/individual-task/:id/task/:taskId/edit",AuthMiddleware.verifyAccessToken, updateTask);
 
-userRouter.get("/individual-task/:id/task/:taskId/sub-task/:subTaskId/get", getSubTask);
+userRouter.delete("/individual-task/:id/task/:taskId/delete",AuthMiddleware.verifyAccessToken, deleteTask);
 
-userRouter.post("/individual-task/:id/task/:taskId/sub-task/add", addSubTask);
+userRouter.get("/individual-task/:id/task/:taskId/sub-task/:subTaskId/get",AuthMiddleware.verifyAccessToken, getSubTask);
 
-userRouter.put("/individual-task/:id/task/:taskId/sub-task/:subTaskId/edit", updateSubTask);
+userRouter.post("/individual-task/:id/task/:taskId/sub-task/add",AuthMiddleware.verifyAccessToken, addSubTask);
 
-userRouter.delete("/individual-task/:id/task/:taskId/sub-task/:subTaskId/delete", deleteSubTask);
+userRouter.put("/individual-task/:id/task/:taskId/sub-task/:subTaskId/edit",AuthMiddleware.verifyAccessToken, updateSubTask);
+
+userRouter.delete("/individual-task/:id/task/:taskId/sub-task/:subTaskId/delete",AuthMiddleware.verifyAccessToken, deleteSubTask);
+
 
 
 userRouter.post("/add", async (req, res, next) => {
