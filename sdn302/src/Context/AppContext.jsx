@@ -11,14 +11,13 @@ const AppProvider = ({ children }) => {
     //parameter
         const [groups,setGroups] = useState([]);
         const [group,setGroup]=useState()
-        const [selectedTask,setSelectedTask] = useState();
-        const [show, setShow] = useState(false);
     //call api
         useEffect(()=>{
             axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
             .then((res)=>{setGroups(res.data)})
         },[])
-    //function
+    //fuction
+
 
 
 
@@ -30,20 +29,9 @@ const AppProvider = ({ children }) => {
     const changePassword_API = `http://localhost:9999/authentication/reset-password`;
 
     // api groups
-    const createGroup_API = `http://localhost:9999/groups/create`;
-
-    const createGroup = async (group) => {
-        try {
-            const response = await axios.post(createGroup_API, group, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Thêm token vào header
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    };
+  
+  
+ 
 
 
     //login
@@ -97,13 +85,12 @@ const AppProvider = ({ children }) => {
             accessToken,
             groups,setGroups,
             group,setGroup,
+            groupMembers,setGroupMembers,
             loginUser,
             registerUser,
             forgotPassword,
             changePassword,
-            createGroup,
-            show, setShow,
-            selectedTask,setSelectedTask
+            createGroup
         }}>
             {children}
         </AppContext.Provider>

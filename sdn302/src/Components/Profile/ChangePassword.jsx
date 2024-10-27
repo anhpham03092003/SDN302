@@ -39,6 +39,17 @@ function ChangePassword() {
               />
             </td>
           </tr>
+          <tr>
+            <td><strong>Re New Password:</strong></td>
+            <td>
+              <input
+                type="password"
+                name="newPassword"
+                placeholder="Enter new password"
+                className="inputField"
+              />
+            </td>
+          </tr>
         </tbody>
       </Table>
       <div style={{ marginTop: '10px' }}>
