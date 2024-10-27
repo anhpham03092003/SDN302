@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom'
 
 function GroupTaskDetail() {
     const {groupId}=  useParams();
-    const { show, setShow, selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken } = useContext(AppContext)
+    const { show, setShow, selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken, groupMembers, setGroupMembers} = useContext(AppContext)
     const handleDelete = async () => {
             if (window.confirm("Remove this task?")) {
                 await axios.delete(`${groups_API}/${groupId}/tasks/${selectedTask._id}/delete`, { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -26,7 +26,7 @@ function GroupTaskDetail() {
                     .catch((err) => console.error(err));
             }
         }
-    
+
     return (
         <Modal
             show={show}
@@ -82,21 +82,11 @@ function GroupTaskDetail() {
                             </Row>
                             <Row className='mb-3'>
                                 <h5 className='mb-3'><FaList /> SubTask</h5>
-                                <Row className='ms-4'>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-                                    <Col md={12}><GroupSubTask /></Col>
-
-                                </Row>
+                                {/* <Row className='ms-4'>
+                                    {selectedTask.subTasks.map((subTask)=>{
+                                        return <Col md={12}><GroupSubTask subTask = {subTask}/></Col>
+                                    })}
+                                </Row> */}
                             </Row>
 
                             <Row className='mb-3'>
@@ -110,9 +100,9 @@ function GroupTaskDetail() {
                             <Row className='text-center my-2'>
                                 <Dropdown >
                                     <Dropdown.Toggle id="dropdown-custom-1" className=' text-dark py-3 mx-1 w-100 rounded-0  border-0 textt-dark background-hover background-color-third'>
-                                        <strong>Unassigned</strong>
+                                        <strong>{selectedTask?.assignee!=null?groupMembers?.find((m)=>m.id == selectedTask.assignee).name:"Unassigneed"}</strong>
                                     </Dropdown.Toggle>
-
+        
                                     <Dropdown.Menu >
                                         <Dropdown.ItemText   ><input type='text' /></Dropdown.ItemText >
                                         <Dropdown.Header>Members list</Dropdown.Header>

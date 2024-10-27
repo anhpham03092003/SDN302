@@ -5,18 +5,10 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function GroupSetting() {
-  const { group, groupMembers = [], setGroupMembers, groups_API, accessToken } = useContext(AppContext);
+  const { group, groupMembers, setGroupMembers, groups_API, accessToken } = useContext(AppContext);
   const { groupId } = useParams();
 
-  useEffect(() => {
-    axios.get(`${groups_API}/${groupId}/get-member`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then((res) => { 
-      setGroupMembers(res.data.memberInfo);  // Assuming `memberInfo` contains an array of members
-    })
-    .catch((err) => console.error(err));
-  }, []);
+  
   console.log(groupMembers);
   
 

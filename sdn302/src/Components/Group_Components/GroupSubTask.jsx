@@ -4,7 +4,7 @@ import { FaClock, FaPen, FaRegClock, FaUser } from 'react-icons/fa'
 import { FaRegSquareCheck, FaRegTrashCan, FaSquareCheck } from 'react-icons/fa6'
 import { GrTasks } from 'react-icons/gr'
 import { IoMenu } from 'react-icons/io5'
-function GroupSubTask() {
+function GroupSubTask({subTask}) {
   const [isDone, setIsDone] = useState(false);
   const handleRemoveSubTask = () => {
     if (window.confirm("Remove this subtask?")) {
@@ -17,7 +17,7 @@ function GroupSubTask() {
         <GrTasks />
       </Col>
       <Col md={7} className='align-self-center'>
-        <p className='m-0 text-start'>SubTaskName</p>
+        <p className='m-0 text-start'>{subTask.subTaskName}</p>
       </Col>
       <Col md={4} className='align-self-center text-end'>
         <IoMenu className='mx-1 item-hover' />

@@ -13,7 +13,7 @@ const AppProvider = ({ children }) => {
         const [group,setGroup]=useState()
         const [selectedTask,setSelectedTask] = useState();
         const [show, setShow] = useState(false);
-        const [groupMembers,setGroupMembers] = useState();
+        const [groupMembers,setGroupMembers] = useState([]);
     //call api
         useEffect(()=>{
             axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})

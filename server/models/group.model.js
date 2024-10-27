@@ -29,14 +29,16 @@ const groupSchema = new mongoose.Schema({
         },
         assignee: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user'
+            ref: 'user',
+            default:null
         },
         reviewer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user'
         },
         deadline: {
-            type: Date // Use Date type for deadline
+            type: Date,
+            default:null
         },
         status: {
             type: String,
@@ -83,7 +85,8 @@ const groupSchema = new mongoose.Schema({
             },
             assignee: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'user'
+                ref: 'user',
+                default:null
             },
             priority: {
                 type: String,
