@@ -44,6 +44,12 @@ groupRouter.delete("/:groupId/out",
     GroupController.outGroup
 )
 
+// get member of group
+groupRouter.get("/:groupId/get-member",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.getGroupMember  
+)
+
 // Tasks
 groupRouter.get(
     "/:groupId/tasks/get-all",

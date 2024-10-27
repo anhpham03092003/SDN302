@@ -26,7 +26,7 @@ function GroupList() {
      
       <h4 className={styles.container}> <MdTimelapse/> Recent Groups</h4>
       <Row>
-        {groups.slice(0, 4).map((group) => ( 
+        {groups?.slice(0, 4).map((group) => ( 
           <Col md={3} className="mb-3" key={group._id}>
             <Link to={`/groups/${group._id}`} className={styles.card}>
               <Card className="text-center" style={{ position: 'relative' }}>
@@ -41,7 +41,7 @@ function GroupList() {
       <h4 className={styles.container}><FaRegListAlt/> All Groups</h4>
       <div className={styles.allGroupsContainer}>
         <Row className="ms-2">
-          {groups.map((group) => (
+          {groups?.map((group) => (
             <Col md={5} className="mb-2" key={group._id}>
               <Link to={`/groups/${group._id}`} className={styles.allGroupItem}>
                 <img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group.groupName} className={styles.allGroupImage} />

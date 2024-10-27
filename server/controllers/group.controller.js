@@ -5,6 +5,7 @@ const createHttpErrors = require("http-errors");
 
 
 
+
 // Create new group
 
 async  function createGroup(req, res, next) {
@@ -45,15 +46,15 @@ async function getAllGroup(req, res, next) {
         if (!groups) {
             throw createHttpErrors(404, "Group not found")
         }
-        const newGroups = groups.map(group => {
-            return {
-            _id: group._id,
-            groupName : group.groupName,
+        // const newGroups = groups.map(group => {
+        //     return {
+        //     _id: group._id,
+        //     groupName : group.groupName,
          
-            }
-        })
+        //     }
+        // })
     
-        res.status(200).json(newGroups)
+        res.status(200).json(groups)
 
     } catch (error) {
         next(error)
@@ -69,6 +70,7 @@ async function getGroupDetail(req, res, next) {
         if (!group) {
             throw createHttpErrors(404, "Group not found")
         }
+    
         res.status(200).json(group)
 
     }catch(error){
@@ -83,7 +85,7 @@ async function editGroupDetail(req, res, next) {
     try {
         const { groupId } = req.params;
         const { id } = req.payload;
-        const { groupName, groupCode, classifications, groupRole } = req.body;
+        const { groupName, groupCode, groupRole } = req.body;
 
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
@@ -97,7 +99,7 @@ async function editGroupDetail(req, res, next) {
 
         const updateGroup = {};
 
-        // Nếu thành viên là 'owner', cho phép chỉnh sửa tất cả các thuộc tính
+        // If the member is 'owner', allow editing of all attributes except classifications
         if (member.groupRole === 'owner') {
             if (groupName) updateGroup.groupName = groupName;
             
@@ -112,20 +114,12 @@ async function editGroupDetail(req, res, next) {
                 }
                 updateGroup.groupCode = groupCode;
             }
-            if (classifications) updateGroup.classifications = classifications;
-
-
-    }
-        // Nếu thành viên là 'member', chỉ cho phép chỉnh sửa classifications
+        }
+        // If the member is 'member', restrict editing to only groupRole validation
         else if (member.groupRole === 'member') {
-            if (groupName && groupCode) {
-                throw createHttpErrors(403, "Only the group owner can edit both the group name and group code");
-            } else if (groupName) {
-                throw createHttpErrors(403, "Only the group owner can edit the group name");
-            } else if (groupCode) {
-                throw createHttpErrors(403, "Only the group owner can edit the group code");
+            if (groupName || groupCode) {
+                throw createHttpErrors(403, "Only the group owner can edit the group name and group code");
             }
-            if (classifications) updateGroup.classifications = classifications;
         }
 
         await db.Groups.updateOne({ _id: groupId }, { $set: updateGroup }, { runValidators: true });
@@ -219,6 +213,35 @@ async function outGroup(req, res, next) {
         next(error);
     }
 }
+
+// get member of group
+
+async function getGroupMember(req, res, next) {
+    try {
+      const { groupId } = req.params;
+
+      const group = await db.Groups.findOne({ _id: groupId })
+        .populate({
+          path: 'members._id',  
+          model: 'user',  
+          select : 'username'               
+        });
+  
+      if (!group) {
+        throw createHttpErrors(404, "Group not found");
+      }
+      const memberInfo = group.members.map(member => ({
+        id: member._id ? member._id._id : null, 
+        name: member._id ? member._id.username : null, 
+        groupRole: member.groupRole                   
+    }));
+
+        res.status(200).json({memberInfo });
+    
+    } catch (error) {
+      next(error);
+    }
+  }
 
 
 async function getAllTask(req, res, next) {
@@ -485,7 +508,8 @@ const GroupController = {
     deleteGroup,
     joinGroupByCode,
     outGroup,
-    deleteSubTask
+    deleteSubTask,
+    getGroupMember
 }
 
 module.exports = GroupController;

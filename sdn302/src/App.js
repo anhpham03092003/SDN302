@@ -24,6 +24,7 @@ import ProfilePage from './Pages/ProfilePage';
 import ProfileInfo from './Components/Profile/ProfileInfo';
 import EditProfile from './Components/Profile/EditProfile';
 import ChangePassword from './Components/Profile/ChangePassword';
+import GroupSetting from './Components/Group_Components/GroupSetting';
 
 
 import './App.css';
@@ -70,6 +71,7 @@ function App() {
                 <Route path="membership" element={<BuyMembership />} />
                 <Route path="memberList" element={<MemberList />} />
                 <Route path="checkOut" element={<Payment />} />
+                <Route path="groupSetting" element={<GroupSetting />} />
               </Route>
             </Route>
 

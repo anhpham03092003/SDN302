@@ -10,12 +10,15 @@ const AppProvider = ({ children }) => {
         const groups_API= "http://localhost:9999/groups"
     //parameter
         const [groups,setGroups] = useState([]);
-        const [group,setGroup]=useState()
+        const [group,setGroup]=useState();
+        const [groupMembers,setGroupMembers] = useState();
     //call api
         useEffect(()=>{
             axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
             .then((res)=>{setGroups(res.data)})
-        },[])
+        },[]);
+
+
     //fuction
 
 
@@ -85,6 +88,7 @@ const AppProvider = ({ children }) => {
             accessToken,
             groups,setGroups,
             group,setGroup,
+            groupMembers,setGroupMembers,
             loginUser,
             registerUser,
             forgotPassword,

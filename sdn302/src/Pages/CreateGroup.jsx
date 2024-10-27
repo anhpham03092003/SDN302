@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { AppContext } from '../Context/AppContext';
+
 
 function CreateGroup() {
     const SignupSchema = Yup.object().shape({
@@ -11,15 +13,16 @@ function CreateGroup() {
 
     });
 
+    const {groups_API} = useContext(AppContext);
     const handleSubmit = async (values) => {
         try {
-            const response = await axios.post('http://localhost:9999/groups/create', values, {
+            const response = await axios.post(`${groups_API}/create`, values, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Thêm token để xác thực
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` 
                 }
             });
             console.log("Group created successfully:", response.data);
-            // Thực hiện thêm logic nếu cần, chẳng hạn như điều hướng đến trang khác
+     
         } catch (error) {
             console.error("Error creating group:", error);
         }
@@ -59,5 +62,6 @@ function CreateGroup() {
         </Container>
     );
 }
+
 
 export default CreateGroup;
