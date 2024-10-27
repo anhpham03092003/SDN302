@@ -19,11 +19,11 @@ const { getProfile,
     deleteSubTask } = require("../controllers/user.controller");
 
 
-userRouter.get("/get-profile/:id",AuthMiddleware.verifyAccessToken, getProfile);
+userRouter.get("/get-profile",AuthMiddleware.verifyAccessToken, getProfile);
 
-userRouter.put("/update-profile/:id",AuthMiddleware.verifyAccessToken, updateProfile);
+userRouter.put("/update-profile",AuthMiddleware.verifyAccessToken, updateProfile);
 
-userRouter.put("/change-password/:id",AuthMiddleware.verifyAccessToken, changePassword);
+userRouter.put("/change-password",AuthMiddleware.verifyAccessToken, changePassword);
 
 userRouter.get("/individual-task/:id/task/:taskId/get",AuthMiddleware.verifyAccessToken, getTask);
 
