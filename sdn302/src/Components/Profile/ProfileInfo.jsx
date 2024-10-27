@@ -1,11 +1,37 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { FaAddressCard, FaUser, FaPhone } from 'react-icons/fa';
 import { IoMail } from 'react-icons/io5';
 import { Table, Button } from 'react-bootstrap';
 import styles from '../../Styles/Profile/Profile.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 function ProfileInfo() {
+  const [userInfo, setUserInfo] = useState(null);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (token) {
+      const fetchUserInfo = async () => {
+        try {
+          const response = await axios.get('http://localhost:9999/users/get-profile', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUserInfo(response.data);
+        } catch (error) {
+          console.error('Error fetching user information:', error);
+        }
+      };
+      fetchUserInfo();
+    }
+  }, [token]);
+
+  if (!userInfo) {
+    return <div>Loading...</div>;
+    }
+
   return (
     <div><div>
     <h2>User Profile</h2>
@@ -17,17 +43,9 @@ function ProfileInfo() {
           </tr>
         </thead>
         <tbody>
-        <tr>
-            <td><strong>Firstname:</strong></td>
-            <td>John</td>
-          </tr>
-          <tr>
-            <td><strong>Lastname:</strong></td>
-            <td>Doe</td>
-          </tr>
           <tr>
             <td><strong>Username:</strong></td>
-            <td>example_username</td>
+            <td>{userInfo.username}</td>
           </tr>
         </tbody>
       </Table>
@@ -42,11 +60,11 @@ function ProfileInfo() {
           
           <tr>
             <td><strong><IoMail /> Email:</strong></td>
-            <td>john.doe@example.com</td>
+            <td>{userInfo.account.email}</td>
           </tr>
           <tr>
             <td><strong><FaPhone /> Phone:</strong></td>
-            <td>+123456789</td>
+            <td>{userInfo.profile.phoneNumber}</td>
           </tr>
         </tbody>
       </Table>
