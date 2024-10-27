@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import axios from 'axios';
 import { FaUser } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
@@ -11,7 +12,18 @@ export default function ForgotPass() {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
-    const { forgotPassword } = useContext(AppContext); // Sử dụng forgotPassword từ AppContext
+    const { authentication_API } = useContext(AppContext); // Sử dụng forgotPassword từ AppContext
+    const forrgot_API = `${authentication_API}/forgot-password`;
+    //forgot password
+    const forgotPassword = async (email, username) => {
+        try {
+            const response = await axios.post(forrgot_API, { email, username });
+            return response.data;
+        } catch (error) {
+            console.error("Register error:", error);
+            throw error;
+        }
+    };
 
     const handleLogin = async (event) => {
         event.preventDefault();

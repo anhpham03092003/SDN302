@@ -32,17 +32,31 @@ const updateProfile = async (req, res, next) => {
 }
 
 const changePassword = async (req, res, next) => {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
     try {
-        const newProfile = {
-            password: req.body.password
+        const user = await db.Users.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-        const user = await db.Users.findByIdAndUpdate(req.params.id, {
-            $set: {
-                'account.password': newProfile.password
-            }
-        },
-            { new: true, runValidators: true });
-        res.status(200).json(user);
+        // Kiểm tra mật khẩu cũ đúng chưa
+        const isMatch = await bcrypt.compare(oldPassword, user.account.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Old password is incorrect" });
+        }
+
+        // nhập và kiểm tra mật khẩu mới
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "New password and confirmation do not match" });
+        }
+        // Mã hóa 
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Cập nhật 
+        user.account.password = hashedNewPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password changed successfully" });
     } catch (error) {
         next(error);
     }
@@ -61,9 +75,9 @@ const getTask = async (req, res, next) => {
 const addTask = async (req, res, next) => {
     try {
         const user = await db.Users.findById(req.params.id);
-        
-        console.log("User found:", user); 
-        
+
+        console.log("User found:", user);
+
         if (!user) {
             return res.status(404).json({ error: { status: 404, message: "User not found" } });
         }
@@ -87,14 +101,14 @@ const addTask = async (req, res, next) => {
         const savedUser = await user.save();
         res.status(200).json(savedUser);
     } catch (error) {
-        console.error("Error adding task:", error); 
+        console.error("Error adding task:", error);
         next(error);
     }
 }
 
 const updateTask = async (req, res, next) => {
     try {
-        const user = await db.Users.findById(req.params.id);   
+        const user = await db.Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ error: { status: 404, message: "User not found" } });
         }
@@ -120,7 +134,7 @@ const updateTask = async (req, res, next) => {
 
 const deleteTask = async (req, res, next) => {
     try {
-        const user = await db.Users.findById(req.params.id);   
+        const user = await db.Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ error: { status: 404, message: "User not found" } });
         }
@@ -140,7 +154,7 @@ const deleteTask = async (req, res, next) => {
 
 const addSubTask = async (req, res, next) => {
     try {
-        const user = await db.Users.findById(req.params.id);   
+        const user = await db.Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ error: { status: 404, message: "User not found" } });
         }
@@ -155,7 +169,7 @@ const addSubTask = async (req, res, next) => {
             status: req.body.status,
             createdAt: Date.now(),
             updateAt: Date.now()
-        };   
+        };
         task.subTasks.push(newSubTask);
         const savedUser = await user.save();
         res.status(200).json({ message: "SubTask added successfully", task });
@@ -178,7 +192,7 @@ const getSubTask = async (req, res, next) => {
 
 const updateSubTask = async (req, res, next) => {
     try {
-        const user = await db.Users.findById(req.params.id);   
+        const user = await db.Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ error: { status: 404, message: "User not found" } });
         }
@@ -203,7 +217,7 @@ const updateSubTask = async (req, res, next) => {
 
 const deleteSubTask = async (req, res, next) => {
     try {
-        const user = await db.Users.findById(req.params.id);   
+        const user = await db.Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ error: { status: 404, message: "User not found" } });
         }
@@ -220,7 +234,7 @@ const deleteSubTask = async (req, res, next) => {
         res.status(200).json({ message: "SubTask deleted successfully", savedUser });
     } catch (error) {
         console.error("Error deleting subTask:", error);
-        next(error);    
+        next(error);
     }
 };
 

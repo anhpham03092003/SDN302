@@ -1,0 +1,51 @@
+.headerContainer {
+    background-color: #7a7676;
+    /* Màu xám tối */
+    padding: 5px 20px;
+    /* Giảm padding */
+    height: 60px;
+    /* Chiều cao thanh header */
+    display: flex;
+}
+
+.headerLink {
+    margin-right: 15px;
+    /* Cách các thẻ ra */
+    color: white;
+    /* Màu chữ trắng cho các link */
+    text-align: bottom;
+    /* Đặt chữ ở dưới cùng */
+    display: flex;
+    /* Sử dụng flex để căn chỉnh */
+    align-items: center;
+    /* Căn giữa dọc */
+}
+
+.username {
+    border: 2px solid white;
+    /* Viền trắng quanh tên người dùng */
+    border-radius: 8px;
+    /* Bo góc cho tên người dùng */
+    padding: 5px 10px;
+    /* Thêm padding để làm nổi bật */
+    background-color: white;
+    /* Nền trắng cho tên người dùng */
+    color: black;
+    /* Màu chữ đen đậm */
+    font-size: 1.2rem;
+    /* Tăng kích thước chữ */
+    display: flex;
+    /* Sử dụng flex để căn chỉnh */
+    align-items: center;
+    /* Căn giữa dọc */
+}
+
+.dropdownItem {
+    color: black;
+    /* Màu chữ đen cho các mục dropdown */
+}
+
+.dropdownItem:hover {
+    background-color: #f8f9fa;
+    /* Màu nền khi hover trên các mục dropdown */
+}

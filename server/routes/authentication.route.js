@@ -1,20 +1,34 @@
 const express = require("express");
 const authRouter = express.Router();
-const authenticationController = require("../controllers/authentication.controller");
+const { AuthController } = require("../controllers");
+const { AuthMiddleware } = require("../middlewares");
 
-// đăng nhập
-authRouter.post("/login", authenticationController.login);
+// Middleware để phân tích body JSON
+authRouter.use(express.json());
 
-// đdăng ký
-authRouter.post("/register", authenticationController.register);
+// Đăng nhập
+authRouter.post("/login", AuthController.login);
 
-// quên mật khẩu
-authRouter.post("/forgot-password", authenticationController.forgotPassword);
+// Đăng ký
+authRouter.post("/register", AuthController.register);
 
-// đổi mật khẩu
-authRouter.post("/reset-password/:id/:token", authenticationController.resetPassword);
+// Quên mật khẩu
+authRouter.post("/forgot-password", AuthController.forgotPassword);
 
-// xác minh
-authRouter.get("/verify/:id/:token", authenticationController.verifyAccount);
+//lấy người dùng bằng id
+// Lấy người dùng bằng ID
+authRouter.get("/get-user",
+    AuthMiddleware.verifyAccessToken,
+    AuthController.getUserById
+);
+// đặt lại mật khẩu
+authRouter.post("/reset-password/:id/:token",
+    AuthController.resetPassword);
+//token để reset với token để đăng nhâp đăng đang là 2 cái khác nhau
+
+// Xác minh tài khoản
+authRouter.get("/verify/:id/:token",
+    AuthMiddleware.verifyAccessToken,
+    AuthController.verifyAccount);
 
 module.exports = authRouter;

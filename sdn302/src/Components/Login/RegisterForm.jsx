@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import axios from 'axios';
 import { FaUser, FaLock, FaEnvelope, FaIdBadge } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { AppContext } from '../../Context/AppContext';
@@ -6,7 +7,7 @@ import styles from '../../Styles/Login/Login.module.css';
 import { Alert } from 'react-bootstrap';
 
 function RegisterForm() {
-  const { registerUser } = useContext(AppContext); // Sử dụng context
+  const { authentication_API } = useContext(AppContext); // Sử dụng context
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -16,9 +17,24 @@ function RegisterForm() {
   const [alertMessage, setAlertMessage] = useState('');
   const navigate = useNavigate();
 
+  const register_API = `${authentication_API}/register`;
+
+  const registerUser = async (username, password, email, rePassword, phoneNumber) => {
+    try {
+      const response = await axios.post(register_API, { username, password, email, rePassword, phoneNumber });
+      return response.data;
+    } catch (error) {
+      console.error("Register error:", error);
+      throw error;
+    }
+  };
+
   const handleRegister = async (event) => {
 
     event.preventDefault();
+
+
+
     try {
       const response = await registerUser(username, password, email, rePassword, phoneNumber);
       console.log('Registration successful', response);

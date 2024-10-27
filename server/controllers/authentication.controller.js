@@ -117,6 +117,24 @@ async function register(req, res, next) {
     }
 }
 
+// Hàm lấy người dùng
+async function getUserById(req, res) {
+    const { id } = req.payload; // Lấy ID từ payload đã được xác thực
+    try {
+        const user = await db.Users.findById(id); // Tìm người dùng theo ID
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user); // Trả về thông tin người dùng
+    } catch (error) {
+        console.error("Get user by ID error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
+
+
 
 //hàm xác minh
 async function verifyAccount(req, res) {
@@ -157,7 +175,7 @@ async function forgotPassword(req, res) {
             expiresIn: "10m",
         });
 
-        const link = `http://localhost:3000/changePassword/${oldUser._id}/${token}`;
+        const link = `http://localhost:3000/resetPassword/${oldUser._id}/${token}`;
 
         // Gửi email thay đổi mật khẩu
         await sendEmail("reset", email, link);
@@ -200,9 +218,11 @@ async function resetPassword(req, res) {
     }
 }
 
+
 const authenticationController = {
     login,
     register,
+    getUserById,
     forgotPassword,
     resetPassword,
     verifyAccount

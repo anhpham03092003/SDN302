@@ -1,19 +1,54 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { AppContext } from '../../Context/AppContext';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
+import axios from 'axios';
 import styles from '../../Styles/Login/Login.module.css';
 
+
 function LoginForm() {
-  const { loginUser } = useContext(AppContext);
+  const { authentication_API } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const login_API = `${authentication_API}/login`;
+  //check token 
+  const checkTokenExpiration = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const { exp } = jwtDecode(token);
+      if (Date.now() >= exp * 1000) {
+        localStorage.removeItem('token'); // Xóa token
+        setMessage('Session expired, please log in again'); // Thông báo hết phiên đăng nhập
+        setTimeout(() => {
+          navigate('/login/loginForm'); // Điều hướng về trang đăng nhập sau 2 giây
+        }, 2000);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkTokenExpiration();
+  }, []);
+
+  const loginUser = async (username, password) => {
+    try {
+      const response = await axios.post(login_API, { username, password });
+      return response.data;
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    }
+  };
 
   const onSubmit = async (event) => {
     event.preventDefault();
+
+
+
     try {
       const result = await loginUser(username, password);
       if (result.token) {

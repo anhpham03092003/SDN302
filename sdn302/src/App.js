@@ -51,7 +51,7 @@ function App() {
               <Route path="forgotPass" element={<ForgotPass />} />
               <Route path="verifyAccount/:id/:token" element={<VerifyAccount />} />
             </Route>
-            <Route path="changePassword/:id/:token" element={<Reset />} />
+            <Route path="resetPassword/:id/:token" element={<Reset />} />
 
             <Route path="/profile" element={<ProfilePage />}>
               <Route path="profileInfo" element={<ProfileInfo />} />
