@@ -254,8 +254,13 @@ async function createTask(req, res, next) {
             deadline: req.body.deadline,
             status: req.body.status,
         }
-        await db.Groups.updateOne({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true })
-        res.status(201).json("Create task successfully")
+        await db.Groups.findOneAndUpdate({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true})
+        const saveGroup = await db.Groups.findOne({ _id: groupId });
+
+        res.status(201).json(saveGroup.tasks[saveGroup.tasks.length-1])
+
+
+        
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 

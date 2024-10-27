@@ -107,7 +107,10 @@ const groupSchema = new mongoose.Schema({
         }]
     }],
     members: [{
-        _id: mongoose.Schema.Types.ObjectId,
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:'user'
+        },
         groupRole: {
             type: String,
             enum: ['owner', 'member', 'viewer'],
@@ -117,8 +120,7 @@ const groupSchema = new mongoose.Schema({
     }],
     isPremium: {
         type: Boolean,
-        default: false,
-        required: [true,"Role is required"]
+        default: false, 
         
     },
     status: {

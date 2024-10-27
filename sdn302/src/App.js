@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
@@ -33,16 +33,17 @@ import GroupSideBar from './Components/Group_Components/GroupSideBar';
 
 
 import AdminDashboard from './Pages/AdminDashboard';
-import AppProvider from './Context/AppContext';
+import AppProvider, { AppContext } from './Context/AppContext';
 
 
 function App() {
+  const {accessToken} = useContext(AppContext)
   return (
-    <BrowserRouter>
-      <AppProvider>
+    
         <div className="App">
           <Header />
           <Routes>
+            <Route path="*" element={<Home />} />
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />}>
@@ -61,7 +62,7 @@ function App() {
 
 
 
-            <Route path="/groups"  >
+            {accessToken && <Route path="/groups"  >
               <Route index element={<GroupListPage />} />
               <Route path="create" element={<CreateGroup />} />
 
@@ -71,7 +72,7 @@ function App() {
                 <Route path="memberList" element={<MemberList />} />
                 <Route path="checkOut" element={<Payment />} />
               </Route>
-            </Route>
+            </Route>}
 
             <Route path="/admin" element={<Admin />}>
               <Route path="dashboard" element={<AdminDashboard />} />
@@ -83,8 +84,7 @@ function App() {
 
           </Routes>
         </div>
-      </AppProvider>
-    </BrowserRouter>
+      
 
 
   );

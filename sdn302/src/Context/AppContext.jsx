@@ -11,13 +11,14 @@ const AppProvider = ({ children }) => {
     //parameter
         const [groups,setGroups] = useState([]);
         const [group,setGroup]=useState()
+        const [selectedTask,setSelectedTask] = useState();
+        const [show, setShow] = useState(false);
     //call api
         useEffect(()=>{
             axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
             .then((res)=>{setGroups(res.data)})
         },[])
-    //fuction
-
+    //function
 
 
 
@@ -100,7 +101,9 @@ const AppProvider = ({ children }) => {
             registerUser,
             forgotPassword,
             changePassword,
-            createGroup
+            createGroup,
+            show, setShow,
+            selectedTask,setSelectedTask
         }}>
             {children}
         </AppContext.Provider>

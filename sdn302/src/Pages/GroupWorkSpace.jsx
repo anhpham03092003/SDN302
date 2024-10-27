@@ -17,7 +17,6 @@ function GroupWorkSpace() {
     .then((res)=>{setGroup(res.data)})
     .catch((err) => console.error(err));
   },[])
-  console.log(group);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false); // State to control modal visibility
 
   const handleShow = () => setShowAddMemberModal(true);
