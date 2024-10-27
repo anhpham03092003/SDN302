@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const db = require("../models/index");
 
+
 const getProfile = async (req, res, next) => {
+    const userId = req.payload.id;
     try {
-        const user = await db.Users.findById(req.params.id);
+        const user = await db.Users.findById(userId);
         res.status(200).json(user);
     } catch (error) {
         next(error);
@@ -11,13 +13,14 @@ const getProfile = async (req, res, next) => {
 }
 
 const updateProfile = async (req, res, next) => {
+    const userId = req.payload.id;
     try {
         const newProfile = {
             avatar: req.body.avatar,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber
         }
-        const user = await db.Users.findByIdAndUpdate(req.params.id, {
+        const user = await db.Users.findByIdAndUpdate(userId, {
             $set: {
                 'profile.phoneNumber': newProfile.phoneNumber,
                 'profile.avatar': newProfile.avatar,
