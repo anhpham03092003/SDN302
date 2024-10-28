@@ -301,6 +301,9 @@ async function editTask(req, res, next) {
         if (!task) {
             throw createHttpErrors(404, "Task not found")
         }
+        if(!req.body){
+            throw createHttpErrors(400, "Input is reqiured")
+        }
         const updateTask = {
             taskName: req.body.taskName,
             description: req.body.description,
@@ -310,7 +313,6 @@ async function editTask(req, res, next) {
             status: req.body.status,
             updatedAt: new Date()
         }
-        console.log(updateTask);
         await db.Groups.updateOne(
             {
                 _id: groupId, "tasks._id": taskId
@@ -376,6 +378,9 @@ async function addSubTask(req, res, next) {
         if (!task) {
             throw createHttpErrors(404, "Task not found")
         }
+        if(!req.body.subTaskName){
+            throw createHttpErrors.BadRequest("Subtask name is required")
+        }
         const newSubTask = {
             subTaskName: req.body.subTaskName
         }
@@ -388,10 +393,15 @@ async function addSubTask(req, res, next) {
                 $push: { "tasks.$.subTasks": newSubTask }
             },
             {
-                runValidators: true
+                runValidators: true,
+                new:true
             }
         )
-            .then(rs => res.status(201).json("Create subtask successfully"))
+        
+        const saveGroup= await db.Groups.findOne({ _id: groupId })
+        const subTasks = saveGroup.tasks.find(t=>t._id==taskId).subTasks
+        res.status(201).json(subTasks[subTasks.length-1])
+        
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -460,7 +470,7 @@ async function editSubTask(req, res, next) {
                 arrayFilters: [{ "subtask._id": subTaskId }],
                 runValidators: true
             })
-            .then((rs) => res.status(200).json("Edit subtask successfully"));
+            .then((rs) => res.status(200).json(updateSubTask));
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -490,9 +500,10 @@ async function deleteSubTask(req, res, next) {
             , {
                 $pull: { "tasks.$.subTasks": { _id: subTaskId } }
             }
-        )
+        ).then((rs)=>res.status(200).json(subTaskId))
+        .catch((err)=>{console.log(err);})
 
-        res.status(200).json("Delete subtask successfully")
+        
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
