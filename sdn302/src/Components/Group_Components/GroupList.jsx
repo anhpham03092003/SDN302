@@ -21,23 +21,20 @@ function GroupList() {
         { groupCode },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
+      const joinedGroup = response.data.group;
+      setGroups((prevGroups) => [...prevGroups, joinedGroup]);
+      setMessage("Joined the group successfully!");
 
-      // Check if the response indicates success
-      if (response.data.success) {
-        const joinedGroup = response.data.group;
-        setGroups((prevGroups) => [...prevGroups, joinedGroup]);
-        setMessage("Joined the group successfully!");
-
-        // Navigate directly to the group page using the group's ID
-        navigate(`/groups/${joinedGroup?._id}`);
-        setShowModal(false);
-      } else if (response.data.message === "Already a member of this group.") {
-        setMessage("You are already a member of this group.");
-      } else {
-        setMessage("Group not found. Please check the group code and try again.");
-      }
+      // Navigate directly to the group page using the group's ID
+      navigate(`/groups/${joinedGroup?._id}`); 
+      setShowModal(false);
     } catch (error) {
-      setMessage(error.response?.data?.message || "Failed to join the group. Please try again.");
+      // Check if the error message is related to group not found
+      if (error.response?.status === 404) {
+        setMessage("Group not found. Please check the group code.");
+      } else {
+        setMessage(error.response?.data?.message || "Failed to join the group. Please try again.");
+      }
     }
   };
 
