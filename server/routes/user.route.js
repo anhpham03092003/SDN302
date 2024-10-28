@@ -46,7 +46,7 @@ userRouter.delete("/individual-task/:id/task/:taskId/sub-task/:subTaskId/delete"
 
 userRouter.get("/all-users", AuthMiddleware.verifyAccessToken, getAllUser);
 userRouter.put("/ban-user/:id", AuthMiddleware.verifyAccessToken, banUser);
-userRouter.get("/count-user-status", AuthMiddleware.verifyAccessToken, countUserStatus);
+// userRouter.get("/count-user-status", AuthMiddleware.verifyAccessToken, countUserStatus);
 
 
 
