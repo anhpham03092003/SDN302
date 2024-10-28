@@ -325,20 +325,20 @@ const getAllUser = async (req, res, next) => {
 //test
 
 const banUser = async (req, res, next) => {
-    const userId = req.params.id;
     try {
-        const user = await db.Users.updateOne({ _id: userId }, { $set: { status: "banned" } }, { new: true });
+        const { id } = req.body;
+        console.log(id);
+        await db.Users.updateOne({ _id: id }, { status: 'banned' })
+            .then((rs) => res.status(200).json(rs))
+            .catch((err) => console.log(err))
 
-        // if (!user) {
-        //     return res.status(404).json({ error: { status: 404, message: "User not found" } });
-        // }
-        console.log("User banned:", user);
-
-        res.status(200).json({ message: "User banned successfully", user }); // Updated response
     } catch (error) {
         next(error);
+
     }
 };
+
+
 
 const countUserStatus = async (req, res, next) => {
     try {

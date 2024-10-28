@@ -85,11 +85,11 @@ function UserManagement() {
                 // Use the returned user object to update only that user's banned status
                 setUsers((prevUsers) =>
                     prevUsers.map((user) =>
-                        user.id === userId ? response.data.user : user
+                        user._id === userId ? response.data.user : user
                     )
                 );
 
-                console.log(response.data.message);
+
                 setMessage(response.data.message); // Optional feedback message
             } else {
                 console.error('Unexpected response structure:', response.data);
