@@ -80,16 +80,16 @@ function UserManagement() {
                     headers: { Authorization: `Bearer ${accessToken}` }
                 }
             );
-    
+
             if (response.status === 200 && response.data.user) {
                 // Use the returned user object to update only that user's banned status
                 setUsers((prevUsers) =>
                     prevUsers.map((user) =>
-                        user.id === userId ? response.data.user : user
+                        user._id === userId ? response.data.user : user
                     )
                 );
-    
-                console.log(response.data.message);
+
+
                 setMessage(response.data.message); // Optional feedback message
             } else {
                 console.error('Unexpected response structure:', response.data);
@@ -100,9 +100,9 @@ function UserManagement() {
             setMessage('Failed to ban user. Please try again.');
         }
     };
-    
-    
-    
+
+
+
     return (
         <div className='ms-1 mt-4'>
             <Form className='d-flex justify-content-end me-4 mb-2'>
@@ -133,14 +133,18 @@ function UserManagement() {
                 </thead>
                 <tbody>
                     {users.map(user => (
-                        <tr key={user.id}>
+                        <tr key={user._id}>
                             <td>{user.username}</td>
                             <td>{user.account.email}</td>
                             <td>{user.role}</td>
-                            <td>{user.status === 'banned' ? 'Banned' : user.status === 'active' ? 'Active' : 'Inactive'}</td>
+                            <td>{user.status === 'banned' && 'Banned'}
+                                {user.status === 'active' && 'Active'}
+                                {user.status === 'inactive' && 'Inactive'}
+                            </td>
+                            {/* <td>{user.status === 'banned' ? 'Banned' : user.status === 'active' ? 'Active' : 'Inactive'}</td> */}
                             <td>
                                 {!user.banned && (
-                                    <Button variant="danger" onClick={() => banUser(user.id)}>
+                                    <Button variant="danger" onClick={() => banUser(user?._id)}>
                                         Ban
                                     </Button>
                                 )}

@@ -2,18 +2,28 @@ import React, { useContext, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from '../../Styles/Login/Forgot.module.css';
 import { AppContext } from '../../Context/AppContext';
+import axios from 'axios';
 
 export default function Reset() {
-  const { id, token } = useParams(); // Lấy id và token từ URL
+  const { id, token } = useParams();
   const navigate = useNavigate();
-  const { changePassword } = useContext(AppContext); // Sử dụng context
+  const { authentication_API } = useContext(AppContext);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
+  const changePassword = async (id, token, password, confirmPassword) => {
+    try {
+      const response = await axios.post(`${authentication_API}/reset-password/${id}/${token}`, { password, confirmPassword });
+      return response.data; // Chỉ trả về data
+    } catch (error) {
+      console.error("Reset password error:", error);
+      throw error;
+    }
+  }
+
   const changePasswordHandler = async (e) => {
     e.preventDefault();
-
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
       return;
@@ -21,11 +31,15 @@ export default function Reset() {
 
     try {
       const response = await changePassword(id, token, password, confirmPassword);
-      alert(response.status);
+      // Kiểm tra response.data.status thay vì response.status
       if (response.status === "Password change successful!") {
-        navigate('/login/loginForm'); // Điều hướng đến trang login
+        alert(response.status); // Hiện thông báo thành công
+        navigate('/login/loginForm');
+      } else {
+        setError("Unexpected response structure"); // Xử lý trường hợp không thành công
       }
     } catch (error) {
+      console.error("Reset password error:", error);
       setError("An error occurred while resetting the password.");
     }
   };
