@@ -85,4 +85,10 @@
   cursor: pointer;
 }
 
+.buttonJoin{
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 70%;
+}
   

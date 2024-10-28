@@ -1,44 +1,69 @@
-import React, { useContext } from "react";
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import React, { useContext, useState } from "react";
+import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import { MdTimelapse } from "react-icons/md";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../Styles/Group_css/GroupList.module.css';
 import { FaRegListAlt } from "react-icons/fa";
 import { AppContext } from "../../Context/AppContext";
-
+import axios from 'axios';
 
 function GroupList() {
-  // const groups = [
-  //   {
-  //     id: 1,
-  //     title: "Group 1",
-  //     image: "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Group 2",
-  //     image: "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" 
-  //   }
-  // ];
-  const {groups} = useContext(AppContext);
+  const { groups, setGroups, accessToken, groups_API } = useContext(AppContext);
+  const [groupCode, setGroupCode] = useState('');
+  const [message, setMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  const joinGroupByCode = async () => {
+    try {
+      const response = await axios.post(
+        `${groups_API}/join-by-code`,
+        { groupCode },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+
+      // Check if the response indicates success
+      if (response.data.success) {
+        const joinedGroup = response.data.group;
+        setGroups((prevGroups) => [...prevGroups, joinedGroup]);
+        setMessage("Joined the group successfully!");
+
+        // Navigate directly to the group page using the group's ID
+        navigate(`/groups/${joinedGroup?._id}`);
+        setShowModal(false);
+      } else if (response.data.message === "Already a member of this group.") {
+        setMessage("You are already a member of this group.");
+      } else {
+        setMessage("Group not found. Please check the group code and try again.");
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to join the group. Please try again.");
+    }
+  };
+
+  const handleJoinSubmit = (e) => {
+    e.preventDefault();
+    joinGroupByCode();
+  };
+
   return (
     <Container>
-     
-      <h4 className={styles.container}> <MdTimelapse/> Recent Groups</h4>
+      <h4 className={styles.container}><MdTimelapse /> Recent Groups</h4>
       <Row>
-        {groups?.slice(0, 4).map((group) => ( 
+        {groups?.slice(0, 4).map((group) => (
           <Col md={3} className="mb-3" key={group._id}>
             <Link to={`/groups/${group._id}`} className={styles.card}>
               <Card className="text-center" style={{ position: 'relative' }}>
                 <Card.Img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group.groupName} className={styles.cardImage} />
-                
                 <div className={styles.cardTitle}>{group.groupName}</div>
               </Card>
             </Link>
           </Col>
         ))}
       </Row>
-      <h4 className={styles.container}><FaRegListAlt/> All Groups</h4>
+      
+      <Button className={styles.buttonJoin} variant="primary" onClick={() => setShowModal(true)}>Join Group</Button>
+      <h4 className={styles.container}><FaRegListAlt /> All Groups</h4>
       <div className={styles.allGroupsContainer}>
         <Row className="ms-2">
           {groups?.map((group) => (
@@ -51,6 +76,32 @@ function GroupList() {
           ))}
         </Row>
       </div>
+
+      {/* Join Group Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Join Group</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleJoinSubmit}>
+            <Form.Group controlId="groupCode">
+              <Form.Label>Group Code</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter group code"
+                value={groupCode}
+                onChange={(e) => setGroupCode(e.target.value)}
+                required
+              />
+            </Form.Group>
+            {message && <p className={styles.message}>{message}</p>}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleJoinSubmit}>Join Group</Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }
