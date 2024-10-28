@@ -50,8 +50,9 @@ function IndividualSpace() {
                     }
                 );
                 setNewColumnName('');
-                setShowTempColumn(false); 
                 fetchUserInfo(); 
+                setShowTempColumn(false); 
+                
             } catch (error) {
                 console.error('Error adding new column:', error);
             }

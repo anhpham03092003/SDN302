@@ -113,9 +113,10 @@ const editClassification = async (req, res, next) => {
 module.exports = editClassification;
 
 const getTask = async (req, res, next) => {
+    const userId = req.payload.id;
     try {
         const taskId = req.params.taskId;
-        const user = await db.Users.findById(req.params.id);
+        const user = await db.Users.findById(userId);
         const task = user.individualTasks.id(taskId);
         res.status(200).json(task);
     } catch (error) {
@@ -233,9 +234,10 @@ const addSubTask = async (req, res, next) => {
     }
 }
 const getSubTask = async (req, res, next) => {
+    const userId = req.payload.id;
     try {
         const taskId = req.params.taskId;
-        const user = await db.Users.findById(req.params.id);
+        const user = await db.Users.findById(userId);
         const task = user.individualTasks.id(taskId)
         const subTask = task.subTasks.id(req.params.subTaskId);
         res.status(200).json(subTask);

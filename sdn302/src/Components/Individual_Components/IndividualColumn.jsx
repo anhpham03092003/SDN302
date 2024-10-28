@@ -56,8 +56,10 @@ function IndividualColumn({ column }) {
                     },
                 }
             );
+            console.log("Classification updated successfully:", response.data);
             setEditColumn(false);
             fetchUserInfo();
+            
         } catch (error) {
             console.error("Error updating classification:", error);
         }

@@ -24,7 +24,7 @@ userRouter.post("/add-classification",AuthMiddleware.verifyAccessToken, addClass
 
 userRouter.put("/edit-classification",AuthMiddleware.verifyAccessToken, editClassification);
 
-userRouter.get("/individual-task/:id/task/:taskId/get",AuthMiddleware.verifyAccessToken, getTask);
+userRouter.get("/individual-task/task/:taskId/get",AuthMiddleware.verifyAccessToken, getTask);
 
 userRouter.post("/individual-task/add",AuthMiddleware.verifyAccessToken, addTask);
 
@@ -32,7 +32,7 @@ userRouter.put("/individual-task/task/:taskId/edit",AuthMiddleware.verifyAccessT
 
 userRouter.delete("/individual-task/task/:taskId/delete",AuthMiddleware.verifyAccessToken, deleteTask);
 
-userRouter.get("/individual-task/:id/task/:taskId/sub-task/:subTaskId/get",AuthMiddleware.verifyAccessToken, getSubTask);
+userRouter.get("/individual-task/task/:taskId/sub-task/:subTaskId/get",AuthMiddleware.verifyAccessToken, getSubTask);
 
 userRouter.post("/individual-task/task/:taskId/sub-task/add",AuthMiddleware.verifyAccessToken, addSubTask);
 
