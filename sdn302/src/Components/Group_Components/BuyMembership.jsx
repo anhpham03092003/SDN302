@@ -14,6 +14,7 @@ function BuyMembership() {
                     <Container fluid className='mt-2'>
                         <Row className='border-bottom border-black pb-3'>
                             <h3 className='m-0 text-center'>Basic</h3>
+                            <h4 className='m-0 text-center'>(Free)</h4>
                         </Row>
 
                         <Row className='m-3 py-5'>
@@ -34,6 +35,7 @@ function BuyMembership() {
                     <Container fluid className='mt-2'>
                         <Row className='border-bottom border-black pb-3'>
                             <h3 className='m-0 text-center'>Premium</h3>
+                            <h4 className='m-0 text-center'>(2000$)</h4>
                         </Row>
 
                         <Row className='m-3 py-5'>
@@ -46,7 +48,7 @@ function BuyMembership() {
 
                         <Row>
                             <Button className='rounded-0 btn-membership border-0 py-3 fw-bolder'>
-                                <Link to="/groups/name/checkOut">Upgrade</Link>
+                                <Link to="checkOut" className="text-decoration-none">Upgrade</Link>
                             </Button>
                         </Row>
                     </Container>

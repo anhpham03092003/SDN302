@@ -9,7 +9,7 @@ import styles from '../../Styles/Login/Login.module.css';
 
 
 function LoginForm() {
-  const { authentication_API } = useContext(AppContext);
+  const { authentication_API, setUser } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -47,13 +47,17 @@ function LoginForm() {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-
-
     try {
       const result = await loginUser(username, password);
       if (result.token) {
         // Đẩy token lên local storage
         localStorage.setItem('token', result.token);
+
+        // Lấy thông tin người dùng và cập nhật
+        const userResponse = await axios.get(`${authentication_API}/get-user`, {
+          headers: { Authorization: `Bearer ${result.token}` }
+        });
+        setUser(userResponse.data); // Cập nhật thông tin người dùng 
         navigate('/home');
         console.log('Login Successfully');
       } else {
@@ -69,7 +73,7 @@ function LoginForm() {
       } else {
         setMessage('An unexpected error occurred');
       }
-      console.log('Login Failed:', error);
+
     }
   };
 

@@ -1,17 +1,17 @@
-import React, { useContext } from 'react'; // Nhập useContext
+import React, { useContext } from 'react';
 import { Container, Nav, NavDropdown } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaPen, FaPlus, FaUser } from "react-icons/fa";
-import { AppContext } from '../Context/AppContext'; // Nhập AppContext
+import { AppContext } from '../Context/AppContext';
 import styles from '../Styles/Header_css/Header.module.css';
 
 function Header() {
-    const { user, accessToken } = useContext(AppContext);
+    const { user, accessToken, handleLogout } = useContext(AppContext);
+    const navigate = useNavigate();
 
-    const handleLogout = () => {
-        // Xóa token
-        localStorage.removeItem('token');
-        // Thực hiện các hành động khác nếu cần
+    const handleLogoutClick = () => {
+        handleLogout(); // Gọi hàm logout từ AppContext
+        navigate('/'); // Điều hướng đến trang chủ
     };
 
     return (
@@ -44,7 +44,7 @@ function Header() {
                                 <NavDropdown.Item href="/profile/profileInfo"><FaUser /> User profile</NavDropdown.Item>
                                 <NavDropdown.Item href="/profile/changePassword"><FaPen /> Change password</NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item onClick={handleLogout}>
+                                <NavDropdown.Item onClick={handleLogoutClick}>
                                     <FaArrowRight /> Logout
                                 </NavDropdown.Item>
                             </NavDropdown>
