@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema({
         enum: ['inactive', 'active', 'banned'],
         default: 'inactive'
     },
+    classifications: {
+        type: [String],
+        default: ['todo', 'doing', 'done', 'other']
+    },
     individualTasks: [{
         taskName: {
             type: String,
@@ -68,7 +72,6 @@ const userSchema = new mongoose.Schema({
         },
         status: {
             type: String,
-            enum: ['todo', 'inprogress', 'done'],
             default: 'todo'
         },
         subTasks: [{
