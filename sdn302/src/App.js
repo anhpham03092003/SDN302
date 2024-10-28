@@ -36,7 +36,6 @@ import GroupSideBar from './Components/Group_Components/GroupSideBar';
 import AdminDashboard from './Pages/AdminDashboard';
 import AppProvider, { AppContext } from './Context/AppContext';
 
-import NotAuthorized from './Pages/NotAuthorized';
 
 function App() {
   const {accessToken} = useContext(AppContext)
@@ -84,8 +83,6 @@ function App() {
 
             <Route path="/individualSpace" element={<IndividualSpacePage />}>
             </Route>
-
-            <Route path="/not-authorized" element={<NotAuthorized />} />
 
           </Routes>
         </div>
