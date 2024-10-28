@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table, Form, Button, Modal, Alert } from 'react-bootstrap';
 import { MdOutlineSearch } from "react-icons/md";
 import { FaPlus, FaUser, FaLock, FaEnvelope, FaIdBadge } from "react-icons/fa";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../Context/AppContext'; // Ensure you have access to AppContext
 
 function UserManagement() {
     const [show, setShow] = useState(false);
@@ -14,7 +15,23 @@ function UserManagement() {
     const [lastName, setLastName] = useState('');
     const [message, setMessage] = useState('');
     const [emailError, setEmailError] = useState('');
+    const [users, setUsers] = useState([]); // To hold user data
     const navigate = useNavigate();
+    const { accessToken } = useContext(AppContext); // Access token from context
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:9999/users/all-users', {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                setUsers(response.data);
+            } catch (error) {
+                console.error('Failed to fetch users', error);
+            }
+        };
+        fetchUsers();
+    }, [accessToken]);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -54,6 +71,38 @@ function UserManagement() {
         }
     };
 
+    const banUser = async (userId) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:9999/users/ban-user/${userId}`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                }
+            );
+
+            if (response.status === 200 && response.data.user) {
+                // Use the returned user object to update only that user's banned status
+                setUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user._id === userId ? response.data.user : user
+                    )
+                );
+
+
+                setMessage(response.data.message); // Optional feedback message
+            } else {
+                console.error('Unexpected response structure:', response.data);
+                setMessage('Failed to ban user. Unexpected server response.');
+            }
+        } catch (error) {
+            console.error('Failed to ban user:', error);
+            setMessage('Failed to ban user. Please try again.');
+        }
+    };
+
+
+
     return (
         <div className='ms-1 mt-4'>
             <Form className='d-flex justify-content-end me-4 mb-2'>
@@ -79,21 +128,29 @@ function UserManagement() {
                         <th>Email</th>
                         <th>Role</th>
                         <th>Status</th>
+                        <th>Action</th> {/* Added action column */}
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>John Doe</td>
-                        <td>john.doe@example.com</td>
-                        <td>Admin</td>
-                        <td>Active</td>
-                    </tr>
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>jane.smith@example.com</td>
-                        <td>User</td>
-                        <td>Inactive</td>
-                    </tr>
+                    {users.map(user => (
+                        <tr key={user._id}>
+                            <td>{user.username}</td>
+                            <td>{user.account.email}</td>
+                            <td>{user.role}</td>
+                            <td>{user.status === 'banned' && 'Banned'}
+                                {user.status === 'active' && 'Active'}
+                                {user.status === 'inactive' && 'Inactive'}
+                            </td>
+                            {/* <td>{user.status === 'banned' ? 'Banned' : user.status === 'active' ? 'Active' : 'Inactive'}</td> */}
+                            <td>
+                                {!user.banned && (
+                                    <Button variant="danger" onClick={() => banUser(user?._id)}>
+                                        Ban
+                                    </Button>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </Table>
 
@@ -106,62 +163,7 @@ function UserManagement() {
                     <form onSubmit={handleRegister}>
                         {message && <Alert variant="danger">{message}</Alert>}
                         {emailError && <Alert variant="danger">{emailError}</Alert>}
-
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                type="text"
-                                placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                            <FaUser className="icon" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                            <FaEnvelope className="icon" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                type="text"
-                                placeholder="First Name"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                required
-                            />
-                            <FaIdBadge className="icon" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                type="text"
-                                placeholder="Last Name"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                required
-                            />
-                            <FaIdBadge className="icon" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Control
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <FaLock className="icon" />
-                        </Form.Group>
-
+                        {/* Registration form fields */}
                         <Button variant="primary" type="submit">
                             Create User
                         </Button>
@@ -173,3 +175,4 @@ function UserManagement() {
 }
 
 export default UserManagement;
+

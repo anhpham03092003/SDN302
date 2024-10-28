@@ -1,112 +1,105 @@
 import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 export const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
     //token
-        const accessToken = localStorage.getItem('token');
+    const accessToken = localStorage.getItem('token');
     // api
-        const groups_API= "http://localhost:9999/groups"
+    const groups_API = "http://localhost:9999/groups"
+    const authentication_API = `http://localhost:9999/authentication`;
     //parameter
-        const [groups,setGroups] = useState([]);
-        const [group,setGroup]=useState()
-        const [selectedTask,setSelectedTask] = useState();
-        const [show, setShow] = useState(false);
-        const [groupMembers,setGroupMembers] = useState([]);
-        const [currentUserRole, setCurrentUserRole] = useState(null);
+    const [groups, setGroups] = useState([]);
+    const [group, setGroup] = useState()
+    const [user, setUser] = useState()
+    const navigate = useNavigate();
+    const [selectedTask, setSelectedTask] = useState();
+    const [show, setShow] = useState(false);
+    const [groupMembers, setGroupMembers] = useState([]);
+    const [currentUserRole, setCurrentUserRole] = useState(null);
+
+
+
     //call api
-        useEffect(()=>{
-            axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
-            .then((res)=>{setGroups(res.data)})
-        },[]);
+    useEffect(() => {
+        axios.get(`${groups_API}/get-group`, { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then((res) => { setGroups(res.data) })
+    }, []);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await axios.get(`${authentication_API}/get-user`, {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                setUser(res.data); // Cập nhật thông tin người dùng
+            } catch (error) {
+                console.error('Error fetching user:', error.response ? error.response.data : error.message);
+            }
+        };
+        fetchUser();
+    }, [accessToken]);
 
 
     //fuction
-        const editTask = async (name,value,groupId)=>{
-            const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/edit`,{[name]:value}, { headers: { Authorization: `Bearer ${accessToken}` } })
-            return response
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setUser(null);
+        setGroups([]);
+    };
+
+
+    //check token
+    const checkTokenExpiration = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const { exp } = jwtDecode(token);
+            if (Date.now() >= exp * 1000) {
+                localStorage.removeItem('token'); // Xóa token
+                setUser(null); // Xóa thông tin người dùng
+                alert('Session expired, please log in again');
+                navigate('/login/loginForm'); // Điều hướng về trang đăng nhập
+            }
         }
-        const editSubTask = async (name,value,groupId,subTask)=>{
-            const response =await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/subTasks/${subTask._id}/edit`,{[name]:value}, { headers: { Authorization: `Bearer ${accessToken}` } })
-            return response
-        }
+    };
 
+    //fuction
+    const editTask = async (name, value, groupId) => {
+        const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/edit`, { [name]: value }, { headers: { Authorization: `Bearer ${accessToken}` } })
+        return response
+    }
+    const editSubTask = async (name, value, groupId, subTask) => {
+        const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/subTasks/${subTask._id}/edit`, { [name]: value }, { headers: { Authorization: `Bearer ${accessToken}` } })
+        return response
+    }
 
-
-
-    //api athentication
-    const login_API = `http://localhost:9999/authentication/login`;
-    const register_API = `http://localhost:9999/authentication/register`;
-    const forrgot_API = `http://localhost:9999/authentication/forgot-password`;
-    const changePassword_API = `http://localhost:9999/authentication/reset-password`;
 
     // api groups
-  
-  
 
 
-    //login
-    const loginUser = async (username, password) => {
-        try {
-            const response = await axios.post(login_API, { username, password });
-            return response.data;
-        } catch (error) {
-            console.error("Login error:", error);
-            throw error;
-        }
-    };
 
-    //register
-    const registerUser = async (username, password, email, rePassword, phoneNumber) => {
-        try {
-            const response = await axios.post(register_API, { username, password, email, rePassword, phoneNumber });
-            return response.data;
-        } catch (error) {
-            console.error("Register error:", error);
-            throw error;
-        }
-    };
-
-    //forgot password
-    const forgotPassword = async (email, username) => {
-        try {
-            const response = await axios.post(forrgot_API, { email, username });
-            return response.data;
-        } catch (error) {
-            console.error("Register error:", error);
-            throw error;
-        }
-    };
-
-    // Change password function
-    const changePassword = async (id, token, password, confirmPassword) => {
-        try {
-            const response = await axios.post(`${changePassword_API}/${id}/${token}`, { password, confirmPassword });
-            return response.data;
-        } catch (error) {
-            console.error("Change password error:", error);
-            throw error;
-        }
-    };
 
 
     return (
         <AppContext.Provider value={{
             groups_API,
             accessToken,
-            groups,setGroups,
-            group,setGroup,
-            groupMembers,setGroupMembers,
-            loginUser,
-            registerUser,
-            forgotPassword,
-            changePassword,
+
+            groups, setGroups,
+            user, setUser,
+            group, setGroup,
+            authentication_API,
+            groupMembers, setGroupMembers,
             show, setShow,
-            selectedTask,setSelectedTask,
+            selectedTask, setSelectedTask,
             currentUserRole, setCurrentUserRole,
             editTask,
-            editSubTask
+            editSubTask,
+            handleLogout,
+            checkTokenExpiration
         }}>
             {children}
         </AppContext.Provider>
