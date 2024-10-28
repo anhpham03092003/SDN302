@@ -7,20 +7,6 @@ const { AuthMiddleware } = require("../middlewares");
 userRouter.use(bodyParser.json());
 
 
-const { getProfile,
-    updateProfile,
-    changePassword,
-    getTask,
-    addTask,
-    updateTask,
-    deleteTask,
-    getSubTask,
-    addSubTask,
-    updateSubTask,
-    deleteSubTask,
-    getAllUser,
-    banUser,
-    countUserStatus } = require("../controllers/user.controller");
 
 const { getProfile, updateProfile, changePassword,
     getClassification, addClassification, editClassification,
