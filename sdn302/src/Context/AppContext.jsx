@@ -23,8 +23,15 @@ const AppProvider = ({ children }) => {
 
 
     //fuction
+        const editTask = async (name,value,groupId)=>{
+            const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/edit`,{[name]:value}, { headers: { Authorization: `Bearer ${accessToken}` } })
+            return response
+        }
+        const editSubTask = async (name,value,groupId,subTask)=>{
+            const response =await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/subTasks/${subTask._id}/edit`,{[name]:value}, { headers: { Authorization: `Bearer ${accessToken}` } })
+            return response
+        }
 
-   
 
 
 
@@ -97,8 +104,9 @@ const AppProvider = ({ children }) => {
             changePassword,
             show, setShow,
             selectedTask,setSelectedTask,
-            currentUserRole, setCurrentUserRole
-
+            currentUserRole, setCurrentUserRole,
+            editTask,
+            editSubTask
         }}>
             {children}
         </AppContext.Provider>

@@ -53,7 +53,7 @@ const groupSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         },
-        comments: [{ // Added comments to the task
+        comments: [{ 
             user: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'user',
@@ -62,11 +62,17 @@ const groupSchema = new mongoose.Schema({
             content: {
                 type: String,
                 required: true,
-                maxlength: 200 // Limit comment content to 200 characters
+                maxlength: 200 
             },
             status: {
                 type: String,
-                required: true
+                required: true,
+                validate: {
+                    validator: function(value) {
+                        return this.classifications.includes(value); 
+                    },
+                    message: props => `${props.value} is not a valid status!`
+                }
             },
             createdAt: {
                 type: Date,
