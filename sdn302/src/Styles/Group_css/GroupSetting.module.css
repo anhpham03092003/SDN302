@@ -13,6 +13,13 @@
   background-color: #ffffff;
 }
 
+.dots{
+  margin: auto;
+  position: absolute;
+  top: 20%;
+  left: 85%;
+}
+
 
 .breadcrumb {
   margin-bottom: 20px;
@@ -113,3 +120,62 @@
   border-radius: 5px;
   background-color: #f4f5f7;
 }
+.successMessage {
+  color: green;
+  margin-top: 10px;
+}
+
+.errorMessage {
+  color: red;
+  margin-top: 10px;
+}
+
+.groupSettingContainer {
+  position: relative;
+}
+
+.iconMenuContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.iconDots {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: #f0f4ff;
+}
+
+.dropdownMenu {
+  transform: translateX(-50%);
+  width: 120px;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 10;
+  margin: auto;
+  position: absolute;
+  top: 25%;
+  left: 83%;
+}
+
+.menuItem {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.menuItem:hover {
+  background-color: #f0f0f0;
+}
+
+
+

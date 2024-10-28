@@ -14,6 +14,7 @@ const AppProvider = ({ children }) => {
         const [selectedTask,setSelectedTask] = useState();
         const [show, setShow] = useState(false);
         const [groupMembers,setGroupMembers] = useState([]);
+        const [currentUserRole, setCurrentUserRole] = useState(null);
     //call api
         useEffect(()=>{
             axios.get(`${groups_API}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
@@ -23,7 +24,7 @@ const AppProvider = ({ children }) => {
 
     //fuction
 
-
+   
 
 
 
@@ -36,7 +37,6 @@ const AppProvider = ({ children }) => {
     // api groups
   
   
- 
 
 
     //login
@@ -96,11 +96,14 @@ const AppProvider = ({ children }) => {
             forgotPassword,
             changePassword,
             show, setShow,
-            selectedTask,setSelectedTask
+            selectedTask,setSelectedTask,
+            currentUserRole, setCurrentUserRole
+
         }}>
             {children}
         </AppContext.Provider>
     );
 };
+
 
 export default AppProvider;

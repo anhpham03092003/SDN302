@@ -10,13 +10,19 @@ import axios from 'axios';
 
 function GroupWorkSpace() {
   const {groupId}=  useParams();
-  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers} = useContext(AppContext);
+  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole} = useContext(AppContext);
   
   useEffect(()=>{
     axios.get(`${groups_API}/${groupId}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
     .then((res)=>{setGroup(res.data)})
     .catch((err) => console.error(err));
   },[])
+
+  useEffect(()=>{
+    axios.get(`${groups_API}/user/${groupId}/get-user-role`,{headers:{ Authorization: `Bearer ${accessToken}`}})
+    .then((res)=>{setCurrentUserRole(res.data)})
+},[]);
+
   useEffect(() => {
     axios.get(`${groups_API}/${groupId}/get-member`, {
       headers: { Authorization: `Bearer ${accessToken}` }

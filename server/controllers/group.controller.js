@@ -80,7 +80,7 @@ async function getGroupDetail(req, res, next) {
     }
 
 // edit group detail by group id
-
+// edit group detail by group id
 async function editGroupDetail(req, res, next) {
     try {
         const { groupId } = req.params;
@@ -110,7 +110,8 @@ async function editGroupDetail(req, res, next) {
                     _id: { $ne: groupId } 
                 });
                 if (existingGroupByCode) {
-                    throw createHttpErrors(409, "Group code already exists");
+                    res.status(409).json({ error: "Group code already exists" });
+                    return;
                 }
                 updateGroup.groupCode = groupCode;
             }
@@ -123,8 +124,8 @@ async function editGroupDetail(req, res, next) {
         }
 
         await db.Groups.updateOne({ _id: groupId }, { $set: updateGroup }, { runValidators: true });
-
         res.status(200).json("Update group successfully");
+
     } catch (error) {
         next(error);
     }
@@ -240,6 +241,119 @@ async function getGroupMember(req, res, next) {
     
     } catch (error) {
       next(error);
+    }
+  }
+
+
+// Set role for member in group
+async function setGroupMemberRole(req, res, next) {
+    try {
+        const { groupId, memberId } = req.params; 
+        const { id } = req.payload;
+        const { groupRole } = req.body;
+
+        const group = await db.Groups.findOne({ _id: groupId }); 
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+        const owner = group.members.find(member => member._id.toString() === id && member.groupRole === 'owner'); 
+        if (!owner) {
+            throw createHttpErrors(403, "Only the group owner can edit member roles");
+        }
+        const member = group.members.find(member => member._id.toString() === memberId); 
+        if (!member) {
+            throw createHttpErrors(404, "Member not found");
+        }
+        if (memberId === owner._id.toString()) {
+            throw createHttpErrors(403, "You cannot change your own role");
+        }
+        const otherOwners = group.members.filter(member => member.groupRole === 'owner' && member._id.toString() !== memberId);
+        if (groupRole === 'owner' && otherOwners.length > 0) {
+            throw createHttpErrors(400, "Cannot assign owner role as there is already an owner");
+        }
+
+        // Cập nhật vai trò thành viên
+        await db.Groups.updateOne(
+            { _id: groupId, "members._id": memberId },
+            { $set: { "members.$.groupRole": groupRole } }
+        );
+        res.status(200).json({ message: "Member role updated successfully", memberId, newRole: groupRole });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// delete group member
+
+async function deleteGroupMember(req, res, next) {
+    try {
+        const { groupId, memberId } = req.params;
+        const { id } = req.payload;
+
+        // Find the group by its ID
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+
+        // Check if the requester is the owner of the group
+        const owner = group.members.find(member => member._id.toString() === id && member.groupRole === 'owner');
+        if (!owner) {
+            throw createHttpErrors(403, "Only the group owner can delete a member");
+        }
+
+        // Check if the member to be deleted exists
+        const memberToDelete = group.members.find(member => member._id.toString() === memberId);
+        if (!memberToDelete) {
+            throw createHttpErrors(404, "Member not found");
+        }
+
+        // Ensure the owner is not trying to delete themselves
+        if (memberId === id) {
+            throw createHttpErrors(403, "The owner cannot remove themselves from the group");
+        }
+
+        // Remove the member from the group
+        group.members = group.members.filter(member => member._id.toString() !== memberId);
+        await group.save();
+
+        // Optionally, remove the group from the user's list of groups
+        const user = await db.Users.findById(memberId);
+        if (user) {
+            user.groups = user.groups.filter(group => group.toString() !== groupId);
+            await user.save();
+        }
+
+        res.status(200).json({ message: "Member removed from the group successfully" });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// get user id 
+
+async function getUserRole(req, res, next) {
+    try {
+      const { groupId } = req.params; 
+      const { id } = req.payload;  
+  
+      const group = await db.Groups.findOne({ _id: groupId });
+  
+      if (!group) {
+        throw createHttpErrors(404, "Group not found");
+      }
+      const member = group.members.find(member => member._id.toString() === id);
+  
+      if (!member) {
+        throw createHttpErrors(404, "User not found in the specified group");
+      }
+      res.status(200).json({
+        id: member._id,
+        groupRole: member.groupRole,
+      });
+  
+    } catch (error) {
+      next(error); 
     }
   }
 
@@ -514,7 +628,10 @@ const GroupController = {
     joinGroupByCode,
     outGroup,
     deleteSubTask,
-    getGroupMember
+    getGroupMember,
+    setGroupMemberRole,
+    deleteGroupMember,
+    getUserRole
 }
 
 module.exports = GroupController;
