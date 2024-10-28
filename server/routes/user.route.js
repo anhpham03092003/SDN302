@@ -6,10 +6,28 @@ const db = require("../models/index");
 const { AuthMiddleware } = require("../middlewares");
 userRouter.use(bodyParser.json());
 
+
+const { getProfile,
+    updateProfile,
+    changePassword,
+    getTask,
+    addTask,
+    updateTask,
+    deleteTask,
+    getSubTask,
+    addSubTask,
+    updateSubTask,
+    deleteSubTask,
+    getAllUser,
+    banUser,
+    countUserStatus } = require("../controllers/user.controller");
+
 const { getProfile, updateProfile, changePassword,
     getClassification, addClassification, editClassification,
     getTask, addTask, updateTask, deleteTask, 
-    getSubTask, addSubTask, updateSubTask, deleteSubTask } = require("../controllers/user.controller");
+    getSubTask, addSubTask, updateSubTask, deleteSubTask, getAllUser, banUser,
+    countUserStatus } = require("../controllers/user.controller");
+
 
 
 userRouter.get("/get-profile",AuthMiddleware.verifyAccessToken, getProfile);
@@ -39,6 +57,10 @@ userRouter.post("/individual-task/task/:taskId/sub-task/add",AuthMiddleware.veri
 userRouter.put("/individual-task/task/:taskId/sub-task/:subTaskId/edit",AuthMiddleware.verifyAccessToken, updateSubTask);
 
 userRouter.delete("/individual-task/task/:taskId/sub-task/:subTaskId/delete",AuthMiddleware.verifyAccessToken, deleteSubTask);
+
+userRouter.get("/all-users", AuthMiddleware.verifyAccessToken, getAllUser);
+userRouter.put("/ban-user/:id", AuthMiddleware.verifyAccessToken, banUser);
+// userRouter.get("/count-user-status", AuthMiddleware.verifyAccessToken, countUserStatus);
 
 
 
