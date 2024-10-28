@@ -16,7 +16,10 @@ const { getProfile,
     getSubTask,
     addSubTask,
     updateSubTask,
-    deleteSubTask } = require("../controllers/user.controller");
+    deleteSubTask,
+    getAllUser,
+    banUser,
+    countUserStatus } = require("../controllers/user.controller");
 
 
 userRouter.get("/get-profile",AuthMiddleware.verifyAccessToken, getProfile);
@@ -40,6 +43,10 @@ userRouter.post("/individual-task/:id/task/:taskId/sub-task/add",AuthMiddleware.
 userRouter.put("/individual-task/:id/task/:taskId/sub-task/:subTaskId/edit",AuthMiddleware.verifyAccessToken, updateSubTask);
 
 userRouter.delete("/individual-task/:id/task/:taskId/sub-task/:subTaskId/delete",AuthMiddleware.verifyAccessToken, deleteSubTask);
+
+userRouter.get("/all-users", AuthMiddleware.verifyAccessToken, getAllUser);
+userRouter.put("/ban-user/:id", AuthMiddleware.verifyAccessToken, banUser);
+userRouter.get("/count-user-status", AuthMiddleware.verifyAccessToken, countUserStatus);
 
 
 
