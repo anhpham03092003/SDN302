@@ -11,10 +11,12 @@ import { useParams } from 'react-router-dom'
 function GroupTaskDetail() {
     const { groupId } = useParams();
     const { editTask, show, setShow, selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken, groupMembers, setGroupMembers } = useContext(AppContext)
-    const [showDescription,setShowDescription] = useState(false)
-    const [showComment,setShowComment] = useState(false)
-    const [newDescription,setNewDescription] = useState("")
-    const [newComment,setNewComment] = useState("")
+    const [showDescription, setShowDescription] = useState(false)
+    const [showComment, setShowComment] = useState(false)
+    const [newDescription, setNewDescription] = useState("")
+    const [newComment, setNewComment] = useState("")
+    const [searchMember, setSearchMember] = useState("");
+    const filterMembers = groupMembers.filter((m) => m.name.toUpperCase().includes(searchMember.toUpperCase()))
     const handleDelete = async () => {
         if (window.confirm("Remove this task?")) {
             await axios.delete(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/delete`, { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -41,6 +43,7 @@ function GroupTaskDetail() {
                 );
                 const updatedGroup = { ...group, tasks: [...updatedTasks] };
                 setSelectedTask({ ...selectedTask, subTasks: [...updatedSubTasks] })
+                e.target.subTaskName.value = "";
                 setGroup(updatedGroup)
 
             })
@@ -72,7 +75,7 @@ function GroupTaskDetail() {
             const updatedTasks = group.tasks.map(task =>
                 task._id == selectedTask._id ? { ...task, description: res.data?.description } : task
             );
- 
+
 
             setSelectedTask({ ...selectedTask, description: res.data?.description })
             setGroup({ ...group, tasks: [...updatedTasks] })
@@ -82,7 +85,7 @@ function GroupTaskDetail() {
         }
 
     }
-    
+
     const handleTaskStatus = async (status) => {
         try {
             const res = await editTask("status", status, groupId)
@@ -90,7 +93,7 @@ function GroupTaskDetail() {
             const updatedTasks = group.tasks.map(task =>
                 task._id == selectedTask._id ? { ...task, status: res.data?.status } : task
             );
- 
+
 
             setSelectedTask({ ...selectedTask, status: res.data?.status })
             setGroup({ ...group, tasks: [...updatedTasks] })
@@ -140,8 +143,8 @@ function GroupTaskDetail() {
                                 <Col md={8} className='align-content-center'>
                                     <p className='m-0'>in the <strong className='text-success '>{selectedTask?.status?.toUpperCase()}</strong></p>
                                     {selectedTask?.deadline && <p className='m-0'>Deadline: <strong>{new Date(selectedTask.deadline).toLocaleDateString('vi-VN')}    </strong></p>}
-                                    
-                                    </Col>
+
+                                </Col>
                                 <Col md={2} className='text-end'>
                                     <Dropdown >
                                         <Dropdown.Toggle id="dropdown-custom-1" className=' text-dark  mx-1 rounded-0  border-0 textt-dark background-hover background-color-third'>
@@ -150,10 +153,10 @@ function GroupTaskDetail() {
 
                                         <Dropdown.Menu >
                                             <Dropdown.Header>
-                                                <Form.Group onSubmit={(e)=>handleEditDeadline(e)}>
-                                                    <Form.Control type='date' name='deadline' /> 
+                                                <Form onSubmit={(e) => handleEditDeadline(e)}>
+                                                    <Form.Control type='date' name='deadline' />
                                                     <Button type='submit' className='m-1 btn-sm p-1'>Save</Button>
-                                                </Form.Group>
+                                                </Form>
                                             </Dropdown.Header>
                                         </Dropdown.Menu>
                                     </Dropdown>
@@ -166,8 +169,8 @@ function GroupTaskDetail() {
 
                                         <Dropdown.Menu >
                                             <Dropdown.Header>Columns list</Dropdown.Header>
-                                            {group?.classifications.map((column,index)=>{
-                                                return <Dropdown.Item className={selectedTask?.status == column ?"fw-bolder text-success":""} key={index} onClick={()=>handleTaskStatus(column)}>{column?.toUpperCase()}</Dropdown.Item>
+                                            {group?.classifications.map((column, index) => {
+                                                return <Dropdown.Item className={selectedTask?.status == column ? "fw-bolder text-success" : ""} key={index} onClick={() => handleTaskStatus(column)}>{column?.toUpperCase()}</Dropdown.Item>
                                             })}
                                         </Dropdown.Menu>
                                     </Dropdown>
@@ -176,21 +179,21 @@ function GroupTaskDetail() {
                             </Row>
                             <Row className='mb-3'>
                                 <h5 className='mb-3 col-md-12'><IoMdMenu /> Description</h5>
-                                <textarea  name='description' rows={4} cols={100}
-                                 placeholder='...Add a description' className='ms-4 border border-secondary-subtle col-md-12' required 
-                                 onFocus={()=>{setShowDescription(true)}}
-                                 onChange={(e)=>setNewDescription(e.target.value)}
-                                 value={newDescription!=""?newDescription:selectedTask?.description}
-                                 >
-                                    
-                                    </textarea>
+                                <textarea name='description' rows={4} cols={100}
+                                    placeholder='...Add a description' className='ms-4 border border-secondary-subtle col-md-12' required
+                                    onFocus={() => { setShowDescription(true) }}
+                                    onChange={(e) => setNewDescription(e.target.value)}
+                                    value={newDescription || selectedTask?.description}
+                                >
 
-                                
-                                {showDescription==true && <Row className='d-flex justify-content-between'>
+                                </textarea>
+
+
+                                {showDescription == true && <Row className='d-flex justify-content-between'>
                                     <Col md={8}></Col>
                                     <Col md={4}>
-                                        <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={()=>{setNewDescription("");setShowDescription(false)}}>Cancel</Button>
-                                        <Button className='col-md-5 m-1 p-1 ' onClick={(e)=>{
+                                        <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={() => { setNewDescription(""); setShowDescription(false) }}>Cancel</Button>
+                                        <Button className='col-md-5 m-1 p-1 ' onClick={(e) => {
                                             e.preventDefault();
                                             handleAddDescription();
                                             setShowDescription(false)
@@ -213,21 +216,21 @@ function GroupTaskDetail() {
                             <Row className='mb-3'>
                                 <h5 className='mb-3'><FaList /> Comments</h5>
                                 <textarea name='comments' rows={4} cols={100}
-                                 placeholder='...Add a comment' className='ms-4 border border-secondary-subtle'
-                                 onFocus={()=>{setShowComment(true)}}
-                                 onChange={(e)=>setNewComment(e.target.value)}
-                                
-                                 value={newComment}
-                                 
-                                 required>
-                                    
-                                    </textarea>
+                                    placeholder='...Add a comment' className='ms-4 border border-secondary-subtle'
+                                    onFocus={() => { setShowComment(true) }}
+                                    onChange={(e) => setNewComment(e.target.value)}
 
-                             
-                                {showComment== true &&<Row className='d-flex justify-content-between'>
+                                    value={newComment}
+
+                                    required>
+
+                                </textarea>
+
+
+                                {showComment == true && <Row className='d-flex justify-content-between'>
                                     <Col md={8}></Col>
                                     <Col md={4}>
-                                        <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={()=>{setNewComment("");setShowComment(false)}}>Cancel</Button>
+                                        <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={() => { setNewComment(""); setShowComment(false) }}>Cancel</Button>
                                         <Button className='col-md-5 m-1 p-1 ' >Save</Button>
                                     </Col>
                                 </Row>}
@@ -241,11 +244,11 @@ function GroupTaskDetail() {
                                     </Dropdown.Toggle>
 
                                     <Dropdown.Menu >
-                                        <Dropdown.ItemText><input type='text' /></Dropdown.ItemText >
+                                        <Dropdown.ItemText><input type='text' onChange={(e)=>setSearchMember(e.target.value)}/></Dropdown.ItemText >
                                         <Dropdown.Header>Assignee</Dropdown.Header>
-                                        <Dropdown.ItemText >{selectedTask?.assignee != null ? groupMembers?.find((m) => m.id == selectedTask.assignee).name : "Unassigned"}</Dropdown.ItemText>
+                                        <Dropdown.ItemText className='fw-bolder' >{selectedTask?.assignee != null ? groupMembers?.find((m) => m.id == selectedTask.assignee).name : "Unassigned"}</Dropdown.ItemText>
                                         <Dropdown.Header>Members list</Dropdown.Header>
-                                        {groupMembers?.map((member) => {
+                                        {filterMembers?.map((member) => {
                                             return <Dropdown.Item key={member.id} onClick={() => handleAssignTask(member.id)}>{member.name}</Dropdown.Item>
                                         })}
 

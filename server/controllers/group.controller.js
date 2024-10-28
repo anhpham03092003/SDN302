@@ -470,7 +470,7 @@ async function editSubTask(req, res, next) {
                 arrayFilters: [{ "subtask._id": subTaskId }],
                 runValidators: true
             })
-            .then((rs) => res.status(200).json("Edit subtask successfully"));
+            .then((rs) => res.status(200).json(updateSubTask));
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 

@@ -37,7 +37,7 @@ function GroupColumn({ column }) {
         <Container fluid className='py-1'>
             <Row className='my-2 d-flex justify-content-between '>
                 <Col md={10} className='text-start'>
-                    {editColumn == false ? <p className='m-0 p-1 rounded-1 background-hover fw-bold' onClick={() => setEditColumn(true)}>{column}</p> :
+                    {editColumn == false ? <p className='m-0 p-1 rounded-1 background-hover fw-bold' onClick={() => setEditColumn(true)}>{column.toUpperCase()}</p> :
                         <Row className='d-flex justify-content-between'>
                             <Col md={8}><input type="text" name='columnName' className='w-100 m-0' required /></Col>
                             <Col md={2} className='background-hover bg-white border border-1 border-black' onClick={() => { setEditColumn(false) }}><IoCheckmark /></Col>
