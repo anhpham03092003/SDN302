@@ -2,25 +2,29 @@ import React, { useContext } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { AppContext, GroupContext } from '../Context/AppContext'; 
+import axios from 'axios';
+import { AppContext } from '../Context/AppContext';
+
 
 function CreateGroup() {
-    const { createGroup } = useContext(AppContext); 
-
     const SignupSchema = Yup.object().shape({
         groupName: Yup.string().required('Required'),
         groupCode: Yup.string().required('Required'),
-        groupPassword: Yup.string().required('Required'),
+
     });
 
+    const {groups_API} = useContext(AppContext);
     const handleSubmit = async (values) => {
         try {
-            const response = await createGroup(values);
-            console.log("Group created successfully:", response);
-           
+            const response = await axios.post(`${groups_API}/create`, values, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                }
+            });
+            console.log("Group created successfully:", response.data);
+     
         } catch (error) {
             console.error("Error creating group:", error);
-            
         }
     };
 
@@ -32,10 +36,9 @@ function CreateGroup() {
                         initialValues={{
                             groupName: '',
                             groupCode: '',
-                            groupPassword: ''
                         }}
                         validationSchema={SignupSchema}
-                        onSubmit={handleSubmit} 
+                        onSubmit={handleSubmit}
                     >
                         <Form className="col-md-10 align-self-center">
                             <h3 className='text-center'>CREATE GROUP</h3>
@@ -59,5 +62,6 @@ function CreateGroup() {
         </Container>
     );
 }
+
 
 export default CreateGroup;

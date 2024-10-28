@@ -10,14 +10,28 @@ import axios from 'axios';
 
 function GroupWorkSpace() {
   const {groupId}=  useParams();
-  const {groups_API,group,setGroup,accessToken} = useContext(AppContext);
+  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole} = useContext(AppContext);
   
   useEffect(()=>{
     axios.get(`${groups_API}/${groupId}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
     .then((res)=>{setGroup(res.data)})
     .catch((err) => console.error(err));
   },[])
-  console.log(group);
+
+  useEffect(()=>{
+    axios.get(`${groups_API}/user/${groupId}/get-user-role`,{headers:{ Authorization: `Bearer ${accessToken}`}})
+    .then((res)=>{setCurrentUserRole(res.data)})
+},[]);
+
+  useEffect(() => {
+    axios.get(`${groups_API}/${groupId}/get-member`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+    .then((res) => { 
+      setGroupMembers(res.data.memberInfo);  // Assuming `memberInfo` contains an array of members
+    })
+    .catch((err) => console.error(err));
+  }, []);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false); // State to control modal visibility
 
   const handleShow = () => setShowAddMemberModal(true);

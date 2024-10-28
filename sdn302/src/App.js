@@ -1,5 +1,5 @@
-import React, { useEffect, useContext } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Group from './Pages/Group';
@@ -24,14 +24,18 @@ import ProfilePage from './Pages/ProfilePage';
 import ProfileInfo from './Components/Profile/ProfileInfo';
 import EditProfile from './Components/Profile/EditProfile';
 import ChangePassword from './Components/Profile/ChangePassword';
+import GroupSetting from './Components/Group_Components/GroupSetting';
+import NotAuthorized from './Pages/NotAuthorized';
 
 import './App.css';
 import AppProvider, { AppContext } from './Context/AppContext'; // Import AppContext
 
 import AdminDashboard from './Pages/AdminDashboard';
 
+
 function App() {
   const { checkTokenExpiration } = useContext(AppContext); // Lấy hàm checkTokenExpiration từ context
+  const { accessToken } = useContext(AppContext)
 
   useEffect(() => {
     checkTokenExpiration();
@@ -57,21 +61,11 @@ function App() {
         </Route>
         <Route path="resetPassword/:id/:token" element={<Reset />} />
 
+
         <Route path="/profile" element={<ProfilePage />}>
           <Route path="profileInfo" element={<ProfileInfo />} />
           <Route path="editProfile" element={<EditProfile />} />
           <Route path="changePassword" element={<ChangePassword />} />
-        </Route>
-
-        <Route path="/groups">
-          <Route index element={<GroupListPage />} />
-          <Route path="create" element={<CreateGroup />} />
-          <Route path=":groupId" element={<GroupWorkSpace />}>
-            <Route index element={<GroupSpace />} />
-            <Route path="membership" element={<BuyMembership />} />
-            <Route path="memberList" element={<MemberList />} />
-            <Route path="membership/checkOut" element={<Payment />} />
-          </Route>
         </Route>
 
         <Route path="/admin" element={<Admin />}>
@@ -79,21 +73,50 @@ function App() {
           <Route path="userManagement" element={<UserManagementPage />} />
         </Route>
 
-        <Route path="/individualSpace" element={<IndividualSpacePage />}></Route>
+        <Route path="/individualSpace" element={<IndividualSpacePage />}>
+        </Route>
+
+        <Route path="/not-authorized" element={<NotAuthorized />} />
+
+
+        {accessToken && <Route path="/groups"  >
+          <Route index element={<GroupListPage />} />
+          <Route path="create" element={<CreateGroup />} />
+
+          <Route path=":groupId" element={<GroupWorkSpace />} >
+            <Route index element={<GroupSpace />} />
+            <Route path="membership" element={<BuyMembership />} />
+            <Route path="memberList" element={<MemberList />} />
+            <Route path="membership/checkOut" element={<Payment />} />
+            <Route path="groupSetting" element={<GroupSetting />} />
+          </Route>
+        </Route>}
+
+        <Route path="/admin" element={<Admin />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="userManagement" element={<UserManagementPage />} />
+        </Route>
+
+        <Route path="/individualSpace" element={<IndividualSpacePage />}>
+        </Route>
+
+        <Route path="/not-authorized" element={<NotAuthorized />} />
+
       </Routes>
-    </div>
+    </div >
+
   );
 }
 
-// Bọc App trong BrowserRouter và AppProvider
-function indexApp() {
-  return (
-    <BrowserRouter>
-      <AppProvider>
-        <App />
-      </AppProvider>
-    </BrowserRouter>
-  );
-}
+// // Bọc App trong BrowserRouter và AppProvider
+// function indexApp() {
+//   return (
+//     <BrowserRouter>
+//       <AppProvider>
+//         <App />
+//       </AppProvider>
+//     </BrowserRouter>
+//   );
+// }
 
-export default indexApp;
+export default App;

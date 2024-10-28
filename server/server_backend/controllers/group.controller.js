@@ -5,6 +5,7 @@ const createHttpErrors = require("http-errors");
 
 
 
+
 // Create new group
 
 async  function createGroup(req, res, next) {
@@ -45,15 +46,15 @@ async function getAllGroup(req, res, next) {
         if (!groups) {
             throw createHttpErrors(404, "Group not found")
         }
-        const newGroups = groups.map(group => {
-            return {
-            _id: group._id,
-            groupName : group.groupName,
+        // const newGroups = groups.map(group => {
+        //     return {
+        //     _id: group._id,
+        //     groupName : group.groupName,
          
-            }
-        })
+        //     }
+        // })
     
-        res.status(200).json(newGroups)
+        res.status(200).json(groups)
 
     } catch (error) {
         next(error)
@@ -69,6 +70,7 @@ async function getGroupDetail(req, res, next) {
         if (!group) {
             throw createHttpErrors(404, "Group not found")
         }
+    
         res.status(200).json(group)
 
     }catch(error){
@@ -78,12 +80,12 @@ async function getGroupDetail(req, res, next) {
     }
 
 // edit group detail by group id
-
+// edit group detail by group id
 async function editGroupDetail(req, res, next) {
     try {
         const { groupId } = req.params;
         const { id } = req.payload;
-        const { groupName, groupCode, classifications, groupRole } = req.body;
+        const { groupName, groupCode, groupRole } = req.body;
 
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
@@ -97,7 +99,7 @@ async function editGroupDetail(req, res, next) {
 
         const updateGroup = {};
 
-        // Nếu thành viên là 'owner', cho phép chỉnh sửa tất cả các thuộc tính
+        // If the member is 'owner', allow editing of all attributes except classifications
         if (member.groupRole === 'owner') {
             if (groupName) updateGroup.groupName = groupName;
             
@@ -108,29 +110,22 @@ async function editGroupDetail(req, res, next) {
                     _id: { $ne: groupId } 
                 });
                 if (existingGroupByCode) {
-                    throw createHttpErrors(409, "Group code already exists");
+                    res.status(409).json({ error: "Group code already exists" });
+                    return;
                 }
                 updateGroup.groupCode = groupCode;
             }
-            if (classifications) updateGroup.classifications = classifications;
-
-
-    }
-        // Nếu thành viên là 'member', chỉ cho phép chỉnh sửa classifications
+        }
+        // If the member is 'member', restrict editing to only groupRole validation
         else if (member.groupRole === 'member') {
-            if (groupName && groupCode) {
-                throw createHttpErrors(403, "Only the group owner can edit both the group name and group code");
-            } else if (groupName) {
-                throw createHttpErrors(403, "Only the group owner can edit the group name");
-            } else if (groupCode) {
-                throw createHttpErrors(403, "Only the group owner can edit the group code");
+            if (groupName || groupCode) {
+                throw createHttpErrors(403, "Only the group owner can edit the group name and group code");
             }
-            if (classifications) updateGroup.classifications = classifications;
         }
 
         await db.Groups.updateOne({ _id: groupId }, { $set: updateGroup }, { runValidators: true });
-
         res.status(200).json("Update group successfully");
+
     } catch (error) {
         next(error);
     }
@@ -220,6 +215,148 @@ async function outGroup(req, res, next) {
     }
 }
 
+// get member of group
+
+async function getGroupMember(req, res, next) {
+    try {
+      const { groupId } = req.params;
+
+      const group = await db.Groups.findOne({ _id: groupId })
+        .populate({
+          path: 'members._id',  
+          model: 'user',  
+          select : 'username'               
+        });
+  
+      if (!group) {
+        throw createHttpErrors(404, "Group not found");
+      }
+      const memberInfo = group.members.map(member => ({
+        id: member._id ? member._id._id : null, 
+        name: member._id ? member._id.username : null, 
+        groupRole: member.groupRole                   
+    }));
+
+        res.status(200).json({memberInfo });
+    
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
+// Set role for member in group
+async function setGroupMemberRole(req, res, next) {
+    try {
+        const { groupId, memberId } = req.params; 
+        const { id } = req.payload;
+        const { groupRole } = req.body;
+
+        const group = await db.Groups.findOne({ _id: groupId }); 
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+        const owner = group.members.find(member => member._id.toString() === id && member.groupRole === 'owner'); 
+        if (!owner) {
+            throw createHttpErrors(403, "Only the group owner can edit member roles");
+        }
+        const member = group.members.find(member => member._id.toString() === memberId); 
+        if (!member) {
+            throw createHttpErrors(404, "Member not found");
+        }
+        if (memberId === owner._id.toString()) {
+            throw createHttpErrors(403, "You cannot change your own role");
+        }
+        const otherOwners = group.members.filter(member => member.groupRole === 'owner' && member._id.toString() !== memberId);
+        if (groupRole === 'owner' && otherOwners.length > 0) {
+            throw createHttpErrors(400, "Cannot assign owner role as there is already an owner");
+        }
+
+        // Cập nhật vai trò thành viên
+        await db.Groups.updateOne(
+            { _id: groupId, "members._id": memberId },
+            { $set: { "members.$.groupRole": groupRole } }
+        );
+        res.status(200).json({ message: "Member role updated successfully", memberId, newRole: groupRole });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// delete group member
+
+async function deleteGroupMember(req, res, next) {
+    try {
+        const { groupId, memberId } = req.params;
+        const { id } = req.payload;
+
+        // Find the group by its ID
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+
+        // Check if the requester is the owner of the group
+        const owner = group.members.find(member => member._id.toString() === id && member.groupRole === 'owner');
+        if (!owner) {
+            throw createHttpErrors(403, "Only the group owner can delete a member");
+        }
+
+        // Check if the member to be deleted exists
+        const memberToDelete = group.members.find(member => member._id.toString() === memberId);
+        if (!memberToDelete) {
+            throw createHttpErrors(404, "Member not found");
+        }
+
+        // Ensure the owner is not trying to delete themselves
+        if (memberId === id) {
+            throw createHttpErrors(403, "The owner cannot remove themselves from the group");
+        }
+
+        // Remove the member from the group
+        group.members = group.members.filter(member => member._id.toString() !== memberId);
+        await group.save();
+
+        // Optionally, remove the group from the user's list of groups
+        const user = await db.Users.findById(memberId);
+        if (user) {
+            user.groups = user.groups.filter(group => group.toString() !== groupId);
+            await user.save();
+        }
+
+        res.status(200).json({ message: "Member removed from the group successfully" });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// get user id 
+
+async function getUserRole(req, res, next) {
+    try {
+      const { groupId } = req.params; 
+      const { id } = req.payload;  
+  
+      const group = await db.Groups.findOne({ _id: groupId });
+  
+      if (!group) {
+        throw createHttpErrors(404, "Group not found");
+      }
+      const member = group.members.find(member => member._id.toString() === id);
+  
+      if (!member) {
+        throw createHttpErrors(404, "User not found in the specified group");
+      }
+      res.status(200).json({
+        id: member._id,
+        groupRole: member.groupRole,
+      });
+  
+    } catch (error) {
+      next(error); 
+    }
+  }
+
 
 async function getAllTask(req, res, next) {
     try {
@@ -254,8 +391,13 @@ async function createTask(req, res, next) {
             deadline: req.body.deadline,
             status: req.body.status,
         }
-        await db.Groups.updateOne({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true })
-        res.status(201).json("Create task successfully")
+        await db.Groups.findOneAndUpdate({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true})
+        const saveGroup = await db.Groups.findOne({ _id: groupId });
+
+        res.status(201).json(saveGroup.tasks[saveGroup.tasks.length-1])
+
+
+        
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -273,6 +415,9 @@ async function editTask(req, res, next) {
         if (!task) {
             throw createHttpErrors(404, "Task not found")
         }
+        if(!req.body){
+            throw createHttpErrors(400, "Input is reqiured")
+        }
         const updateTask = {
             taskName: req.body.taskName,
             description: req.body.description,
@@ -282,7 +427,6 @@ async function editTask(req, res, next) {
             status: req.body.status,
             updatedAt: new Date()
         }
-        console.log(updateTask);
         await db.Groups.updateOne(
             {
                 _id: groupId, "tasks._id": taskId
@@ -348,6 +492,9 @@ async function addSubTask(req, res, next) {
         if (!task) {
             throw createHttpErrors(404, "Task not found")
         }
+        if(!req.body.subTaskName){
+            throw createHttpErrors.BadRequest("Subtask name is required")
+        }
         const newSubTask = {
             subTaskName: req.body.subTaskName
         }
@@ -360,10 +507,15 @@ async function addSubTask(req, res, next) {
                 $push: { "tasks.$.subTasks": newSubTask }
             },
             {
-                runValidators: true
+                runValidators: true,
+                new:true
             }
         )
-            .then(rs => res.status(201).json("Create subtask successfully"))
+        
+        const saveGroup= await db.Groups.findOne({ _id: groupId })
+        const subTasks = saveGroup.tasks.find(t=>t._id==taskId).subTasks
+        res.status(201).json(subTasks[subTasks.length-1])
+        
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -432,7 +584,7 @@ async function editSubTask(req, res, next) {
                 arrayFilters: [{ "subtask._id": subTaskId }],
                 runValidators: true
             })
-            .then((rs) => res.status(200).json("Edit subtask successfully"));
+            .then((rs) => res.status(200).json(updateSubTask));
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -462,9 +614,10 @@ async function deleteSubTask(req, res, next) {
             , {
                 $pull: { "tasks.$.subTasks": { _id: subTaskId } }
             }
-        )
+        ).then((rs)=>res.status(200).json(subTaskId))
+        .catch((err)=>{console.log(err);})
 
-        res.status(200).json("Delete subtask successfully")
+        
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -485,7 +638,11 @@ const GroupController = {
     deleteGroup,
     joinGroupByCode,
     outGroup,
-    deleteSubTask
+    deleteSubTask,
+    getGroupMember,
+    setGroupMemberRole,
+    deleteGroupMember,
+    getUserRole
 }
 
 module.exports = GroupController;

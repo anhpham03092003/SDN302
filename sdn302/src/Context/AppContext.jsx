@@ -16,6 +16,10 @@ const AppProvider = ({ children }) => {
     const [group, setGroup] = useState()
     const [user, setUser] = useState()
     const navigate = useNavigate();
+    const [selectedTask, setSelectedTask] = useState();
+    const [show, setShow] = useState(false);
+    const [groupMembers, setGroupMembers] = useState([]);
+    const [currentUserRole, setCurrentUserRole] = useState(null);
 
 
 
@@ -23,7 +27,7 @@ const AppProvider = ({ children }) => {
     useEffect(() => {
         axios.get(`${groups_API}/get-group`, { headers: { Authorization: `Bearer ${accessToken}` } })
             .then((res) => { setGroups(res.data) })
-    }, [])
+    }, []);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -47,6 +51,7 @@ const AppProvider = ({ children }) => {
         setGroups([]);
     };
 
+
     //check token
     const checkTokenExpiration = () => {
         const token = localStorage.getItem('token');
@@ -61,22 +66,20 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    //fuction
+    const editTask = async (name, value, groupId) => {
+        const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/edit`, { [name]: value }, { headers: { Authorization: `Bearer ${accessToken}` } })
+        return response
+    }
+    const editSubTask = async (name, value, groupId, subTask) => {
+        const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/subTasks/${subTask._id}/edit`, { [name]: value }, { headers: { Authorization: `Bearer ${accessToken}` } })
+        return response
+    }
+
 
     // api groups
-    const createGroup_API = `http://localhost:9999/groups/create`;
 
-    const createGroup = async (group) => {
-        try {
-            const response = await axios.post(createGroup_API, group, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Thêm token vào header
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    };
+
 
 
 
@@ -84,11 +87,17 @@ const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             groups_API,
             accessToken,
+
             groups, setGroups,
             user, setUser,
             group, setGroup,
             authentication_API,
-            createGroup,
+            groupMembers, setGroupMembers,
+            show, setShow,
+            selectedTask, setSelectedTask,
+            currentUserRole, setCurrentUserRole,
+            editTask,
+            editSubTask,
             handleLogout,
             checkTokenExpiration
         }}>
@@ -96,5 +105,6 @@ const AppProvider = ({ children }) => {
         </AppContext.Provider>
     );
 };
+
 
 export default AppProvider;

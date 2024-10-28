@@ -28,7 +28,7 @@ function GroupSideBar() {
             <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}><FaGear/></Col>
                 <Col className='align-content-center text-start' md={10}>
-                    <p className='m-0'> Group Settings</p>
+                <p className='m-0'><Link to='groupSetting' className='text-decoration-none text-dark'>Group settings</Link>  </p>
                 </Col>
             </Row>
             <Row className='py-2 background-hover border-bottom border-3 border-white'>

@@ -6,7 +6,7 @@ const groupSchema = new mongoose.Schema({
         type: String,
         unique: [true,"Group name existed"],
         required: [true,"Group name is required"],
-        maxlength: 10 // Limit group name to 10 characters
+        maxlength: 15 // Limit group name to 10 characters
     },
     groupCode: {
         type: String,
@@ -29,14 +29,16 @@ const groupSchema = new mongoose.Schema({
         },
         assignee: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user'
+            ref: 'user',
+            default:null
         },
         reviewer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user'
         },
         deadline: {
-            type: Date // Use Date type for deadline
+            type: Date,
+            default:null
         },
         status: {
             type: String,
@@ -51,7 +53,7 @@ const groupSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         },
-        comments: [{ // Added comments to the task
+        comments: [{ 
             user: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'user',
@@ -60,11 +62,17 @@ const groupSchema = new mongoose.Schema({
             content: {
                 type: String,
                 required: true,
-                maxlength: 200 // Limit comment content to 200 characters
+                maxlength: 200 
             },
             status: {
                 type: String,
-                required: true
+                required: true,
+                validate: {
+                    validator: function(value) {
+                        return this.classifications.includes(value); 
+                    },
+                    message: props => `${props.value} is not a valid status!`
+                }
             },
             createdAt: {
                 type: Date,
@@ -83,7 +91,8 @@ const groupSchema = new mongoose.Schema({
             },
             assignee: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'user'
+                ref: 'user',
+                default:null
             },
             priority: {
                 type: String,
@@ -107,7 +116,10 @@ const groupSchema = new mongoose.Schema({
         }]
     }],
     members: [{
-        _id: mongoose.Schema.Types.ObjectId,
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:'user'
+        },
         groupRole: {
             type: String,
             enum: ['owner', 'member', 'viewer'],
@@ -117,8 +129,7 @@ const groupSchema = new mongoose.Schema({
     }],
     isPremium: {
         type: Boolean,
-        default: false,
-        required: [true,"Role is required"]
+        default: false, 
         
     },
     status: {

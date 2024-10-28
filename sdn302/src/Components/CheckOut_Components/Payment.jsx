@@ -2,11 +2,13 @@ import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import styles from '../../Styles/Checkout/Checkout.module.css';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 function Payment() {
+    const { groupId } = useParams();
     const handleZaloPayClick = async () => {
         try {
-            const response = await axios.post('http://localhost:8888/payment');
+            const response = await axios.post('http://localhost:8888/payment', { groupId: groupId });
             if (response.data.order_url) {
                 // Chuyển hướng đến trang thanh toán của ZaloPay
                 window.location.href = response.data.order_url;
@@ -16,6 +18,8 @@ function Payment() {
             alert('Giao dịch thất bại. Vui lòng thử lại!');
         }
     };
+
+    console.log(groupId);
 
     const handleOtherPaymentClick = () => {
         // Hiển thị thông báo "coming soon"

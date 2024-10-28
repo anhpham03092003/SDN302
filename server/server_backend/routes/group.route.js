@@ -44,6 +44,30 @@ groupRouter.delete("/:groupId/out",
     GroupController.outGroup
 )
 
+// get member of group
+groupRouter.get("/:groupId/get-member",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.getGroupMember  
+)
+
+// set group member role
+groupRouter.put("/:groupId/member/:memberId/set-role",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.setGroupMemberRole
+)
+
+// delete group member for owner
+groupRouter.delete("/:groupId/member/:memberId/delete",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.deleteGroupMember
+)
+
+// get user id
+groupRouter.get("/user/:groupId/get-user-role",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.getUserRole
+)
+
 // Tasks
 groupRouter.get(
     "/:groupId/tasks/get-all",

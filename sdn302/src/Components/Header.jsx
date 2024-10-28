@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Container, Nav, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaArrowRight, FaPen, FaPlus, FaUser } from "react-icons/fa";
+import { FaArrowRight, FaBell, FaPen, FaPlus, FaUser, } from "react-icons/fa";
 import { AppContext } from '../Context/AppContext';
 import styles from '../Styles/Header_css/Header.module.css';
 
@@ -37,8 +37,19 @@ function Header() {
                     </Nav.Item>
                 </Nav>
 
-                <Nav>
-                    {accessToken ? (
+
+
+                {accessToken ? (
+
+                    <Nav>
+                        <Nav.Item className='align-content-center'>
+                            <NavDropdown title={<FaBell className='text-dark m-0 item-hover' />} id="basic-nav-dropdown">
+                                <NavDropdown.Header href="/"><h5>Notifications</h5></NavDropdown.Header>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item href="/">Notification 1</NavDropdown.Item>
+                                <NavDropdown.Item href="/">Notification 2</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav.Item>
                         <Nav.Item className='p-2'>
                             <NavDropdown title={<span className={styles.username}>{user ? user.username : 'User'}</span>} id="basic-nav-dropdown">
                                 <NavDropdown.Item href="/profile/profileInfo"><FaUser /> User profile</NavDropdown.Item>
@@ -49,17 +60,19 @@ function Header() {
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav.Item>
-                    ) : (
-                        <>
-                            <Nav.Item className='p-2'>
-                                <Link to="/login/loginForm" className='text-dark text-decoration-none'>Login</Link>
-                            </Nav.Item>
-                            <Nav.Item className='p-2'>
-                                <Link to="/login/registerForm" className='text-dark text-decoration-none'>Register</Link>
-                            </Nav.Item>
-                        </>
-                    )}
-                </Nav>
+                    </Nav>
+                ) : (
+                    <Nav>
+
+                        <Nav.Item className='p-2'>
+                            <Link to="/login/loginForm" className='text-dark text-decoration-none'>Login</Link>
+                        </Nav.Item>
+                        <Nav.Item className='p-2'>
+                            <Link to="/login/registerForm" className='text-dark text-decoration-none'>Register</Link>
+                        </Nav.Item>
+                    </Nav>
+                )}
+
             </div>
         </Container>
     );

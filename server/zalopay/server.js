@@ -31,9 +31,10 @@ app.get('/', (req, res) => {
  * description: tạo đơn hàng, thanh toán
  */
 app.post('/payment', async (req, res) => {
+    const { groupId } = req.body; // Lấy groupId từ request body
     const amount = 5075140; // Số tiền cố định
     const embed_data = {
-        redirecturl: 'http://localhost:3000/groups/671e36e30f93d8b077a7957a', // Chuyển hướng về trang Checkout
+        redirecturl: `http://localhost:3000/groups/${groupId}`, // Chuyển hướng về trang nhóm cụ thể
     };
 
     const items = [];
@@ -52,16 +53,11 @@ app.post('/payment', async (req, res) => {
         bank_code: '',
     };
 
-    // appid|app_trans_id|appuser|amount|apptime|embeddata|item
     const data = `${config.app_id}|${order.app_trans_id}|${order.app_user}|${order.amount}|${order.app_time}|${order.embed_data}|${order.item}`;
     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
-    console.log('Order:', order);
-    console.log('MAC:', order.mac);
-
     try {
         const result = await axios.post(config.endpoint, null, { params: order });
-        console.log('Result:', result.data);
         return res.status(200).json(result.data);
     } catch (error) {
         console.log('Payment request error:', error.response ? error.response.data : error.message);
