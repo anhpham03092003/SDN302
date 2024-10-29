@@ -16,14 +16,14 @@ const updateProfile = async (req, res, next) => {
     const userId = req.payload.id;
     try {
         const newProfile = {
-            avatar: req.body.avatar,
+            username: req.body.username,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber
         }
         const user = await db.Users.findByIdAndUpdate(userId, {
             $set: {
                 'profile.phoneNumber': newProfile.phoneNumber,
-                'profile.avatar': newProfile.avatar,
+                'username': newProfile.username,
                 'account.email': newProfile.email
             }
         },
