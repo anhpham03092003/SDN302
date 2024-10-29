@@ -1,14 +1,13 @@
 import React, { useContext } from 'react';
-import { Container, Nav, NavDropdown } from 'react-bootstrap';
+import { Container, Nav, NavDropdown, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaArrowRight, FaBell, FaPen, FaPlus, FaUser, } from "react-icons/fa";
+import { FaArrowRight, FaBell, FaPen, FaPlus, FaUser } from "react-icons/fa";
 import { AppContext } from '../Context/AppContext';
 import styles from '../Styles/Header_css/Header.module.css';
 
 function Header() {
     const { user, accessToken, handleLogout } = useContext(AppContext);
     const navigate = useNavigate();
-
     const handleLogoutClick = () => {
         handleLogout(); // Gọi hàm logout từ AppContext
         navigate('/'); // Điều hướng đến trang chủ
@@ -36,12 +35,19 @@ function Header() {
                         <Link to="/groups/create" className='btn btn-primary btn-sm rounded-0'><FaPlus /> Create</Link>
                     </Nav.Item>
                 </Nav>
-
-
-
                 {accessToken ? (
-
-                    <Nav>
+                    <Nav className='d-flex align-items-center'>
+                        {user && user.role === 'admin' && (
+                            <Nav.Item className='mx-2'>
+                                <Button
+                                    variant="success"
+                                    onClick={() => navigate('/admin/userManagement')}
+                                    className="btn-md"
+                                >
+                                    For Admin
+                                </Button>
+                            </Nav.Item>
+                        )}
                         <Nav.Item className='align-content-center'>
                             <NavDropdown title={<FaBell className='text-dark m-0 item-hover' />} id="basic-nav-dropdown">
                                 <NavDropdown.Header href="/"><h5>Notifications</h5></NavDropdown.Header>
@@ -63,7 +69,6 @@ function Header() {
                     </Nav>
                 ) : (
                     <Nav>
-
                         <Nav.Item className='p-2'>
                             <Link to="/login/loginForm" className='text-dark text-decoration-none'>Login</Link>
                         </Nav.Item>
@@ -72,7 +77,6 @@ function Header() {
                         </Nav.Item>
                     </Nav>
                 )}
-
             </div>
         </Container>
     );
