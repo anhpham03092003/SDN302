@@ -323,21 +323,46 @@ const getAllUser = async (req, res, next) => {
 };
 
 //test
-
 const banUser = async (req, res, next) => {
+    const userId = req.params.id;
+    console.log("Attempting to ban user with ID:", userId);  // Log userId
+
+    // Log the userId for verification
+    console.log("Attempting to ban user with ID:", userId);
+
+    // Validate userId as a MongoDB ObjectID
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        console.error("Invalid User ID format:", userId);
+        return res.status(400).json({ error: { status: 400, message: "Invalid User ID format" } });
+    }
+
     try {
-        const { id } = req.body;
-        console.log(id);
-        await db.Users.updateOne({ _id: id }, { status: 'banned' })
-            .then((rs) => res.status(200).json(rs))
-            .catch((err) => console.log(err))
+        const result = await db.Users.updateOne({ _id: userId }, { status: 'banned' });
+        
+        // Log the result of the update operation
+        console.log("Update operation result:", result);
 
+        if (result.matchedCount === 0) {
+            console.error("User not found with ID:", userId);
+            return res.status(404).json({ error: { status: 404, message: "User not found" } });
+        }
+        if (result.modifiedCount === 0) {
+            console.warn("User is already banned:", userId);
+            return res.status(400).json({ error: { status: 400, message: "User is already banned" } });
+        }
+        
+        res.status(200).json({ message: "User banned successfully", result });
     } catch (error) {
+        console.error("Error banning user:", error);
         next(error);
-
     }
 };
 
+// const banUser = async (req, res, next) => {
+//     const userId = req.params.id;
+//     console.log("Attempting to ban user with ID:", userId);  // Log userId
+//     res.status(200).json({ message: `User with ID ${userId} would be banned (test response)` });
+// };
 
 
 const countUserStatus = async (req, res, next) => {
