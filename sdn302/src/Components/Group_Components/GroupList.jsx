@@ -8,9 +8,10 @@ import { AppContext } from "../../Context/AppContext";
 import axios from 'axios';
 
 function GroupList() {
-  const { groups, setGroups, accessToken, groups_API } = useContext(AppContext);
+  const { groups , setGroups, accessToken, groups_API } = useContext(AppContext);
   const [groupCode, setGroupCode] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
@@ -21,25 +22,34 @@ function GroupList() {
         { groupCode },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
+
+      // Khi tham gia thành công, cập nhật nhóm và chuyển hướng
       const joinedGroup = response.data.group;
       setGroups((prevGroups) => [...prevGroups, joinedGroup]);
-      setMessage("Joined the group successfully!");
+      setSuccess("Tham gia nhóm thành công!");
+      setError(''); // Xóa lỗi nếu có
 
-      // Navigate directly to the group page using the group's ID
-      navigate(`/groups/${joinedGroup?._id}`); 
+      if (joinedGroup?._id) {
+        navigate(`/groups/${joinedGroup._id}`);
+      }
       setShowModal(false);
     } catch (error) {
-      // Check if the error message is related to group not found
+      // Xử lý lỗi và hiển thị thông báo tương ứng
       if (error.response?.status === 404) {
-        setMessage("Group not found. Please check the group code.");
+        setError("Không tìm thấy nhóm. Vui lòng kiểm tra mã nhóm.");
+      } else if (error.response?.status === 400) {
+        setError("Bạn đã là thành viên của nhóm này.");
       } else {
-        setMessage(error.response?.data?.message || "Failed to join the group. Please try again.");
+        setError(error.response?.data?.message || "Không thể tham gia nhóm. Vui lòng thử lại.");
       }
+      setSuccess(''); // Xóa thông báo thành công nếu có
     }
   };
 
   const handleJoinSubmit = (e) => {
     e.preventDefault();
+    setError(''); // Đặt lại lỗi
+    setSuccess(''); // Đặt lại thông báo thành công
     joinGroupByCode();
   };
 
@@ -47,30 +57,34 @@ function GroupList() {
     <Container>
       <h4 className={styles.container}><MdTimelapse /> Recent Groups</h4>
       <Row>
-        {groups?.slice(0, 4).map((group) => (
-          <Col md={3} className="mb-3" key={group._id}>
-            <Link to={`/groups/${group._id}`} className={styles.card}>
-              <Card className="text-center" style={{ position: 'relative' }}>
-                <Card.Img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group.groupName} className={styles.cardImage} />
-                <div className={styles.cardTitle}>{group.groupName}</div>
-              </Card>
-            </Link>
-          </Col>
-        ))}
+        {groups.slice(0, 4).map((group) => 
+          group ? (
+            <Col md={3} className="mb-3" key={group._id}>
+              <Link to={`/groups/${group._id}`} className={styles.card}>
+                <Card className="text-center" style={{ position: 'relative' }}>
+                  <Card.Img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group.groupName} className={styles.cardImage} />
+                  <div className={styles.cardTitle}>{group.groupName}</div>
+                </Card>
+              </Link>
+            </Col>
+          ) : null
+        )}
       </Row>
       
       <Button className={styles.buttonJoin} variant="primary" onClick={() => setShowModal(true)}>Join Group</Button>
       <h4 className={styles.container}><FaRegListAlt /> All Groups</h4>
       <div className={styles.allGroupsContainer}>
         <Row className="ms-2">
-          {groups?.map((group) => (
-            <Col md={5} className="mb-2" key={group._id}>
-              <Link to={`/groups/${group._id}`} className={styles.allGroupItem}>
-                <img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group.groupName} className={styles.allGroupImage} />
-                <span className={styles.allGroupTitle}>{group.groupName}</span>
-              </Link>
-            </Col>
-          ))}
+          {groups.map((group) => 
+            group ? (
+              <Col md={5} className="mb-2" key={group._id}>
+                <Link to={`/groups/${group._id}`} className={styles.allGroupItem}>
+                  <img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group.groupName} className={styles.allGroupImage} />
+                  <span className={styles.allGroupTitle}>{group.groupName}</span>
+                </Link>
+              </Col>
+            ) : null
+          )}
         </Row>
       </div>
 
@@ -91,7 +105,9 @@ function GroupList() {
                 required
               />
             </Form.Group>
-            {message && <p className={styles.message}>{message}</p>}
+            {/* Hiển thị thông báo lỗi hoặc thành công */}
+            {error && <p className={styles.error}>{error}</p>}
+            {success && <p className={styles.success}>{success}</p>}
           </Form>
         </Modal.Body>
         <Modal.Footer>

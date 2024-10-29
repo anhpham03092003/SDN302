@@ -27,7 +27,7 @@ const AppProvider = ({ children }) => {
     useEffect(() => {
         axios.get(`${groups_API}/get-group`, { headers: { Authorization: `Bearer ${accessToken}` } })
             .then((res) => { setGroups(res.data) })
-    }, []);
+    }, [accessToken]);
 
     useEffect(() => {
         const fetchUser = async () => {

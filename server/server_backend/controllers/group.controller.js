@@ -124,7 +124,9 @@ async function editGroupDetail(req, res, next) {
         }
 
         await db.Groups.updateOne({ _id: groupId }, { $set: updateGroup }, { runValidators: true });
-        res.status(200).json("Update group successfully");
+        const saveGroup = await db.Groups.findOne({ _id: groupId });
+
+        res.status(200).json(saveGroup);
 
     } catch (error) {
         next(error);
