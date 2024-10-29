@@ -264,7 +264,7 @@ function GroupTaskDetail() {
                                     <Dropdown.Menu >
                                         <Dropdown.ItemText   >
                                             <Form onSubmit={(e) => handleAddSubTask(e)}>
-                                                <Form.Control type='text' name='subTaskName' />
+                                                <Form.Control type='text' name='subTaskName' required/>
                                                 <Button type='submit' className='w-100'  >Add</Button>
                                             </Form>
                                         </Dropdown.ItemText >
