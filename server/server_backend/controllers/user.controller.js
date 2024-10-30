@@ -364,22 +364,13 @@ const banUser = async (req, res, next) => {
 //     res.status(200).json({ message: `User with ID ${userId} would be banned (test response)` });
 // };
 
-
-const countUserStatus = async (req, res, next) => {
+const countNormalUsers = async (req, res, next) => {
     try {
-        const users = await db.Users.find(); // Fetch all users
-
-        // Count user status
-        const statusCount = users.reduce((acc, user) => {
-            acc[user.status] = (acc[user.status] || 0) + 1;
-            return acc;
-        }, {});
-
-        // Respond with the counts
-        res.status(200).json({ statusCount });
+        const count = await db.Users.countDocuments({ role: 'user' });
+        res.status(200).json({ count });
     } catch (error) {
-        console.error("Error counting user statuses:", error);
-        res.status(500).json({ error: { status: 500, message: "Failed to count user statuses" } });
+        console.error("Error counting users with role 'user':", error);
+        // next(error);
     }
 };
 
@@ -388,6 +379,7 @@ module.exports = {
     getProfile, updateProfile, changePassword,
     getClassification, addClassification, editClassification,
     getTask, addTask, updateTask, deleteTask,
-    getSubTask, addSubTask, updateSubTask, deleteSubTask, getAllUser, banUser, countUserStatus
+    getSubTask, addSubTask, updateSubTask, deleteSubTask, getAllUser, banUser,
+    countNormalUsers
 };
 
