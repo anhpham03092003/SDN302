@@ -204,7 +204,7 @@ function UserManagement() {
         const fetchUsers = async () => {
             if (!user) {
                 setIsLoading(true);
-                return;  
+                return;
             }
 
             if (user.role !== 'admin') {
@@ -222,7 +222,7 @@ function UserManagement() {
             } catch (error) {
                 console.error('Failed to fetch users', error);
             } finally {
-                setIsLoading(false);  
+                setIsLoading(false);
             }
         };
 

@@ -42,7 +42,7 @@ function App() {
 
     const interval = setInterval(() => {
       checkTokenExpiration();
-    }, 60000); // 60000
+    }, 60000); // check mỗi 1p
 
     return () => clearInterval(interval);
   }, [checkTokenExpiration]);
