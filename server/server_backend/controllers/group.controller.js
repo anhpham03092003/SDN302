@@ -1,5 +1,6 @@
 const db = require('../models');
 const bcrypt = require("bcrypt")
+const morgan = require("morgan")
 const createHttpErrors = require("http-errors");
 
 
@@ -365,7 +366,7 @@ async function getAllTask(req, res, next) {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            throw createHttpErrors[404]("Group not found")
         }
         const { tasks } = group;
         res.status(200).json(tasks)
@@ -391,7 +392,7 @@ async function createTask(req, res, next) {
             description: req.body.description,
             reviewer: id,
             deadline: req.body.deadline,
-            status: req.body.status,
+            status: req.body.status.toLowerCase(),
         }
         await db.Groups.findOneAndUpdate({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true})
         const saveGroup = await db.Groups.findOne({ _id: groupId });
@@ -421,12 +422,12 @@ async function editTask(req, res, next) {
             throw createHttpErrors(400, "Input is reqiured")
         }
         const updateTask = {
-            taskName: req.body.taskName,
-            description: req.body.description,
-            assignee: req.body.assignee,
-            reviewer: req.body.reviewer,
-            deadline: req.body.deadline,
-            status: req.body.status,
+            taskName: req.body.taskName? req.body.taskName:task.taskName,
+            description: req.body.description? req.body.description:task.description,        
+            reviewer: req.body.reviewer? req.body.reviewer:task.reviewer,
+            assignee: req.body.assignee? req.body.assignee:task.assignee,
+            deadline: req.body.deadline? req.body.deadline:task.deadline,
+            status: req.body.status?.toLowerCase(),
             updatedAt: new Date()
         }
         await db.Groups.updateOne(
@@ -625,6 +626,124 @@ async function deleteSubTask(req, res, next) {
         // new khong co next : throw httpError.400 
     }
 }
+
+// CRUD column 
+async function createColumn(req, res, next) {
+    try {
+        const { groupId} = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const newColumn = req.body.newColumn.toLowerCase();
+        if(newColumn == ""){
+            throw createHttpErrors(400, "Input please");
+        }
+        if (group.classifications.includes(newColumn)) {
+            throw createHttpErrors(400, "Column already exists");
+        }
+
+        const updatedGroup = await db.Groups.findByIdAndUpdate(
+            {_id:groupId}, 
+            {$addToSet: {classifications: newColumn} },
+            {
+                runValidators:true,
+                new:true
+            }
+        );
+
+        res.status(201).json(updatedGroup);
+        
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
+
+async function editColumn(req, res, next) {
+    try {
+        const { groupId} = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const newColumn = req.body.newColumn?.toLowerCase();
+        const selectedColumn = req.body.selectedColumn?.toLowerCase();
+        if(newColumn == ""||selectedColumn == ""){
+            throw createHttpErrors(400, "Input please");
+        }
+        if (!group.classifications.includes(selectedColumn)) {
+            throw createHttpErrors(400, "The selected column does not exist");
+        }
+        if (group.classifications.includes(newColumn)) {
+            throw createHttpErrors(400, "The new column already existed");
+        }
+        const updatedClassifications = group.classifications.map((column)=> column == selectedColumn ? newColumn : column);
+
+        const updatedGroup = await db.Groups.findByIdAndUpdate(
+            {_id:groupId}, 
+            { classifications: updatedClassifications },
+            {
+                runValidators:true,
+                new:true
+            }
+        );
+
+        res.status(201).json(updatedGroup);
+        
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
+
+async function deleteColumn(req, res, next) {
+    try {
+        const { groupId} = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const selectedColumn = req.body.selectedColumn.toLowerCase();
+        const alternativeColumn = req.body.alternativeColumn.toLowerCase();
+        if(alternativeColumn == ""||selectedColumn == ""){
+            throw createHttpErrors(400, "Input please");
+        }
+        if (!group.classifications.includes(selectedColumn)) {
+            throw createHttpErrors(400, "The selected column does not exist");
+        }
+        if (!group.classifications.includes(alternativeColumn)) {
+            throw createHttpErrors(400, "The alternative column does not exist");
+        }
+        const {tasks} = group;
+
+        const updatedTasks = tasks.map((task) => {
+            return {
+                ...task,
+                status: task.status.toLowerCase() == selectedColumn ? alternativeColumn : task.status.toLowerCase()
+            }
+        });
+        
+        // const updatedGroup = await db.Groups.findByIdAndUpdate(
+        //     {_id:groupId}, 
+        //     { 
+        //         $set:{tasks:[...updatedTasks]},
+        //         $pull:{classifications: selectedColumn} },
+        //     {
+        //         runValidators:true,
+        //         new:true
+        //     }
+        // );
+
+        res.status(201).json(updatedTasks);
+        
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
+
+
 const GroupController = {
     getAllTask,
     createTask,
@@ -644,7 +763,10 @@ const GroupController = {
     getGroupMember,
     setGroupMemberRole,
     deleteGroupMember,
-    getUserRole
+    getUserRole,
+    createColumn,
+    editColumn,
+    deleteColumn
 }
 
 module.exports = GroupController;

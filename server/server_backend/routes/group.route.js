@@ -3,7 +3,7 @@ const groupRouter = express.Router();
 const bodyParser = require("body-parser");
 const db = require("../models/index");
 const { GroupController } = require("../controllers");
-const { AuthMiddleware } = require("../middlewares");
+const { AuthMiddleware, GroupMiddleware } = require("../middlewares");
 
 groupRouter.use(bodyParser.json());
 
@@ -19,16 +19,17 @@ groupRouter.get("/get-group",
 )
 
 groupRouter.get("/:groupId/get-group",
+    AuthMiddleware.verifyAccessToken,
     GroupController.getGroupDetail
 )
 
 groupRouter.put("/:groupId/edit",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
     GroupController.editGroupDetail
 )
 
 groupRouter.delete("/:groupId/delete",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isOwner],
     GroupController.deleteGroup
 )
 
@@ -68,51 +69,70 @@ groupRouter.get("/user/:groupId/get-user-role",
     GroupController.getUserRole
 )
 
+//CRUD Column
+groupRouter.post("/:groupId/create-column",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    GroupController.createColumn
+)
+
+groupRouter.put("/:groupId/edit-column",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    GroupController.editColumn
+)
+
+groupRouter.delete("/:groupId/delete-column",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    GroupController.deleteColumn
+)
+
+
+
 // Tasks
 groupRouter.get(
     "/:groupId/tasks/get-all",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
     GroupController.getAllTask
 )
 
 groupRouter.post(
     "/:groupId/tasks/create",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
     GroupController.createTask
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/edit",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
     GroupController.editTask
 )
 groupRouter.delete(
     "/:groupId/tasks/:taskId/delete",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
     GroupController.deleteTask
 )
 
 //Subtask
 groupRouter.get(
     "/:groupId/tasks/:taskId/subTasks/get-all",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
     GroupController.getAllSubTask
 )
 groupRouter.post(
     "/:groupId/tasks/:taskId/subTasks/create",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
     GroupController.addSubTask
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/edit",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
     GroupController.editSubTask
 )
 
 groupRouter.delete(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/delete",
-    AuthMiddleware.verifyAccessToken,
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
     GroupController.deleteSubTask
 )
+
 
 
 module.exports = groupRouter

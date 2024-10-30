@@ -15,13 +15,17 @@ function GroupColumn({ column }) {
         return t.status == column
     });
     const [newTask, setNewTask] = useState("");
+    const [newColumn, setNewColumn] = useState(column);
+    const [editColumn, setEditColumn] = useState(false)
+    const [addTask, setAddTask] = useState(false)
     const handleRemoveTask = () => {
         if (window.confirm("Remove this column?")) {
 
         }
     }
     async function handleCreateTask() {
-        await axios.post(`${groups_API}/${group._id}/tasks/create`, { taskName: newTask, status: column }, { headers: { Authorization: `Bearer ${accessToken}` } })
+        if(newTask!=""){
+            await axios.post(`${groups_API}/${group._id}/tasks/create`, { taskName: newTask, status: column }, { headers: { Authorization: `Bearer ${accessToken}` } })
             .then((res) => {
 
                 setGroup({...group,tasks: [...group.tasks, res.data]});
@@ -29,18 +33,34 @@ function GroupColumn({ column }) {
                 setAddTask(false)
             })
             .catch((err) => console.log(err));
+        }else{
+            window.alert("You must enter task name!")
+        }
 
     }
-    const [editColumn, setEditColumn] = useState(false)
-    const [addTask, setAddTask] = useState(false)
+
+    const handleEditColumn = async ()=>{
+        if(newColumn != ""){
+            await axios.put(`${groups_API}/${group._id}/edit-column`,
+            {selectedColumn:column.toLowerCase(),newColumn:newColumn},
+             { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then((res)=>setGroup(res.data))
+            .catch((err)=>console.log(err))
+        
+        }else{
+            window.alert("You must enter column name!")
+        }
+
+    }
+
     return (
         <Container fluid className='py-1'>
             <Row className='my-2 d-flex justify-content-between '>
                 <Col md={10} className='text-start'>
                     {editColumn == false ? <p className='m-0 p-1 rounded-1 background-hover fw-bold' onClick={() => setEditColumn(true)}>{column.toUpperCase()}</p> :
                         <Row className='d-flex justify-content-between'>
-                            <Col md={8}><input type="text" name='columnName' className='w-100 m-0' required /></Col>
-                            <Col md={2} className='background-hover bg-white border border-1 border-black' onClick={() => { setEditColumn(false) }}><IoCheckmark /></Col>
+                            <Col md={8}><input type="text" name='columnName' className='w-100 m-0' value={newColumn} onChange={(e)=>{setNewColumn(e.target.value)}} required /></Col>
+                            <Col md={2} className='background-hover bg-white border border-1 border-black' onClick={() => { setEditColumn(false); handleEditColumn()}}><IoCheckmark /></Col>
                             <Col md={2} className='background-hover bg-white border border-1 border-black' onClick={() => { setEditColumn(false) }}><IoMdClose /></Col>
 
                         </Row>}
@@ -56,7 +76,7 @@ function GroupColumn({ column }) {
 
             <Row className='my-2'>
                 <Col md={9} className='text-start p-1'>
-                    {addTask == false ? <p className='m-0 p-1 rounded-1 background-hover' onClick={() => setAddTask(true)}><FaPlus />  Create task</p> :
+                    {addTask == false ? <p className='m-0 p-1 rounded-1 background-hover'  onClick={() => setAddTask(true)}><FaPlus />  Create task</p> :
                         <Row className='d-flex justify-content-between'>
                             <Col md={8}><input type="text" name='taskName' className='w-100 m-0'
                                 onChange={(e) => { setNewTask(e.target.value) }} required /></Col>
