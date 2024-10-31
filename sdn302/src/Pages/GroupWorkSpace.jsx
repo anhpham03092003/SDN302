@@ -46,7 +46,7 @@ function GroupWorkSpace() {
         <Col md={10}>
           <Row className="group-header background-color-third vh-12">
             <Col md={6} className="align-content-center text-start">
-              <h5>{group?.groupName}/{}</h5>
+              <h5>{group?.groupName}{}</h5>
             </Col>
             <Col md={6} className="align-content-center text-end">
               <Button className="rounded-0" onClick={handleShow}>

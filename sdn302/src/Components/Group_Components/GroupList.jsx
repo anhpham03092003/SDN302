@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Modal ,InputGroup, FormControl} from 'react-bootstrap';
 import { MdTimelapse } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../Styles/Group_css/GroupList.module.css';
@@ -14,7 +14,12 @@ function GroupList() {
   const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
 
+
+  const filteredGroups = groups?.filter((group) =>
+    group.groupName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const joinGroupByCode = async () => {
     try {
       const response = await axios.post(
@@ -57,7 +62,7 @@ function GroupList() {
     <Container>
       <h4 className={styles.container}><MdTimelapse /> Recent Groups</h4>
       <Row>
-        {groups.slice(0, 4).map((group) => 
+        {groups?.slice(0, 4).map((group) => 
           group ? (
             <Col md={3} className="mb-3" key={group._id}>
               <Link to={`/groups/${group._id}`} className={styles.card}>
@@ -70,12 +75,26 @@ function GroupList() {
           ) : null
         )}
       </Row>
-      
-      <Button className={styles.buttonJoin} variant="primary" onClick={() => setShowModal(true)}>Join Group</Button>
+      <Row>
+        <Col md={6}>
+      <InputGroup>
+        <FormControl
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </InputGroup>
+      </Col>
+      <Col md={4}></Col>
+      <Col  md={2}>
+
+      <Button  variant="primary" onClick={() => setShowModal(true)}>Join Group</Button>
+      </Col>
+      </Row>
       <h4 className={styles.container}><FaRegListAlt /> All Groups</h4>
       <div className={styles.allGroupsContainer}>
         <Row className="ms-2">
-          {groups.map((group) => 
+          {filteredGroups?.map((group) => 
             group ? (
               <Col md={5} className="mb-2" key={group._id}>
                 <Link to={`/groups/${group._id}`} className={styles.allGroupItem}>

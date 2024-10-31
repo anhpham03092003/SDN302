@@ -15,10 +15,11 @@ function CreateGroup() {
     const SignupSchema = Yup.object().shape({
         groupName: Yup.string()
             .required('Required')
+            .min(3, 'Group name must be at least 3 characters')
             .max(15, 'Group name cannot exceed 15 characters'),
         groupCode: Yup.string()
             .required('Required')
-            .max(6, 'Group code cannot exceed 6 characters'),
+            .length(6, 'Group code must be exactly 6 characters'),
     });
 
     // Check if group name or code already exists
@@ -31,6 +32,8 @@ function CreateGroup() {
             throw new Error('Unable to check group existence.'); // Propagate error as necessary
         }
     };
+    
+    
 
     const handleSubmit = async (values, { setErrors, setSubmitting }) => {
         setSubmitting(true);
