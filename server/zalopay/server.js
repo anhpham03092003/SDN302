@@ -24,19 +24,23 @@ app.get('/', (req, res) => {
     res.send('Server is running!');
 });
 
+//lưu token tạm thời
+let storedToken;
+
 /**
  * method: POST
  * Sandbox POST https://sb-openapi.zalopay.vn/v2/create
  * Real POST https://openapi.zalopay.vn/v2/create
  * description: tạo đơn hàng, thanh toán
  */
-app.post('/payment', async (req, res) => {
-    const { groupId } = req.body; // Lấy groupId từ request body
-    const amount = 5075140; // Số tiền cố định
-    const embed_data = {
-        redirecturl: `http://localhost:3000/groups/${groupId}`, // Chuyển hướng về trang nhóm cụ thể
-    };
 
+app.post('/payment', async (req, res) => {
+    const { groupId } = req.body;
+    storedToken = req.headers['authorization']; // Lưu token vào biến toàn cục
+
+    // Tiếp tục xử lý thanh toán như trước
+    const amount = 5075140;
+    const embed_data = { redirecturl: `http://localhost:3000/groups/${groupId}` };
     const items = [];
     const transID = Math.floor(Math.random() * 1000000);
 
@@ -47,10 +51,10 @@ app.post('/payment', async (req, res) => {
         app_time: Date.now(),
         item: JSON.stringify(items),
         embed_data: JSON.stringify(embed_data),
-        amount: amount, // Sử dụng số tiền cố định
-        callback_url: 'https://b074-1-53-37-194.ngrok-free.app/callback',
+        amount,
+        callback_url: 'https://e06d-118-70-211-234.ngrok-free.app/callback',
         description: `Lazada - Payment for the order #${transID}`,
-        bank_code: '',
+        bank_code: ''
     };
 
     const data = `${config.app_id}|${order.app_trans_id}|${order.app_user}|${order.amount}|${order.app_time}|${order.embed_data}|${order.item}`;
@@ -65,12 +69,13 @@ app.post('/payment', async (req, res) => {
     }
 });
 
+
 /**
  * method: POST
  * description: callback để Zalopay Server call đến khi thanh toán thành công.
  * Khi và chỉ khi ZaloPay đã thu tiền khách hàng thành công thì mới gọi API này để thông báo kết quả.
  */
-app.post('/callback', (req, res) => {
+app.post('/callback', async (req, res) => {
     let result = {};
     try {
         let dataStr = req.body.data;
@@ -82,17 +87,22 @@ app.post('/callback', (req, res) => {
             result.return_message = 'mac not equal';
         } else {
             let dataJson = JSON.parse(dataStr);
-            console.log(
-                "update order's status = success where app_trans_id =",
-                dataJson['app_trans_id'],
+            const groupId = JSON.parse(dataJson.embed_data).redirecturl.split('/').pop();
+
+            // Gọi API updatePremium với token được lưu từ trước
+            await axios.post(
+                'http://localhost:9999/groups/updatePremium',
+                { _id: groupId, isPremium: true },
+                {
+                    headers: {
+                        Authorization: storedToken,
+                    },
+                }
             );
+            console.log(`Cập nhật group ${groupId} thành Premium`);
 
             result.return_code = 1;
             result.return_message = 'success';
-
-            // Chuyển hướng đến trang groups
-            res.redirect('http://localhost:3000/groups/671e36e30f93d8b077a7957a');
-            return;
         }
     } catch (ex) {
         console.log('lỗi:::' + ex.message);
@@ -100,9 +110,9 @@ app.post('/callback', (req, res) => {
         result.return_message = ex.message;
     }
 
-    // thông báo kết quả cho ZaloPay server
     res.json(result);
 });
+
 
 app.post('/check-status-order', async (req, res) => {
     const { app_trans_id } = req.body;
@@ -130,6 +140,7 @@ app.post('/check-status-order', async (req, res) => {
     } catch (error) {
         console.log('lỗi');
         console.log(error);
+        return res.status(500).json({ error: 'Error checking order status' });
     }
 });
 

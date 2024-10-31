@@ -9,25 +9,25 @@ const morgan = require("morgan");
 
 // Create new group
 
-async  function createGroup(req, res, next) {
+async function createGroup(req, res, next) {
     try {
-        const { groupName, groupCode} = req.body;
-        const {id} = req.payload;
-        const existingGroup = await db.Groups.findOne({groupName,groupCode});
+        const { groupName, groupCode } = req.body;
+        const { id } = req.payload;
+        const existingGroup = await db.Groups.findOne({ groupName, groupCode });
         if (existingGroup) {
             throw createHttpErrors(400, "Group already exists")
         }
-        const defaultClassifications = ['todo','inprogress','done'];
+        const defaultClassifications = ['todo', 'inprogress', 'done'];
         const members = [
             {
-                _id: id, 
-                groupRole: 'owner' 
+                _id: id,
+                groupRole: 'owner'
             }
         ];
-        const newGroup = new db.Groups({    
+        const newGroup = new db.Groups({
             groupName,
             groupCode,
-            classifications:  defaultClassifications,
+            classifications: defaultClassifications,
             members,
         })
         const nGroup = await newGroup.save();
@@ -52,10 +52,10 @@ async  function createGroup(req, res, next) {
 
 
 // Get all groups by user id
- 
+
 async function getAllGroup(req, res, next) {
     try {
-        const {id} = req.payload;
+        const { id } = req.payload;
         const groups = await db.Groups.find({ members: { $elemMatch: { _id: id } } });
         if (!groups) {
             throw createHttpErrors(404, "Group not found")
@@ -64,10 +64,10 @@ async function getAllGroup(req, res, next) {
         //     return {
         //     _id: group._id,
         //     groupName : group.groupName,
-         
+
         //     }
         // })
-    
+
         res.status(200).json(groups)
 
     } catch (error) {
@@ -76,24 +76,23 @@ async function getAllGroup(req, res, next) {
 }
 
 // get group detail by group id
-
 async function getGroupDetail(req, res, next) {
-    try{
+    try {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
             throw createHttpErrors(404, "Group not found")
         }
-    
+
         res.status(200).json(group)
 
-    }catch(error){
+    } catch (error) {
         next(error)
     }
 
-    }
+}
 
-// edit group detail by group id
+
 // edit group detail by group id
 async function editGroupDetail(req, res, next) {
     try {
@@ -116,12 +115,12 @@ async function editGroupDetail(req, res, next) {
         // If the member is 'owner', allow editing of all attributes except classifications
         if (member.groupRole === 'owner') {
             if (groupName) updateGroup.groupName = groupName;
-            
+
             if (groupCode) {
                 // Check if the groupCode already exists (excluding the current group)
-                const existingGroupByCode = await db.Groups.findOne({ 
-                    groupCode, 
-                    _id: { $ne: groupId } 
+                const existingGroupByCode = await db.Groups.findOne({
+                    groupCode,
+                    _id: { $ne: groupId }
                 });
                 if (existingGroupByCode) {
                     res.status(409).json({ error: "Group code already exists" });
@@ -152,8 +151,8 @@ async function editGroupDetail(req, res, next) {
 
 async function deleteGroup(req, res, next) {
     try {
-        const { groupId } = req.params; 
-        const { id } = req.payload; 
+        const { groupId } = req.params;
+        const { id } = req.payload;
         const group = await db.Groups.findOne({ _id: groupId });
 
         if (!group) {
@@ -207,7 +206,7 @@ async function joinGroupByCode(req, res, next) {
 async function outGroup(req, res, next) {
     try {
         const { groupId } = req.params;
-        const { id } = req.payload; 
+        const { id } = req.payload;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
             throw createHttpErrors(404, "Group not found");
@@ -235,48 +234,48 @@ async function outGroup(req, res, next) {
 
 async function getGroupMember(req, res, next) {
     try {
-      const { groupId } = req.params;
+        const { groupId } = req.params;
 
-      const group = await db.Groups.findOne({ _id: groupId })
-        .populate({
-          path: 'members._id',  
-          model: 'user',  
-          select : 'username'               
-        });
-  
-      if (!group) {
-        throw createHttpErrors(404, "Group not found");
-      }
-      const memberInfo = group.members.map(member => ({
-        id: member._id ? member._id._id : null, 
-        name: member._id ? member._id.username : null, 
-        groupRole: member.groupRole                   
-    }));
+        const group = await db.Groups.findOne({ _id: groupId })
+            .populate({
+                path: 'members._id',
+                model: 'user',
+                select: 'username'
+            });
 
-        res.status(200).json({memberInfo });
-    
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+        const memberInfo = group.members.map(member => ({
+            id: member._id ? member._id._id : null,
+            name: member._id ? member._id.username : null,
+            groupRole: member.groupRole
+        }));
+
+        res.status(200).json({ memberInfo });
+
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
+}
 
 
 // Set role for member in group
 async function setGroupMemberRole(req, res, next) {
     try {
-        const { groupId, memberId } = req.params; 
+        const { groupId, memberId } = req.params;
         const { id } = req.payload;
         const { groupRole } = req.body;
 
-        const group = await db.Groups.findOne({ _id: groupId }); 
+        const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
             throw createHttpErrors(404, "Group not found");
         }
-        const owner = group.members.find(member => member._id.toString() === id && member.groupRole === 'owner'); 
+        const owner = group.members.find(member => member._id.toString() === id && member.groupRole === 'owner');
         if (!owner) {
             throw createHttpErrors(403, "Only the group owner can edit member roles");
         }
-        const member = group.members.find(member => member._id.toString() === memberId); 
+        const member = group.members.find(member => member._id.toString() === memberId);
         if (!member) {
             throw createHttpErrors(404, "Member not found");
         }
@@ -350,28 +349,28 @@ async function deleteGroupMember(req, res, next) {
 
 async function getUserRole(req, res, next) {
     try {
-      const { groupId } = req.params; 
-      const { id } = req.payload;  
-  
-      const group = await db.Groups.findOne({ _id: groupId });
-  
-      if (!group) {
-        throw createHttpErrors(404, "Group not found");
-      }
-      const member = group.members.find(member => member._id.toString() === id);
-  
-      if (!member) {
-        throw createHttpErrors(404, "User not found in the specified group");
-      }
-      res.status(200).json({
-        id: member._id,
-        groupRole: member.groupRole,
-      });
-  
+        const { groupId } = req.params;
+        const { id } = req.payload;
+
+        const group = await db.Groups.findOne({ _id: groupId });
+
+        if (!group) {
+            throw createHttpErrors(404, "Group not found");
+        }
+        const member = group.members.find(member => member._id.toString() === id);
+
+        if (!member) {
+            throw createHttpErrors(404, "User not found in the specified group");
+        }
+        res.status(200).json({
+            id: member._id,
+            groupRole: member.groupRole,
+        });
+
     } catch (error) {
-      next(error); 
+        next(error);
     }
-  }
+}
 
 
 async function getAllTask(req, res, next) {
@@ -407,13 +406,13 @@ async function createTask(req, res, next) {
             deadline: req.body.deadline,
             status: req.body.status,
         }
-        await db.Groups.findOneAndUpdate({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true})
+        await db.Groups.findOneAndUpdate({ _id: groupId }, { $addToSet: { tasks: newTask } }, { runValidators: true })
         const saveGroup = await db.Groups.findOne({ _id: groupId });
 
-        res.status(201).json(saveGroup.tasks[saveGroup.tasks.length-1])
+        res.status(201).json(saveGroup.tasks[saveGroup.tasks.length - 1])
 
 
-        
+
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -431,7 +430,7 @@ async function editTask(req, res, next) {
         if (!task) {
             throw createHttpErrors(404, "Task not found")
         }
-        if(!req.body){
+        if (!req.body) {
             throw createHttpErrors(400, "Input is reqiured")
         }
         const updateTask = {
@@ -508,7 +507,7 @@ async function addSubTask(req, res, next) {
         if (!task) {
             throw createHttpErrors(404, "Task not found")
         }
-        if(!req.body.subTaskName){
+        if (!req.body.subTaskName) {
             throw createHttpErrors.BadRequest("Subtask name is required")
         }
         const newSubTask = {
@@ -524,14 +523,14 @@ async function addSubTask(req, res, next) {
             },
             {
                 runValidators: true,
-                new:true
+                new: true
             }
         )
-        
-        const saveGroup= await db.Groups.findOne({ _id: groupId })
-        const subTasks = saveGroup.tasks.find(t=>t._id==taskId).subTasks
-        res.status(201).json(subTasks[subTasks.length-1])
-        
+
+        const saveGroup = await db.Groups.findOne({ _id: groupId })
+        const subTasks = saveGroup.tasks.find(t => t._id == taskId).subTasks
+        res.status(201).json(subTasks[subTasks.length - 1])
+
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
@@ -630,19 +629,49 @@ async function deleteSubTask(req, res, next) {
             , {
                 $pull: { "tasks.$.subTasks": { _id: subTaskId } }
             }
-        ).then((rs)=>res.status(200).json(subTaskId))
-        .catch((err)=>{console.log(err);})
+        ).then((rs) => res.status(200).json(subTaskId))
+            .catch((err) => { console.log(err); })
 
-        
+
     } catch (error) {
         next(error)
         // new khong co next : throw httpError.400 
     }
 }
 
+
+const updatePremium = async (req, res) => {
+    try {
+        const { _id } = req.body;
+
+        if (!_id) {
+            return res.status(400).json({ message: "_id is required in request body" });
+        }
+
+        // Cập nhật isPremium thành true cho nhóm có _id tương ứng
+        const result = await db.Groups.updateOne(
+            { _id }, // Điều kiện lọc dựa trên _id
+            { $set: { isPremium: true } } // Cập nhật trường isPremium thành true
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        res.status(200).json({
+            message: "Group's premium status updated successfully",
+            result
+        });
+    } catch (error) {
+        console.error("Error updating premium status:", error);
+        res.status(500).json({ message: "Internal server error", error });
+    }
+};
+
+
 const countGroups = async (req, res, next) => {
     try {
-        const filter = {};  
+        const filter = {};
         const count = await db.Groups.countDocuments(filter);
         res.status(200).json({ count });
     } catch (error) {
@@ -653,7 +682,7 @@ const countGroups = async (req, res, next) => {
 
 const countPremiumGroups = async (req, res, next) => {
     try {
-        const filter = {isPremium: true};  
+        const filter = { isPremium: true };
         const count = await db.Groups.countDocuments(filter);
         res.status(200).json({ count });
     } catch (error) {
@@ -682,6 +711,7 @@ const GroupController = {
     setGroupMemberRole,
     deleteGroupMember,
     getUserRole,
+    updatePremium,
     countGroups,
     countPremiumGroups
 }
