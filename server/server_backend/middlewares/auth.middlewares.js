@@ -35,7 +35,7 @@ async function verifyAccessToken(req, res, next) {
 
     const authHeader = req.headers['authorization'];
     const bearerToken = authHeader.split(' ');
-    
+
     if (bearerToken.length !== 2 || bearerToken[0] !== 'Bearer') {
         console.error("Invalid Authorization header format");
         return next(createError(401, 'Invalid Authorization header format'));

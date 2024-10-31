@@ -8,7 +8,19 @@ function Payment() {
     const { groupId } = useParams();
     const handleZaloPayClick = async () => {
         try {
-            const response = await axios.post('http://localhost:8888/payment', { groupId: groupId });
+            // Lấy token từ localStorage
+            const token = localStorage.getItem('token');
+
+            // Gửi request kèm theo groupId trong body và token trong headers
+            const response = await axios.post(
+                'http://localhost:8888/payment',
+                { groupId: groupId },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
             if (response.data.order_url) {
                 // Chuyển hướng đến trang thanh toán của ZaloPay
                 window.location.href = response.data.order_url;
@@ -18,6 +30,7 @@ function Payment() {
             alert('Giao dịch thất bại. Vui lòng thử lại!');
         }
     };
+
 
     console.log(groupId);
 

@@ -6,7 +6,11 @@ const { GroupController } = require("../controllers");
 const { AuthMiddleware } = require("../middlewares");
 
 groupRouter.use(bodyParser.json());
-
+// Groups premium
+groupRouter.post("/updatePremium",
+    AuthMiddleware.verifyAccessToken,
+    GroupController.updatePremium
+)
 // Groups
 groupRouter.post("/create",
     AuthMiddleware.verifyAccessToken,
@@ -47,7 +51,7 @@ groupRouter.delete("/:groupId/out",
 // get member of group
 groupRouter.get("/:groupId/get-member",
     AuthMiddleware.verifyAccessToken,
-    GroupController.getGroupMember  
+    GroupController.getGroupMember
 )
 
 // set group member role
