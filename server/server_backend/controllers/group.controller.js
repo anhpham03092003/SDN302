@@ -639,6 +639,29 @@ async function deleteSubTask(req, res, next) {
         // new khong co next : throw httpError.400 
     }
 }
+
+const countGroups = async (req, res, next) => {
+    try {
+        const filter = {};  
+        const count = await db.Groups.countDocuments(filter);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error counting groups:", error);
+        next(error);
+    }
+};
+
+const countPremiumGroups = async (req, res, next) => {
+    try {
+        const filter = {isPremium: true};  
+        const count = await db.Groups.countDocuments(filter);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error counting groups:", error);
+        next(error);
+    }
+};
+
 const GroupController = {
     getAllTask,
     createTask,
@@ -658,7 +681,9 @@ const GroupController = {
     getGroupMember,
     setGroupMemberRole,
     deleteGroupMember,
-    getUserRole
+    getUserRole,
+    countGroups,
+    countPremiumGroups
 }
 
 module.exports = GroupController;
