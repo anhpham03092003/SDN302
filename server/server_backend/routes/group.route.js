@@ -118,5 +118,15 @@ groupRouter.delete(
     GroupController.deleteSubTask
 )
 
+groupRouter.get(
+    "/count",
+    GroupController.countGroups
+)
+
+groupRouter.get(
+    "/count-premium",
+    GroupController.countPremiumGroups
+)
+
 
 module.exports = groupRouter

@@ -62,7 +62,6 @@ async function getAllGroup(req, res, next) {
 }
 
 // get group detail by group id
-
 async function getGroupDetail(req, res, next) {
     try {
         const { groupId } = req.params;
@@ -656,6 +655,27 @@ const updatePremium = async (req, res) => {
 };
 
 
+const countGroups = async (req, res, next) => {
+    try {
+        const filter = {};
+        const count = await db.Groups.countDocuments(filter);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error counting groups:", error);
+        next(error);
+    }
+};
+
+const countPremiumGroups = async (req, res, next) => {
+    try {
+        const filter = { isPremium: true };
+        const count = await db.Groups.countDocuments(filter);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error counting groups:", error);
+        next(error);
+    }
+};
 
 const GroupController = {
     getAllTask,
@@ -677,7 +697,9 @@ const GroupController = {
     setGroupMemberRole,
     deleteGroupMember,
     getUserRole,
-    updatePremium
+    updatePremium,
+    countGroups,
+    countPremiumGroups
 }
 
 module.exports = GroupController;
