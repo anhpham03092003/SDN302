@@ -112,7 +112,7 @@ groupRouter.delete(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/delete",
     AuthMiddleware.verifyAccessToken,
     GroupController.deleteSubTask
-)
+) 
 
 
 module.exports = groupRouter

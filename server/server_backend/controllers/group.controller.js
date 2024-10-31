@@ -1,6 +1,7 @@
 const db = require('../models');
 const bcrypt = require("bcrypt")
 const createHttpErrors = require("http-errors");
+const morgan = require("morgan");
 
 
 
@@ -23,13 +24,26 @@ async  function createGroup(req, res, next) {
                 groupRole: 'owner' 
             }
         ];
-        const newGroup = new db.Groups({ 
+        const newGroup = new db.Groups({    
             groupName,
             groupCode,
             classifications:  defaultClassifications,
             members,
         })
-        await newGroup.save();
+        const nGroup = await newGroup.save();
+        const nGroupId = nGroup._id;
+        console.log(nGroupId);
+        
+        const updatedUser = await db.Users.findOneAndUpdate(
+            { _id: id },
+            { $push: { groups: nGroupId } },
+            { new: true } 
+          );
+          
+          if (!updatedUser) {
+            throw createHttpErrors(400, "Failed to update user with group ID");
+          }
+          
         res.status(201).json({message:"Group created successfully", group:  newGroup});
     } catch(error) {
         next(error);
