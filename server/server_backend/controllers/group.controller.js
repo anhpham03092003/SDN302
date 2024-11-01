@@ -806,7 +806,8 @@ async function addComment(req, res, next) {
                 $push: { "tasks.$.comments": newComment }
             },
             {
-                runValidators: true
+                runValidators: true,
+                new:true
             }
         )
         const comments = saveGroup?.tasks.find(t=>t._id==taskId).comments
