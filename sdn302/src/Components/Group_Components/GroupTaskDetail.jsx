@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, ButtonGroup, Col, Container, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
 import { FaList } from 'react-icons/fa'
 import { IoMenu } from 'react-icons/io5'
@@ -16,6 +16,9 @@ function GroupTaskDetail() {
     const [showComment, setShowComment] = useState(false)
     const [newDescription, setNewDescription] = useState("")
     const [newComment, setNewComment] = useState("")
+    useEffect(()=>{
+        setNewDescription(selectedTask?.description)
+    },[selectedTask])
     const [searchMember, setSearchMember] = useState("");
     const filterMembers = groupMembers?.filter((m) => m.name.toUpperCase().includes(searchMember.toUpperCase()))
     const handleDelete = async () => {
@@ -45,6 +48,22 @@ function GroupTaskDetail() {
                 const updatedGroup = { ...group, tasks: [...updatedTasks] };
                 setSelectedTask({ ...selectedTask, subTasks: [...updatedSubTasks] })
                 e.target.subTaskName.value = "";
+                setGroup(updatedGroup)
+
+            })
+            .catch((err) => console.error(err));
+    }
+
+    const handleAddComment = async () => {
+        await axios.post(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/comments/create`, { content: newComment, status: "created" }, { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then((res) => {
+                const updatedComments = [...selectedTask.comments, res.data];
+                const updatedTasks = group.tasks.map(task =>
+                    task._id == selectedTask._id ? { ...task, comments: updatedComments } : task
+                );
+                const updatedGroup = { ...group, tasks: [...updatedTasks] };
+                setSelectedTask({ ...selectedTask, comments: [...updatedComments] })
+                setNewComment("");
                 setGroup(updatedGroup)
 
             })
@@ -184,7 +203,7 @@ function GroupTaskDetail() {
                                     placeholder='...Add a description' className='ms-4 border border-secondary-subtle col-md-12' required
                                     onFocus={() => { setShowDescription(true) }}
                                     onChange={(e) => setNewDescription(e.target.value)}
-                                    value={newDescription || selectedTask?.description}
+                                    value={newDescription}
                                 >
 
                                 </textarea>
@@ -193,7 +212,7 @@ function GroupTaskDetail() {
                                 {showDescription == true && <Row className='d-flex justify-content-between'>
                                     <Col md={8}></Col>
                                     <Col md={4}>
-                                        <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={() => { setNewDescription(""); setShowDescription(false) }}>Cancel</Button>
+                                        <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={() => { setNewDescription(selectedTask?.description); setShowDescription(false) }}>Cancel</Button>
                                         <Button className='col-md-5 m-1 p-1 ' onClick={(e) => {
                                             e.preventDefault();
                                             handleAddDescription();
@@ -240,12 +259,14 @@ function GroupTaskDetail() {
                                     <Col md={8}></Col>
                                     <Col md={4}>
                                         <Button className='col-md-5 m-1 p-1 btn-secondary' onClick={() => { setNewComment(""); setShowComment(false) }}>Cancel</Button>
-                                        <Button className='col-md-5 m-1 p-1 ' >Save</Button>
+                                        <Button className='col-md-5 m-1 p-1 ' onClick={() => { handleAddComment(); setShowComment(false) }} >Save</Button>
                                     </Col>
                                 </Row>}
 
-                                {selectedTask?.comments?.map((comment)=><GroupComment comment={comment}/>)}
-                                
+                                {selectedTask?.comments
+                                    ?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+                                    .map((comment) => <GroupComment key={comment.id} comment={comment} />)}
+
                             </Row>
                         </Col>
                         <Col md={3}>
