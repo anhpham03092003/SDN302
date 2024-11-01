@@ -14,6 +14,7 @@ async function isInGroup(req, res, next) {
         if (!groupMember) {
             throw createError.Unauthorized("The user is not in group")
         }
+        console.log(groupMember);
         next();
     } catch (error) {
         next(error)

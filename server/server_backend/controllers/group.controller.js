@@ -679,10 +679,22 @@ async function editColumn(req, res, next) {
             throw createHttpErrors(400, "The new column already existed");
         }
         const updatedClassifications = group.classifications.map((column)=> column == selectedColumn ? newColumn : column);
+        const updatedTasks = [...group.tasks]
+        
+        updatedTasks.forEach(task => {
+            if (task.status.toLowerCase() == selectedColumn) {
+                task.status = newColumn; 
+            }
+            return task;
+        });
 
         const updatedGroup = await db.Groups.findByIdAndUpdate(
             {_id:groupId}, 
-            { classifications: updatedClassifications },
+            {
+                $set: { 
+                    tasks: updatedTasks, 
+                    classifications: updatedClassifications 
+                } },
             {
                 runValidators:true,
                 new:true
@@ -708,7 +720,7 @@ async function deleteColumn(req, res, next) {
         const alternativeColumn = req.body.alternativeColumn.toLowerCase();
         if(alternativeColumn == ""||selectedColumn == ""){
             throw createHttpErrors(400, "Input please");
-        }
+        }   
         if (!group.classifications.includes(selectedColumn)) {
             throw createHttpErrors(400, "The selected column does not exist");
         }
@@ -717,25 +729,27 @@ async function deleteColumn(req, res, next) {
         }
         const {tasks} = group;
 
-        const updatedTasks = tasks.map((task) => {
-            return {
-                ...task,
-                status: task.status.toLowerCase() == selectedColumn ? alternativeColumn : task.status.toLowerCase()
+        const updatedTasks = [...group.tasks]
+        
+        updatedTasks.forEach(task => {
+            if (task.status.toLowerCase() == selectedColumn) {
+                task.status = alternativeColumn; 
             }
+            return task;
         });
         
-        // const updatedGroup = await db.Groups.findByIdAndUpdate(
-        //     {_id:groupId}, 
-        //     { 
-        //         $set:{tasks:[...updatedTasks]},
-        //         $pull:{classifications: selectedColumn} },
-        //     {
-        //         runValidators:true,
-        //         new:true
-        //     }
-        // );
+        const updatedGroup = await db.Groups.findByIdAndUpdate(
+            {_id:groupId}, 
+            { 
+                $set:{tasks:[...updatedTasks]},
+                $pull:{classifications: selectedColumn} },
+            {
+                runValidators:true,
+                new:true
+            }
+        );
 
-        res.status(201).json(updatedTasks);
+        res.status(201).json(updatedGroup);
         
     } catch (error) {
         next(error)
@@ -743,7 +757,147 @@ async function deleteColumn(req, res, next) {
     }
 }
 
+// Comment
+async function getAllComments(req, res, next) {
+    try {
+        const { groupId, taskId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if (!task) {
+            throw createHttpErrors(404, "Task not found")
+        }
 
+        const { comments } = task;
+        res.status(200).json(comments)
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function addComment(req, res, next) {
+    try {
+        const {id} = req.payload;
+        const { groupId, taskId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if (!task) {
+            throw createHttpErrors(404, "Task not found")
+        }
+        if(!req.body){
+            throw createHttpErrors.BadRequest("Comment is required")
+        }
+        const newComment = {
+            user: id,
+            content: req.body.content,
+            status: req.body.status
+        }
+        const saveGroup = await db.Groups.findOneAndUpdate(
+            {
+                _id: groupId, "tasks._id": taskId
+
+            },
+            {
+                $push: { "tasks.$.comments": newComment }
+            },
+            {
+                runValidators: true
+            }
+        )
+        const comments = saveGroup?.tasks.find(t=>t._id==taskId).comments
+        res.status(201).json(comments[comments.length-1])
+        
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
+
+async function editComment(req, res, next) {
+    try {
+        const { groupId, taskId, commentId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if (!task) {
+            throw createHttpErrors(404, "Task not found")
+        }
+        const comment = task.comments.find(c => c._id == commentId)
+        if (!comment) {
+            throw createHttpErrors(404, "Comment not found")
+        }
+        
+        const updateComment = {
+            content: req.body.content?req.body.content:comment.content,
+            status: req.body.status?req.body.status:comment.status,
+            updatedAt: new Date()
+        }
+        await db.Groups.findOneAndUpdate(
+            {
+                _id: groupId,
+                "tasks._id": taskId,
+                "tasks.comments._id": commentId
+            },
+            {
+                $set: {
+                    "tasks.$.comments.$[comment].content": updateComment.content,
+                    "tasks.$.comments.$[comment].status": updateComment.status,
+                    "tasks.$.comments.$[comment].updatedAt": updateComment.updatedAt
+                }
+            },
+            {
+                arrayFilters: [{ "comment._id": commentId }],
+                runValidators: true,
+                new:true
+            })
+            .then((rs)=>res.status(200).json(rs))
+        
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
+
+async function deleteComment(req, res, next) {
+    try {
+        const { groupId, taskId, commentId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        if (!group) {
+            throw createHttpErrors(404, "Group not found")
+        }
+        const task = group.tasks.find(t => t._id == taskId)
+        if (!task) {
+            throw createHttpErrors(404, "Task not found")
+        }
+        const comment = task.comments.find(c => c._id == commentId)
+        if (!comment) {
+            throw createHttpErrors(404, "Comment not found")
+        }
+
+        await db.Groups.findOneAndUpdate(
+            {
+                _id: groupId, "tasks._id": taskId
+            }
+            , {
+                $pull: { "tasks.$.comments": { _id: commentId } }
+            }
+        ).then((rs)=>res.status(200).json(commentId))
+        .catch((err)=>{console.log(err);})
+
+        
+    } catch (error) {
+        next(error)
+        // new khong co next : throw httpError.400 
+    }
+}
 const GroupController = {
     getAllTask,
     createTask,
@@ -766,7 +920,11 @@ const GroupController = {
     getUserRole,
     createColumn,
     editColumn,
-    deleteColumn
+    deleteColumn,
+    getAllComments,
+    addComment,
+    editComment,
+    deleteComment
 }
 
 module.exports = GroupController;

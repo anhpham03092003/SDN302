@@ -21,6 +21,7 @@ const groupSchema = new mongoose.Schema({
         taskName: {
             type: String,
             required: [true,"Task name is required"],
+            unique:false,
             maxlength: 50 // Limit task name to 50 characters
         },
         description: {

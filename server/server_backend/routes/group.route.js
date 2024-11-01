@@ -133,6 +133,27 @@ groupRouter.delete(
     GroupController.deleteSubTask
 )
 
+// Comment
+groupRouter.get(
+    "/:groupId/tasks/:taskId/comments/get-all",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
+    GroupController.getAllComments
+)
+groupRouter.post(
+    "/:groupId/tasks/:taskId/comments/create",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    GroupController.addComment
+)
+groupRouter.put(
+    "/:groupId/tasks/:taskId/comments/:commentId/edit",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    GroupController.editComment
+)
 
+groupRouter.delete(
+    "/:groupId/tasks/:taskId/comments/:commentId/delete",
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    GroupController.deleteComment
+)
 
 module.exports = groupRouter

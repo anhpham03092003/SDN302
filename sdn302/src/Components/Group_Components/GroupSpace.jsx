@@ -30,7 +30,7 @@ function GroupSpace() {
         <Container fluid className='overflow-auto vh-83'>
 
             <Row className='flex-nowrap mt-3 ms-2'>
-                {group?.classifications.map((column)=>{
+                {group?.classifications?.map((column)=>{
                     return <Col md={3} className='mx-2 background-color-secondary'><GroupColumn column={column} /></Col>
                 })}
                 <Col md={3} className='mx-2 '>
