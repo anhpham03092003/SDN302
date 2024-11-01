@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Button, ButtonGroup, Col, Container, Dropdown, Form, Modal, Row } from 'react-bootstrap'
+import { Button, ButtonGroup, Col, Container, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
 import { FaList } from 'react-icons/fa'
 import { IoMenu } from 'react-icons/io5'
 import GroupSubTask from './GroupSubTask'
@@ -7,6 +7,7 @@ import { IoMdMenu } from 'react-icons/io'
 import { AppContext } from '../../Context/AppContext'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
+import GroupComment from './GroupComment'
 
 function GroupTaskDetail() {
     const { groupId } = useParams();
@@ -16,7 +17,7 @@ function GroupTaskDetail() {
     const [newDescription, setNewDescription] = useState("")
     const [newComment, setNewComment] = useState("")
     const [searchMember, setSearchMember] = useState("");
-    const filterMembers = groupMembers.filter((m) => m.name.toUpperCase().includes(searchMember.toUpperCase()))
+    const filterMembers = groupMembers?.filter((m) => m.name.toUpperCase().includes(searchMember.toUpperCase()))
     const handleDelete = async () => {
         if (window.confirm("Remove this task?")) {
             await axios.delete(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/delete`, { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -215,16 +216,24 @@ function GroupTaskDetail() {
 
                             <Row className='mb-3'>
                                 <h5 className='mb-3'><FaList /> Comments</h5>
-                                <textarea name='comments' rows={4} cols={100}
-                                    placeholder='...Add a comment' className='ms-4 border border-secondary-subtle'
-                                    onFocus={() => { setShowComment(true) }}
-                                    onChange={(e) => setNewComment(e.target.value)}
 
-                                    value={newComment}
+                                <Row>
+                                    <Col md={1}>
+                                        <Image className='w-100' src={"https://as2.ftcdn.net/v2/jpg/04/10/43/77/1000_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg"}></Image>
+                                    </Col>
+                                    <Col md={11}>
+                                        <input type='text' name='comments' rows={4} cols={100}
+                                            placeholder='...Add a comment' className='  border border-secondary-subtle'
+                                            onFocus={() => { setShowComment(true) }}
+                                            onChange={(e) => setNewComment(e.target.value)}
 
-                                    required>
+                                            value={newComment}
 
-                                </textarea>
+                                            required>
+
+                                        </input>
+                                    </Col>
+                                </Row>
 
 
                                 {showComment == true && <Row className='d-flex justify-content-between'>
@@ -234,6 +243,9 @@ function GroupTaskDetail() {
                                         <Button className='col-md-5 m-1 p-1 ' >Save</Button>
                                     </Col>
                                 </Row>}
+
+                                {selectedTask?.comments?.map((comment)=><GroupComment comment={comment}/>)}
+                                
                             </Row>
                         </Col>
                         <Col md={3}>
@@ -244,7 +256,7 @@ function GroupTaskDetail() {
                                     </Dropdown.Toggle>
 
                                     <Dropdown.Menu >
-                                        <Dropdown.ItemText><input type='text' onChange={(e)=>setSearchMember(e.target.value)}/></Dropdown.ItemText >
+                                        <Dropdown.ItemText><input type='text' onChange={(e) => setSearchMember(e.target.value)} /></Dropdown.ItemText >
                                         <Dropdown.Header>Assignee</Dropdown.Header>
                                         <Dropdown.ItemText className='fw-bolder' >{selectedTask?.assignee != null ? groupMembers?.find((m) => m.id == selectedTask.assignee).name : "Unassigned"}</Dropdown.ItemText>
                                         <Dropdown.Header>Members list</Dropdown.Header>
@@ -264,7 +276,7 @@ function GroupTaskDetail() {
                                     <Dropdown.Menu >
                                         <Dropdown.ItemText   >
                                             <Form onSubmit={(e) => handleAddSubTask(e)}>
-                                                <Form.Control type='text' name='subTaskName' required/>
+                                                <Form.Control type='text' name='subTaskName' required />
                                                 <Button type='submit' className='w-100'  >Add</Button>
                                             </Form>
                                         </Dropdown.ItemText >

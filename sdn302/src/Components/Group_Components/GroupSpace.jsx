@@ -5,6 +5,7 @@ import { FaPlus } from 'react-icons/fa'
 import { IoCheckmark } from 'react-icons/io5'
 import { IoMdClose } from 'react-icons/io'
 import { AppContext } from '../../Context/AppContext'
+import axios from 'axios'
 
 function GroupSpace() {
     const {groups_API,group,setGroup,accessToken} = useContext(AppContext);
@@ -14,11 +15,22 @@ function GroupSpace() {
     const handleCreateColumn = ()=>{
         
     }
+    const handleAddColumn = async ()=>{
+        if(newColumn!=""){
+            await axios.post(`${groups_API}/${group._id}/create-column`,{newColumn : newColumn}, { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then((res)=>setGroup(res.data))
+            .catch((err)=>console.log(err))
+        
+        }else{
+            window.alert("You must enter column name!")
+        }
+
+    }
     return (
         <Container fluid className='overflow-auto vh-83'>
 
             <Row className='flex-nowrap mt-3 ms-2'>
-                {group?.classifications.map((column)=>{
+                {group?.classifications?.map((column)=>{
                     return <Col md={3} className='mx-2 background-color-secondary'><GroupColumn column={column} /></Col>
                 })}
                 <Col md={3} className='mx-2 '>
@@ -28,7 +40,7 @@ function GroupSpace() {
                                 <input type="text" name='columnName' className='w-100 m-0'
                                  onChange={(e)=>{setNewColumn(e.target.value)}}  required/>
                                 </Col>
-                            <Col md={2} className='background-hover bg-white  border border-1 border-black' onClick={() => { setAddColumn(false) }}><IoCheckmark /></Col>
+                            <Col md={2} className='background-hover bg-white  border border-1 border-black' onClick={() => { setAddColumn(false); handleAddColumn() }}><IoCheckmark /></Col>
 
                             <Col md={2} className='background-hover bg-white  border border-1 border-black' onClick={() => { setAddColumn(false) }}><IoMdClose /></Col>
 
