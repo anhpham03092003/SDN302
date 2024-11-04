@@ -65,10 +65,25 @@ function IndividualSpace() {
         setShowTempColumn(false);
     };
 
+    const updateColumnName = (oldName, newName) => {
+        setUserInfo(prevUserInfo => ({
+            ...prevUserInfo,
+            classifications: prevUserInfo.classifications.map(col => (col === oldName ? newName : col))
+        }));
+    };
+
+    const sortedClassifications = userInfo ? [...userInfo.classifications] : [];
+    const otherIndex = sortedClassifications.indexOf("other");
+    
+    if (otherIndex > -1) {
+        sortedClassifications.splice(otherIndex, 1); 
+        sortedClassifications.push("other"); 
+    }
+    
     return (
         <Container fluid className='vh-83'>
 
-            {userInfo?.classifications.reduce((rows, column, index) => {
+            {sortedClassifications.reduce((rows, column, index) => {
                 if (index % 3 === 0) rows.push([]);
                 rows[rows.length - 1].push(column);
                 return rows;
@@ -76,7 +91,7 @@ function IndividualSpace() {
                 <Row className='flex-nowrap mt-3 ms-2' key={rowIndex}>
                     {row.map((column, colIndex) => (
                         <Col md={3} className='mx-2 background-color-secondary' key={colIndex}>
-                            <IndividualColumn column={column} />
+                            <IndividualColumn column={column} updateColumnName={updateColumnName} onDataChange={fetchUserInfo} />
                         </Col>
                     ))}
 
@@ -98,6 +113,7 @@ function IndividualSpace() {
                                         placeholder="Enter column name"
                                         value={newColumnName}
                                         onChange={(e) => setNewColumnName(e.target.value)}
+                                        required
                                     />
                                     <Row>
                                         <Col xs={6}>
