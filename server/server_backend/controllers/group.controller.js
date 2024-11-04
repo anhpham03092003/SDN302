@@ -9,14 +9,26 @@ const morgan = require("morgan");
 
 // Create new group
 
+
+function generateGroupCode(length = 6) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
 async function createGroup(req, res, next) {
     try {
-        const { groupName, groupCode } = req.body;
+        const { groupName } = req.body;
         const { id } = req.payload;
-        const existingGroup = await db.Groups.findOne({ groupName, groupCode });
+        const groupCode = generateGroupCode();
+        const existingGroup = await db.Groups.findOne({ groupName });
         if (existingGroup) {
-            throw createHttpErrors(400, "Group already exists")
+            return res.status(400).json({ message: "Group name already exists, please choose another name." });
         }
+
         const defaultClassifications = ['todo', 'inprogress', 'done'];
         const members = [
             {
@@ -29,23 +41,24 @@ async function createGroup(req, res, next) {
             groupCode,
             classifications: defaultClassifications,
             members,
-        })
+        });
+
         const nGroup = await newGroup.save();
         const nGroupId = nGroup._id;
         console.log(nGroupId);
-        
+
         const updatedUser = await db.Users.findOneAndUpdate(
             { _id: id },
             { $push: { groups: nGroupId } },
             { new: true } 
-          );
-          
-          if (!updatedUser) {
+        );
+        
+        if (!updatedUser) {
             throw createHttpErrors(400, "Failed to update user with group ID");
-          }
-          
-        res.status(201).json({message:"Group created successfully", group:  newGroup});
-    } catch(error) {
+        }
+
+        res.status(201).json({ message: "Group created successfully", group: newGroup });
+    } catch (error) {
         next(error);
     }
 }
@@ -175,27 +188,32 @@ async function joinGroupByCode(req, res, next) {
         const { groupCode } = req.body;
         const { id } = req.payload;
         const group = await db.Groups.findOne({ groupCode });
+        
         if (!group) {
-            throw createHttpErrors(404, "Group not found");
+            return res.status(404).json({ message: "Group not found" });
         }
+        
         const isMember = group.members.some(member => member._id.toString() === id);
         if (isMember) {
-            throw createHttpErrors(400, "You are already a member of this group");
+            return res.status(400).json({ message: "You are already a member of this group" });
         }
+
         group.members.push({
             _id: id,
             groupRole: 'member'
         });
 
         await group.save();
+        
         const user = await db.Users.findById(id);
         if (!user) {
-            throw createHttpErrors(404, "User not found");
+            return res.status(404).json({ message: "User not found" });
         }
+        
         user.groups.push(group._id);
         await user.save();
 
-        res.status(200).json({ message: "Joined the group successfully", group });
+        return res.status(200).json({ message: "Joined the group successfully", group });
 
     } catch (error) {
         next(error);
