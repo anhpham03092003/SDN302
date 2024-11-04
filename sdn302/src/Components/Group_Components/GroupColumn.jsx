@@ -9,7 +9,7 @@ import { IoCheckmark } from 'react-icons/io5';
 import { AppContext } from '../../Context/AppContext';
 import axios from 'axios';
 function GroupColumn({ column }) {
-    const { groups_API, group, setGroup, accessToken, show, setShow, selectedTask, setSelectedTask } = useContext(AppContext)
+    const { groups_API, group, setGroup, accessToken, show, setShow, selectedTask, setSelectedTask,currentUserRole } = useContext(AppContext)
 
     const tasks = group.tasks.filter((t) => {
         return t.status == column
@@ -19,46 +19,59 @@ function GroupColumn({ column }) {
     const [editColumn, setEditColumn] = useState(false)
     const [addTask, setAddTask] = useState(false)
     const [showDeletion, setShowDeletion] = useState(false)
-    const handleRemoveTask = () => {
-        if (window.confirm("Remove this column?")) {
 
-        }
-    }
-    const handleDeleteColumn = async (e)=>{
+    const handleDeleteColumn = async (e) => {
         e.preventDefault();
-        const alternativeColumn =    e.target.classification.value;
-        await axios.delete(`${groups_API}/${group._id}/delete-column`,
-         { headers: { Authorization: `Bearer ${accessToken}` },
-         data:{ selectedColumn: column, alternativeColumn }, })
-        .then((res)=> setGroup(res.data))
-        .catch((err)=> console.log(err))
+        if (currentUserRole?.groupRole != "viewer") {
+            const alternativeColumn = e.target.classification.value;
+            await axios.delete(`${groups_API}/${group._id}/delete-column`,
+                {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                    data: { selectedColumn: column, alternativeColumn },
+                })
+                .then((res) => setGroup(res.data))
+                .catch((err) => console.log(err))
+        } else {
+            window.alert("You must be group member to add new column!")
+        }
+
+
     }
     async function handleCreateTask() {
-        if (newTask != "") {
-            await axios.post(`${groups_API}/${group._id}/tasks/create`, { taskName: newTask, status: column }, { headers: { Authorization: `Bearer ${accessToken}` } })
-                .then((res) => {
-
-                    setGroup({ ...group, tasks: [...group.tasks, res.data] });
-                    setNewTask('');
-                    setAddTask(false)
-                })
-                .catch((err) => console.log(err));
+        
+        if (currentUserRole?.groupRole != "viewer") {
+            if (newTask != "") {
+                await axios.post(`${groups_API}/${group._id}/tasks/create`, { taskName: newTask, status: column }, { headers: { Authorization: `Bearer ${accessToken}` } })
+                    .then((res) => {
+    
+                        setGroup({ ...group, tasks: [...group.tasks, res.data] });
+                        setNewTask('');
+                        setAddTask(false)
+                    })
+                    .catch((err) => console.log(err));
+            } else {
+                window.alert("You must enter task name!")
+            }
         } else {
-            window.alert("You must enter task name!")
+            window.alert("You must be group member to add new column!")
         }
-
     }
 
     const handleEditColumn = async () => {
-        if (newColumn != "") {
-            await axios.put(`${groups_API}/${group._id}/edit-column`,
-                { selectedColumn: column.toLowerCase(), newColumn: newColumn },
-                { headers: { Authorization: `Bearer ${accessToken}` } })
-                .then((res) => setGroup(res.data))
-                .catch((err) => console.log(err))
 
+        if (currentUserRole?.groupRole != "viewer") {
+            if (newColumn != "") {
+                await axios.put(`${groups_API}/${group._id}/edit-column`,
+                    { selectedColumn: column.toLowerCase(), newColumn: newColumn },
+                    { headers: { Authorization: `Bearer ${accessToken}` } })
+                    .then((res) => setGroup(res.data))
+                    .catch((err) => console.log(err))
+    
+            } else {
+                window.alert("You must enter column name!")
+            }
         } else {
-            window.alert("You must enter column name!")
+            window.alert("You must be group member to add new column!")
         }
 
     }
@@ -98,20 +111,20 @@ function GroupColumn({ column }) {
 
                         </Row>}
                 </Col>
-                <Col md={3} className='text-end p-1'><FaRegTrashCan className='item-hover ' onClick={()=>setShowDeletion(true)} /></Col>
-            </Row>  
+                <Col md={3} className='text-end p-1'><FaRegTrashCan className='item-hover ' onClick={() => setShowDeletion(true)} /></Col>
+            </Row>
             <GroupTaskDetail />
             <Modal
                 show={showDeletion}
                 size="md"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
-                <Modal.Header closeButton onHide={() => {setShowDeletion(false) }}>
+                <Modal.Header closeButton onHide={() => { setShowDeletion(false) }}>
                     Confirm deletion
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
-                        <Form onSubmit={(e)=>handleDeleteColumn(e)}>
+                        <Form onSubmit={(e) => handleDeleteColumn(e)}>
                             <Form.Label>Choose alternative status for tasks:</Form.Label>
                             <Row className='d-flex justify-content-around'>
 
@@ -123,17 +136,17 @@ function GroupColumn({ column }) {
                                 to
                                 <Col md={5}>
                                     <Form.Select name='classification'>
-                                       {group?.classifications.map((c)=>{
+                                        {group?.classifications.map((c) => {
                                             return <option disabled={c == column} value={c}>{c.toUpperCase()}</option>
-                                       }) }
-                                        
+                                        })}
+
                                     </Form.Select>
                                 </Col>
-                               
-                                 <Col md={6} className='mt-2'></Col>
-                                 <Col md={2} className='mt-2'>
+
+                                <Col md={6} className='mt-2'></Col>
+                                <Col md={2} className='mt-2'>
                                     <Button type='submit' className='bg-danger'>Confirm</Button>
-                                    </Col>      
+                                </Col>
                             </Row>
                         </Form>
                     </Container>
