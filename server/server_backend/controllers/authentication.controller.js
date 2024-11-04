@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const db = require("../models/index");
 
+
 // Hàm gửi email
 async function sendEmail(type, email, link) {
     const transporter = nodemailer.createTransport({
@@ -119,7 +120,7 @@ async function register(req, res, next) {
 
 // Hàm lấy người dùng
 async function getUserById(req, res) {
-    const { id } = req.payload;
+    const { id } = req.body;
     try {
         const user = await db.Users.findById(id);
         if (!user) {
@@ -132,8 +133,21 @@ async function getUserById(req, res) {
     }
 }
 
-
-
+//lấy bằng email
+// Controller function to get user by email
+async function getUserByEmail(req, res) {
+    const { email } = req.body;
+    try {
+        const user = await db.Users.findOne({ 'account.email': email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error("Get user by email error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
 
 
 //hàm xác minh
@@ -220,12 +234,14 @@ async function resetPassword(req, res) {
 
 
 const authenticationController = {
+    sendEmail,
     login,
     register,
     getUserById,
     forgotPassword,
     resetPassword,
-    verifyAccount
+    verifyAccount,
+    getUserByEmail
 };
 
 module.exports = authenticationController

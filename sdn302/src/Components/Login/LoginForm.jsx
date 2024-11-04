@@ -49,15 +49,12 @@ function LoginForm() {
 
     try {
       const result = await loginUser(username, password);
-      if (result.token) {
-        // Đẩy token lên local storage
+      // Check successful login
+      if (result.status === "Login successful!" && result.token) {
         localStorage.setItem('token', result.token);
 
-        // Lấy thông tin người dùng và cập nhật
-        const userResponse = await axios.get(`${authentication_API}/get-user`, {
-          headers: { Authorization: `Bearer ${result.token}` }
-        });
-        setUser(userResponse.data); // Cập nhật thông tin người dùng 
+        // Set user information in context
+        setUser(result.user);
         navigate('/home');
         console.log('Login Successfully');
       } else {
@@ -65,17 +62,19 @@ function LoginForm() {
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        if (error.response.data.status == "Please verify your account!") {
+        if (error.response.data.message === "Please verify your account!") {
           setMessage("Please verify your account! Check your email for the verification link.");
-        } else {
+        } else if (error.response.data.message === "Username or password is incorrect") {
           setMessage('Username or password is incorrect');
+        } else {
+          setMessage('An unexpected error occurred');
         }
       } else {
         setMessage('An unexpected error occurred');
       }
-
     }
   };
+
 
   return (
     <div>

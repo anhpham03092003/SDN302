@@ -29,20 +29,6 @@ const AppProvider = ({ children }) => {
             .then((res) => { setGroups(res.data) })
     }, [accessToken]);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await axios.get(`${authentication_API}/get-user`, {
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
-                setUser(res.data); // Cập nhật thông tin người dùng
-            } catch (error) {
-                console.error('Error fetching user:', error.response ? error.response.data : error.message);
-            }
-        };
-        fetchUser();
-    }, [accessToken]);
-
 
     //fuction
     const handleLogout = () => {
@@ -66,6 +52,7 @@ const AppProvider = ({ children }) => {
         }
     };
 
+
     //fuction
     const editTask = async (name, value, groupId) => {
         const response = await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/edit`, { [name]: value }, { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -85,7 +72,6 @@ const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             groups_API,
             accessToken,
-
             groups, setGroups,
             user, setUser,
             group, setGroup,

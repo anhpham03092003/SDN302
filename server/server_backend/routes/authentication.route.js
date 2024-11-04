@@ -20,6 +20,11 @@ authRouter.get("/get-user",
     AuthMiddleware.verifyAccessToken,
     AuthController.getUserById
 );
+
+//lấy bằng email
+authRouter.post("/getByEmail",
+    AuthController.getUserByEmail);
+
 // đặt lại mật khẩu
 authRouter.post("/reset-password/:id/:token",
     AuthController.resetPassword);
