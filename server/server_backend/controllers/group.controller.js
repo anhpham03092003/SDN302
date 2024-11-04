@@ -364,7 +364,9 @@ async function getAllTask(req, res, next) {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors[404]("Group not found")
+            // throw createHttpErrors[404]("Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const { tasks } = group;
         res.status(200).json(tasks)
@@ -383,7 +385,8 @@ async function createTask(req, res, next) {
         // const role = group.memberRole(id);
         // console.log(role);
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
         }
         const newTask = {
             taskName: req.body.taskName,
@@ -410,14 +413,20 @@ async function editTask(req, res, next) {
         const { groupId, taskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
         if (!req.body) {
-            throw createHttpErrors(400, "Input is reqiured")
+            // throw createHttpErrors(400, "Input is reqiured")
+            return res.status(400).json({ error: { status: 400, message: "Input is reqiured" } })
+
         }
         const updateTask = {
             taskName: req.body.taskName ? req.body.taskName : task.taskName,
@@ -459,11 +468,16 @@ async function deleteTask(req, res, next) {
         const { groupId, taskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
 
         await db.Groups.updateOne(
@@ -487,14 +501,20 @@ async function addSubTask(req, res, next) {
         const { groupId, taskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
         if (!req.body.subTaskName) {
-            throw createHttpErrors.BadRequest("Subtask name is required")
+            // throw createHttpErrors.BadRequest("Subtask name is required")
+            return res.status(404).json({ error: { status: 404, message: "Sub task not found" } })
+
         }
         const newSubTask = {
             subTaskName: req.body.subTaskName
@@ -528,10 +548,14 @@ async function getAllSubTask(req, res, next) {
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
             throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
             throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
 
         const { subTasks } = task;
@@ -548,15 +572,21 @@ async function editSubTask(req, res, next) {
         const { groupId, taskId, subTaskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
         const subTask = task.subTasks.find(st => st._id == subTaskId)
         if (!subTask) {
-            throw createHttpErrors(404, "Subtask not found")
+            // throw createHttpErrors(404, "Subtask not found")
+            return res.status(404).json({ error: { status: 404, message: "Sub task not found" } })
+
         }
         const updateSubTask = {
             subTaskName: req.body.subTaskName ? req.body.subTaskName : subTask.subTaskName,
@@ -597,15 +627,21 @@ async function deleteSubTask(req, res, next) {
         const { groupId, taskId, subTaskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
         const subTask = task.subTasks.find(st => st._id == subTaskId)
         if (!subTask) {
-            throw createHttpErrors(404, "Subtask not found")
+            // throw createHttpErrors(404, "Subtask not found")
+            return res.status(404).json({ error: { status: 404, message: "Sub task not found" } })
+
         }
 
         await db.Groups.updateOne(
@@ -631,14 +667,19 @@ async function createColumn(req, res, next) {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const newColumn = req.body.newColumn.toLowerCase();
         if (newColumn == "") {
-            throw createHttpErrors(400, "Input please");
+
+            return res.status(400).json({ error: { status: 400, message: "Input please" } })
         }
         if (group.classifications.includes(newColumn)) {
-            throw createHttpErrors(400, "Column already exists");
+            // throw createHttpErrors(400, "Column already exists");
+            return res.status(404).json({ error: { status: 404, message: "Column not found" } })
+
         }
 
         const updatedGroup = await db.Groups.findByIdAndUpdate(
@@ -663,18 +704,25 @@ async function editColumn(req, res, next) {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const newColumn = req.body.newColumn?.toLowerCase();
         const selectedColumn = req.body.selectedColumn?.toLowerCase();
         if (newColumn == "" || selectedColumn == "") {
-            throw createHttpErrors(400, "Input please");
+            return res.status(400).json({ error: { status: 400, message: "Input please" } })
+
         }
         if (!group.classifications.includes(selectedColumn)) {
-            throw createHttpErrors(400, "The selected column does not exist");
+            // throw createHttpErrors(400, "The selected column does not exist");
+            return res.status(400).json({ error: { status: 400, message: "The selected column does not exist" } })
+
         }
         if (group.classifications.includes(newColumn)) {
-            throw createHttpErrors(400, "The new column already existed");
+            // throw createHttpErrors(400, "The new column already existed");
+            return res.status(400).json({ error: { status: 400, message: "The new column already existed" } })
+
         }
         const updatedClassifications = group.classifications.map((column) => column == selectedColumn ? newColumn : column);
         const updatedTasks = [...group.tasks]
@@ -713,18 +761,22 @@ async function deleteColumn(req, res, next) {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
         }
         const selectedColumn = req.body.selectedColumn.toLowerCase();
         const alternativeColumn = req.body.alternativeColumn.toLowerCase();
         if (alternativeColumn == "" || selectedColumn == "") {
-            throw createHttpErrors(400, "Input please");
+            // throw createHttpErrors(400, "Input please");
+            return res.status(400).json({ error: { status: 400, message: "Input please" } })
         }
         if (!group.classifications.includes(selectedColumn)) {
-            throw createHttpErrors(400, "The selected column does not exist");
+            // throw createHttpErrors(400, "The selected column does not exist");
+            return res.status(400).json({ error: { status: 400, message: "The selected column does not exist" } })
         }
         if (!group.classifications.includes(alternativeColumn)) {
-            throw createHttpErrors(400, "The alternative column does not exist");
+            // throw createHttpErrors(400, "The alternative column does not exist");
+            return res.status(400).json({ error: { status: 400, message: "The alternative column already existed" } })
         }
         const { tasks } = group;
 
@@ -763,11 +815,15 @@ async function getAllComments(req, res, next) {
         const { groupId, taskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
 
         const { comments } = task;
@@ -784,14 +840,20 @@ async function addComment(req, res, next) {
         const { groupId, taskId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
         if (!req.body) {
-            throw createHttpErrors.BadRequest("Comment is required")
+
+            // throw createHttpErrors.BadRequest("Comment is required")
+            return res.status(400).json({ error: { status: 400, message: "Input please" } })
         }
         const newComment = {
             user: id,
@@ -825,15 +887,21 @@ async function editComment(req, res, next) {
         const { groupId, taskId, commentId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
+
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
+
         }
         const comment = task.comments.find(c => c._id == commentId)
         if (!comment) {
-            throw createHttpErrors(404, "Comment not found")
+            // throw createHttpErrors(404, "Comment not found")
+            return res.status(404).json({ error: { status: 404, message: "Comment not found" } })
+
         }
 
         const updateComment = {
@@ -872,15 +940,18 @@ async function deleteComment(req, res, next) {
         const { groupId, taskId, commentId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
-            throw createHttpErrors(404, "Group not found")
+            // throw createHttpErrors(404, "Group not found")
+            return res.status(404).json({ error: { status: 404, message: "Group not found" } })
         }
         const task = group.tasks.find(t => t._id == taskId)
         if (!task) {
-            throw createHttpErrors(404, "Task not found")
+            // throw createHttpErrors(404, "Task not found")
+            return res.status(404).json({ error: { status: 404, message: "Task not found" } })
         }
         const comment = task.comments.find(c => c._id == commentId)
         if (!comment) {
-            throw createHttpErrors(404, "Comment not found")
+            // throw createHttpErrors(404, "Comment not found")
+            return res.status(404).json({ error: { status: 404, message: "Comment not found" } })
         }
 
         await db.Groups.findOneAndUpdate(
