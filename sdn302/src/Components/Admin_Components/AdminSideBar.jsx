@@ -9,47 +9,36 @@ function AdminSideBar() {
         <div>
             <Row className='vh-12'></Row>
           
-            <Row className='py-2 sidebar-items'>
-                <Col className='align-content-center text-start' md={2}>
-                    <FaCog/>
-                </Col>
-                <Col className='align-content-center text-start' md={10}>
-                    <Link to="/settings" className='text-decoration-none'>
-                        <p className='m-2'>Setting</p>
-                    </Link>
-                </Col>
-            </Row>
-
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}>
                     <FaBell/>
                 </Col>
                 <Col className='align-content-center text-start' md={10}>
-                    <Link to="/notifications" className='text-decoration-none'>
-                        <p className='m-2'>Notifications</p>
-                    </Link>
+                    <p className='m-0'>
+                        <Link to="/notifications" className='text-decoration-none text-dark'>Notifications</Link>
+                    </p>
                 </Col>
             </Row>
 
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}>
                     <MdSpaceDashboard/>
                 </Col>
                 <Col className='align-content-center text-start' md={10}>
-                    <Link to="/admin/dashboard" className='text-decoration-none'>
-                        <p className='m-2'>Dashboard</p>
-                    </Link>
+                    <p className='m-0'>
+                        <Link to="/admin/dashboard" className='text-decoration-none text-dark'>Dashboard</Link>
+                    </p>
                 </Col>
             </Row>
 
-            <Row className='py-2 sidebar-items'>
+            <Row className='py-2 background-hover'>
                 <Col className='align-content-center text-start' md={2}>
                     <FaUser/>
                 </Col>
                 <Col className='align-content-center text-start' md={10}>
-                    <Link to="/admin/userManagement" className='text-decoration-none'>
-                        <p className='m-2'>User Management</p>
-                    </Link>
+                    <p className='m-0'>
+                        <Link to="/admin/userManagement" className='text-decoration-none text-dark'>User Management</Link>
+                    </p>
                 </Col>
             </Row>
         </div>
