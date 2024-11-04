@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
         },
         avatar: {
             type: String,
-            default: 'default-avatar-url' // Default avatar URL, update with a valid URL
+            default: '/images/avatar/imageDefault.jpg' // Default avatar URL, update with a valid URL
         }
     },
     groups: [{
