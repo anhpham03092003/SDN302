@@ -28,12 +28,12 @@ groupRouter.get("/:groupId/get-group",
 )
 
 groupRouter.put("/:groupId/edit",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup],
     GroupController.editGroupDetail
 )
 
 groupRouter.delete("/:groupId/delete",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isOwner],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isOwner],
     GroupController.deleteGroup
 )
 
@@ -75,17 +75,17 @@ groupRouter.get("/user/:groupId/get-user-role",
 
 //CRUD Column
 groupRouter.post("/:groupId/create-column",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.createColumn
 )
 
 groupRouter.put("/:groupId/edit-column",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.editColumn
 )
 
 groupRouter.delete("/:groupId/delete-column",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteColumn
 )
 
@@ -94,69 +94,69 @@ groupRouter.delete("/:groupId/delete-column",
 // Tasks
 groupRouter.get(
     "/:groupId/tasks/get-all",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup],
     GroupController.getAllTask
 )
 
 groupRouter.post(
     "/:groupId/tasks/create",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.createTask
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/edit",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.editTask
 )
 groupRouter.delete(
     "/:groupId/tasks/:taskId/delete",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteTask
 )
 
 //Subtask
 groupRouter.get(
     "/:groupId/tasks/:taskId/subTasks/get-all",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup],
     GroupController.getAllSubTask
 )
 groupRouter.post(
     "/:groupId/tasks/:taskId/subTasks/create",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.addSubTask
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/edit",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.editSubTask
 )
 
 groupRouter.delete(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/delete",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteSubTask
 )
 
 // Comment
 groupRouter.get(
     "/:groupId/tasks/:taskId/comments/get-all",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup],
     GroupController.getAllComments
 )
 groupRouter.post(
     "/:groupId/tasks/:taskId/comments/create",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.addComment
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/comments/:commentId/edit",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.editComment
 )
 
 groupRouter.delete(
     "/:groupId/tasks/:taskId/comments/:commentId/delete",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteComment
 )
 
@@ -170,6 +170,13 @@ groupRouter.get(
     "/count-premium",
     GroupController.countPremiumGroups
 )
+
+groupRouter.post('/:groupId/invite',
+    [GroupMiddleware.overBasicFunction],
+    GroupController.inviteUserToGroup
+);
+
+groupRouter.get('/confirm-invite', GroupController.confirmInvite);
 
 
 module.exports = groupRouter

@@ -1,17 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
+import { AppContext } from '../../Context/AppContext';
 
 const AddMember = ({ show, handleClose }) => {
+  const { groups_API, group, authentication_API, accessToken } = useContext(AppContext);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState('Role 1'); // Default role
+  const [role, setRole] = useState('member');
+  const groupId = group?._id;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle adding the member here
-    console.log('Member Added:', { email, name, role });
-    handleClose(); // Close the modal after submission
+    try {
+      const response = await axios.post(
+        `${authentication_API}/getByEmail`,
+        { email },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+
+      const fetchedUser = response.data;
+      if (fetchedUser && fetchedUser.account.email === email) {
+        const isAlreadyMember = group.members.some(
+          (member) => member._id === fetchedUser._id
+        );
+
+        if (isAlreadyMember) {
+          alert('Member already exists in the group');
+          return;
+        }
+
+        const inviteResponse = await axios.post(`${groups_API}/${groupId}/invite`, {
+          email,
+          role,
+          action: 'inviteMember'
+        });
+
+        // Kiểm tra nếu phản hồi có lỗi, lấy thông báo lỗi từ API
+        if (inviteResponse.data.error.status === 400) {
+          alert('You must upgrade group to invite more members!');
+        } else {
+          // Nếu không có lỗi, hiển thị thông báo thành công
+          alert('Email invite sent successfully!');
+          handleClose();
+        }
+
+        // console.log('Member Added:', inviteResponse.data.error.status);
+        handleClose();
+      } else {
+        alert('User with the provided email not found');
+      }
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+    }
   };
+
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -30,7 +73,6 @@ const AddMember = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-
           <Form.Group controlId="formName">
             <Form.Label>Name (Optional)</Form.Label>
             <Form.Control
@@ -40,19 +82,13 @@ const AddMember = ({ show, handleClose }) => {
               onChange={(e) => setName(e.target.value)}
             />
           </Form.Group>
-
           <Form.Group controlId="formRole">
             <Form.Label>Choose Role</Form.Label>
-            <Form.Control
-              as="select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option>Role 1</option>
-              <option>Role 2</option>
+            <Form.Control as="select" value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="member">Member</option>
+              <option value="viewer">Viewer</option>
             </Form.Control>
           </Form.Group>
-
           <Button variant="primary" type="submit" style={{ marginTop: '10px' }}>
             Send Invitation
           </Button>

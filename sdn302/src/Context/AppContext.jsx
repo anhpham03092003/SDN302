@@ -85,7 +85,6 @@ const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             groups_API,
             accessToken,
-
             groups, setGroups,
             user, setUser,
             group, setGroup,

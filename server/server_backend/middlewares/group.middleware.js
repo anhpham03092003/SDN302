@@ -79,25 +79,28 @@ async function overBasicFunction(req, res, next) {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
         const isPremium = group.isPremium;
-        if(isPremium==false){
-            if(group.classifications.length >= 3){
-                throw createError[400]("You must upgrade group to create more column task!")
+
+        const action = req.body.action;
+
+        if (!isPremium) {
+            if (action === "inviteMember") {
+                if (group.members.length >= 5) {
+                    throw createError[400]("You must upgrade group to invite more members!");
+                }
+            } else if (action === "addTask") {
+                if (group.classifications.length >= 3) {
+                    throw createError[400]("You must upgrade group to create more columns for tasks!");
+                }
             }
-            if(group.members.length >= 5){
-                throw createError[400]("You must upgrade group to invite more member!")
-            }
-                req.body.assignee =""
-                req.body.priority =""
-                req.body.status=""
-                throw createError[400]("You must upgrade group to unlock this function!")
         }
-        
+
         next();
-        return;
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
+
+
 
 module.exports = {
     isInGroup,
