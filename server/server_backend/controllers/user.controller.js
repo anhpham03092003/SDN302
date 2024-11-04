@@ -18,21 +18,32 @@ const updateProfile = async (req, res, next) => {
         const newProfile = {
             username: req.body.username,
             email: req.body.email,
-            phoneNumber: req.body.phoneNumber
-        }
-        const user = await db.Users.findByIdAndUpdate(userId, {
-            $set: {
-                'profile.phoneNumber': newProfile.phoneNumber,
-                'username': newProfile.username,
-                'account.email': newProfile.email
-            }
-        },
-            { new: true, runValidators: true });
+            phoneNumber: req.body.phoneNumber,
+            avatar: req.body.avatar
+        };
+
+        console.log('Received profile data:', newProfile);  // Kiểm tra dữ liệu nhận từ frontend
+
+        const user = await db.Users.findByIdAndUpdate(
+            userId,
+            {
+                $set: {
+                    'profile.phoneNumber': newProfile.phoneNumber,
+                    'username': newProfile.username,
+                    'account.email': newProfile.email,
+                    'profile.avatar': newProfile.avatar
+                }
+            },
+            { new: true, runValidators: true }
+        );
+
         res.status(200).json(user);
     } catch (error) {
+        console.error('Error updating profile:', error);  
         next(error);
     }
-}
+};
+
 
 const changePassword = async (req, res, next) => {
     const userId = req.payload.id; // Get the user ID from the request payload

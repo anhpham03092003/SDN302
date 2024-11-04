@@ -39,27 +39,23 @@ function Header() {
                     <Nav className='d-flex align-items-center'>
                         {user && user.role === 'admin' && (
                             <Nav.Item className='mx-2'>
-                                <Button
-                                    variant="success"
-                                    onClick={() => navigate('/admin/userManagement')}
-                                    className="btn-md"
-                                >
+                                <Link to="/admin/userManagement" className="btn btn-success btn-md">
                                     For Admin
-                                </Button>
+                                </Link>
                             </Nav.Item>
                         )}
                         <Nav.Item className='align-content-center'>
                             <NavDropdown title={<FaBell className='text-dark m-0 item-hover' />} id="basic-nav-dropdown">
-                                <NavDropdown.Header href="/"><h5>Notifications</h5></NavDropdown.Header>
+                                <NavDropdown.Header as="div"><h5>Notifications</h5></NavDropdown.Header>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item href="/">Notification 1</NavDropdown.Item>
-                                <NavDropdown.Item href="/">Notification 2</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/">Notification 1</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/">Notification 2</NavDropdown.Item>
                             </NavDropdown>
                         </Nav.Item>
                         <Nav.Item className='p-2'>
                             <NavDropdown title={<span className={styles.username}>{user ? user.username : 'User'}</span>} id="basic-nav-dropdown">
-                                <NavDropdown.Item href="/profile/profileInfo"><FaUser /> User profile</NavDropdown.Item>
-                                <NavDropdown.Item href="/profile/changePassword"><FaPen /> Change password</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/profile/profileInfo"><FaUser /> User profile</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/profile/changePassword"><FaPen /> Change password</NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item onClick={handleLogoutClick}>
                                     <FaArrowRight /> Logout

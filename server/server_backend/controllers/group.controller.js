@@ -1,7 +1,10 @@
 const db = require('../models');
+const JWT = require('jsonwebtoken');
 const bcrypt = require("bcrypt")
 const morgan = require("morgan")
 const createHttpErrors = require("http-errors");
+const authenticationController = require("./authentication.controller");
+
 
 // Create new group
 
@@ -670,9 +673,8 @@ async function createColumn(req, res, next) {
         }
         const newColumn = req.body.newColumn.toLowerCase();
         if (newColumn == "") {
-            // throw createHttpErrors(400, "Input please");
-            return res.status(400).json({ error: { status: 400, message: "Input please" } })
 
+            return res.status(400).json({ error: { status: 400, message: "Input please" } })
         }
         if (group.classifications.includes(newColumn)) {
             // throw createHttpErrors(400, "Column already exists");
@@ -709,7 +711,6 @@ async function editColumn(req, res, next) {
         const newColumn = req.body.newColumn?.toLowerCase();
         const selectedColumn = req.body.selectedColumn?.toLowerCase();
         if (newColumn == "" || selectedColumn == "") {
-            // throw createHttpErrors(400, "Input please");
             return res.status(400).json({ error: { status: 400, message: "Input please" } })
 
         }
@@ -850,9 +851,9 @@ async function addComment(req, res, next) {
 
         }
         if (!req.body) {
+
             // throw createHttpErrors.BadRequest("Comment is required")
             return res.status(400).json({ error: { status: 400, message: "Input please" } })
-
         }
         const newComment = {
             user: id,
@@ -1022,13 +1023,95 @@ const countPremiumGroups = async (req, res, next) => {
     }
 };
 
+
+// Hàm để thêm người dùng vào nhóm thông qua email và gửi link xác nhận
+async function inviteUserToGroup(req, res, next) {
+    try {
+        const { email, role } = req.body;
+        const groupId = req.params.groupId;
+
+        if (!email || !groupId || !role) {
+            throw createError.BadRequest("Missing required fields: email, groupId, or role");
+        }
+        const user = await db.Users.findOne({ "account.email": email });
+        if (!user) {
+            throw createError.NotFound("User with this email not found");
+        }
+
+        const group = await db.Groups.findById(groupId);
+        if (!group) {
+            throw createError.NotFound("Group not found");
+        }
+
+        if (!group.isPremium && group.members.length >= 5) {
+            throw createError.BadRequest("Cannot invite more members to a non-premium group with 5 members");
+        }
+
+        // Tạo token mới để mời
+        const token = JWT.sign(
+            { userId: user._id, groupId, role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        // Link xác nhận
+        const link = `http://localhost:9999/groups/confirm-invite?token=${token}`;
+
+        // Gửi email với link xác nhận
+        await authenticationController.sendEmail("verify", email, link);
+
+        res.status(200).json({ message: "Invitation sent successfully" });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+// xác nhận vào nhóm bằng link
+async function confirmInvite(req, res, next) {
+    try {
+        const token = req.query.token;
+
+        if (!token) throw createHttpErrors.BadRequest("Token is required");
+
+        const decoded = JWT.verify(token, process.env.JWT_SECRET);
+        const { userId, groupId, role } = decoded;
+
+        const group = await db.Groups.findById(groupId);
+        if (!group) throw createHttpErrors.NotFound("Group not found");
+
+        const isMember = group.members.some(member => member._id.toString() === userId);
+        if (isMember) {
+            throw createHttpErrors.Conflict("User is already in the group");
+        }
+
+        group.members.push({ _id: userId, groupRole: role });
+        await group.save();
+
+        const user = await db.Users.findById(userId);
+        if (!user) throw createHttpErrors.NotFound("User not found");
+
+        const isGroupExists = user.groups.some(groupId => groupId.toString() === group._id.toString());
+        if (!isGroupExists) {
+            user.groups.push(group._id);
+            await user.save();
+        }
+
+        res.status(200).json({ message: "User added to group successfully", groupId });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
 // Get all groups from the database
 async function getAllGroups(req, res, next) {
     try {
         const groups = await db.Groups.find();
-        res.status(200).json(groups); 
+        res.status(200).json(groups);
     } catch (error) {
-        next(error); 
+        next(error);
     }
 }
 
@@ -1059,6 +1142,8 @@ const GroupController = {
     addComment,
     editComment,
     deleteComment,
+    inviteUserToGroup,
+    confirmInvite,
     getAllComments,
     createColumn,
     editColumn,

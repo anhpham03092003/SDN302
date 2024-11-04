@@ -136,11 +136,12 @@ async function restrictFunction(req, res, next) {
         }
 
         next();
-        return;
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
+
+
 
 module.exports = {
     isInGroup,

@@ -34,7 +34,21 @@ function ProfileInfo() {
 
   return (
     <div><div>
+      
     <h2>User Profile</h2>
+
+    <div className={styles.avatarContainer}>
+        {userInfo.profile.avatar ? (
+          <img
+            src={userInfo.profile.avatar} // Ensure this matches your API response structure
+            alt="User Avatar"
+            className={styles.avatarImage} // CSS class for avatar styling
+          />
+        ) : (
+          <div>No Avatar Available</div>
+        )}
+      </div>
+
     <div>
       <Table striped bordered hover>
         <thead>
