@@ -132,7 +132,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
             });
 
             if (response.status === 200) {
-                onUpdateTask(null);
+                onUpdateTask('delete');
                 console.log('Task deleted successfully');
                 setShowDeleteConfirm(false);
                 setShow(false);
