@@ -8,16 +8,16 @@ import { AppContext } from '../../Context/AppContext'
 import axios from 'axios'
 
 function GroupSpace() {
-    const {groups_API,group,setGroup,accessToken,currentUserRole,setCurrentUserRole} = useContext(AppContext);
+    const {groups_API,group,setGroup,accessToken,currentUserRole,setCurrentUserRole,showUpgrade,setShowUpgrade} = useContext(AppContext);
     const [newColumn,setNewColumn] = useState("");
 
     const [addColumn, setAddColumn] = useState(false)
-    const [showUpgrade, setShowUpgrade] = useState(false)
+    
 
     const handleAddColumn = async ()=>{
         if(currentUserRole?.groupRole!="viewer"){
             if(group.isPremium == false && group.classifications.length >=5){
-                window.alert("You must upgrade group!")
+                setShowUpgrade(true)
             }else{
                 if(newColumn!=""){
                     await axios.post(`${groups_API}/${group._id}/create-column`,{newColumn : newColumn}, { headers: { Authorization: `Bearer ${accessToken}` } })
