@@ -12,7 +12,7 @@ function Header() {
         handleLogout(); // Gọi hàm logout từ AppContext
         navigate('/'); // Điều hướng đến trang chủ
     };
-
+    console.log(user);
     return (
         <Container fluid className={styles.headerContainer}>
             <div className="d-flex justify-content-between align-items-center w-100">

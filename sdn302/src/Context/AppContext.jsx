@@ -29,6 +29,18 @@ const AppProvider = ({ children }) => {
             .then((res) => { setGroups(res.data) })
     }, [accessToken]);
 
+    useEffect(() => {
+        if (accessToken) {
+            const fetchUser = async () => {
+                const newUser = jwtDecode(accessToken);
+                setUser(newUser);
+            };
+            fetchUser();
+        } else {
+            setUser(null);
+        }
+    }, [accessToken]);
+
 
     //fuction
     const handleLogout = () => {

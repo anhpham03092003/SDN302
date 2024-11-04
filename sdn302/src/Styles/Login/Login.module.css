@@ -121,3 +121,12 @@
 .forgot {
     margin: 0px;
 }
+
+
+.message {
+    color: red;
+    background-color: pink;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}

@@ -20,7 +20,8 @@ const AddMember = ({ show, handleClose }) => {
       );
 
       const fetchedUser = response.data;
-      if (fetchedUser && fetchedUser.account.email === email) {
+
+      if (fetchedUser && fetchedUser.account && fetchedUser.account.email === email) {
         const isAlreadyMember = group.members.some(
           (member) => member._id === fetchedUser._id
         );
@@ -35,28 +36,26 @@ const AddMember = ({ show, handleClose }) => {
           role,
           action: 'inviteMember'
         });
-        console.log('Member Added:', inviteResponse.data.error.status);
 
-        // Kiểm tra nếu phản hồi có lỗi, lấy thông báo lỗi từ API
-        if (inviteResponse.data.error.status === 400) {
+        if (inviteResponse.data.error && inviteResponse.data.error.status === 400) {
           alert('You must upgrade group to invite more members!');
         } else {
-          // Nếu không có lỗi, hiển thị thông báo thành công
           alert('Email invite sent successfully!');
           handleClose();
         }
-
-        // console.log('Member Added:', inviteResponse.data.error.status);
-        handleClose();
       } else {
-        alert('User with the provided email not found');
+        alert('User with the provided email not found 1');
       }
     } catch (error) {
       console.error('Error:', error.response ? error.response.data : error.message);
-      alert('User with the provided email not found');
-
+      if (error.response && error.response.status === 404) {
+        alert('User with the provided email not found');
+      } else {
+        alert('An unexpected error occurred. Please try again later.');
+      }
     }
   };
+
 
 
   return (
