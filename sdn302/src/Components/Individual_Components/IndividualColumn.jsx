@@ -41,6 +41,13 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
     }, [token]);
 
     useEffect(() => {
+        const interval = setInterval(() => {
+            fetchUserInfo();
+        }, 500);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
         if (userInfo) {
             const filteredTasks = userInfo.individualTasks.filter((task) => task.status === column);
             setTasks(filteredTasks);
