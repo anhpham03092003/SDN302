@@ -15,6 +15,10 @@
   background-color: #F5F5F5 !important;
 }
 
+.background-color-quadra{
+  background-color: #FE964B !important;
+}
+
 .btn-membership {
   background: linear-gradient(270deg, var(--ds-background-accent-purple-bolder, #FE964B) 0%, var(--ds-background-neutral-bold-pressed, #ffa15e) 100%);
   

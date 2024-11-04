@@ -47,11 +47,13 @@ function LoginForm() {
   const onSubmit = async (event) => {
     event.preventDefault();
 
+
     try {
       const result = await loginUser(username, password);
 
       if (result.status === "Login successful!" && result.token) {
         localStorage.setItem('token', result.token);
+
 
         // Set user information in context
         setUser(result.user);
@@ -63,8 +65,10 @@ function LoginForm() {
     } catch (error) {
       console.error("Login error:", error); // In thông tin lỗi vào console để kiểm tra
 
+
       if (error.response && error.response.data) {
         const { status, message } = error.response.data;
+
 
         if (status === "Please verify your account!") {
           setMessage("Please verify your account! Check your email for the verification link.");

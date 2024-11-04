@@ -5,7 +5,7 @@ import { IoMdMenu } from 'react-icons/io';
 import IndividualSubTask from './IndividualSubTask';
 import axios from 'axios';
 
-function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
+function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
     const token = localStorage.getItem('token');
     const [userInfo, setUserInfo] = useState(null);
     const [description, setDescription] = useState(task.description || '');
@@ -19,6 +19,8 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
     const [subtaskStatus, setSubtaskStatus] = useState('inprogress');
     const [dateError, setDateError] = useState('');
     const [subtasks, setSubtasks] = useState(task.subTasks || []);
+
+    console.log(subtasks)
     const fetchUserInfo = async () => {
         try {
             const response = await axios.get('http://localhost:9999/users/get-profile', {
@@ -69,12 +71,12 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                     // Kiểm tra tính hợp lệ của ngày
                     const currentDate = new Date();
                     const selectedDate = new Date(value);
-                    
+
                     if (selectedDate < currentDate.setHours(0, 0, 0, 0)) {
                         setDateError('Ngày phải lớn hơn hoặc bằng ngày hiện tại.');
                         alert('Deadline cannot be in the past.');
                     } else {
-                        setDateError(''); 
+                        setDateError('');
                         setTaskDate(value);
                         updateTask(updatedData);
                     }
@@ -86,7 +88,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                 default:
                     return;
             }
-        }, 500); 
+        }, 500);
     };
 
     const handleAddSubtask = async () => {
@@ -99,7 +101,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
             const newSubtask = {
                 subName: subtaskName,
                 priority: subtaskPriority,
-                status: 'inprogress',
+                status: subtaskStatus,
             };
 
             const response = await axios.post(`http://localhost:9999/users/individual-task/task/${task._id}/sub-task/add`, newSubtask, {
@@ -109,12 +111,12 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
             });
             console.log('Response:', response.data);
             if (response.status === 201) {
-                setSubtasks(prevSubtasks => [...prevSubtasks, newSubtask]);
+                setSubtasks(prevSubtasks => [...prevSubtasks, newSubtask]); 
                 console.log('Subtask added successfully:', response.data);
                 setSubtaskName('');
                 setSubtaskPriority('medium');
                 setSubtaskStatus('inprogress');
-                
+
             }
 
         } catch (error) {
@@ -123,7 +125,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
     };
 
     const handleDeleteTask = async () => {
-        
+
         try {
             const response = await axios.delete(`http://localhost:9999/users/individual-task/task/${task._id}/delete`, {
                 headers: {
@@ -143,13 +145,11 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
     };
 
     const handleUpdateSubTask = (updatedSubTask) => {
-        if (updatedSubTask == 'delete') {
-            // Xóa subtask
+        if (updatedSubTask.action === 'delete') {
             setSubtasks((prevSubtasks) =>
                 prevSubtasks.filter((subtask) => subtask._id !== updatedSubTask._id)
             );
         } else {
-            // Cập nhật subtask
             setSubtasks((prevSubtasks) =>
                 prevSubtasks.map((subtask) =>
                     subtask._id === updatedSubTask._id ? updatedSubTask : subtask
@@ -157,7 +157,6 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
             );
         }
     };
-
     return (
         <>
             <Modal
@@ -198,10 +197,10 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                                     </Col>
                                     <Col md={2} className='text-end'>
                                         <strong>Status</strong>
-                                        <select 
+                                        <select
                                             className='form-select'
-                                            value={currentStatus} 
-                                            onChange={(e) => handleFieldChange('status', e.target.value)} 
+                                            value={currentStatus}
+                                            onChange={(e) => handleFieldChange('status', e.target.value)}
                                         >
                                             {
                                                 userInfo?.classifications?.map((classification, index) => (
@@ -223,8 +222,8 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                                         className='ms-4 border border-secondary-subtle'
                                         required
                                         value={description}
-                                        onChange={(e) => handleFieldChange('description', e.target.value)} 
-                                        
+                                        onChange={(e) => handleFieldChange('description', e.target.value)}
+
                                     />
                                 </Row>
                                 <Row className='mb-3'>
@@ -246,17 +245,17 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
                                             <Dropdown.ItemText>
-                                                <input 
-                                                    type='text' 
-                                                    placeholder='Subtask Name' 
+                                                <input
+                                                    type='text'
+                                                    placeholder='Subtask Name'
                                                     value={subtaskName}
                                                     onChange={(e) => setSubtaskName(e.target.value)}
                                                     className='form-control'
                                                 />
                                             </Dropdown.ItemText>
                                             <Dropdown.ItemText>
-                                                <select 
-                                                    className='form-select' 
+                                                <select
+                                                    className='form-select'
                                                     value={subtaskPriority}
                                                     onChange={(e) => setSubtaskPriority(e.target.value)}
                                                 >
@@ -266,8 +265,8 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                                                 </select>
                                             </Dropdown.ItemText>
                                             <Dropdown.ItemText>
-                                                <select 
-                                                    className='form-select' 
+                                                <select
+                                                    className='form-select'
                                                     value={subtaskStatus}
                                                     onChange={(e) => setSubtaskStatus(e.target.value)}
                                                 >
@@ -276,8 +275,8 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
                                                 </select>
                                             </Dropdown.ItemText>
                                             <Dropdown.ItemText>
-                                                <Button 
-                                                    variant="primary" 
+                                                <Button
+                                                    variant="primary"
                                                     onClick={handleAddSubtask}
                                                     className='w-100'
                                                 >

@@ -11,6 +11,7 @@ const AppProvider = ({ children }) => {
     // api
     const groups_API = "http://localhost:9999/groups"
     const authentication_API = `http://localhost:9999/authentication`;
+     const users_API = "http://localhost:9999/users"
     //parameter
     const [groups, setGroups] = useState([]);
     const [group, setGroup] = useState()
@@ -19,6 +20,7 @@ const AppProvider = ({ children }) => {
     const [selectedTask, setSelectedTask] = useState();
     const [show, setShow] = useState(false);
     const [groupMembers, setGroupMembers] = useState([]);
+    const [showUpgrade,setShowUpgrade]=useState(false)
     const [currentUserRole, setCurrentUserRole] = useState(null);
 
 
@@ -42,6 +44,11 @@ const AppProvider = ({ children }) => {
     }, [accessToken]);
 
 
+    useEffect(() => {
+        axios.get(`${users_API}/get-profile`, { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then((res) => { setUser(res.data) })
+    }, [accessToken]);
+   
     //fuction
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -95,7 +102,8 @@ const AppProvider = ({ children }) => {
             editTask,
             editSubTask,
             handleLogout,
-            checkTokenExpiration
+            checkTokenExpiration,
+            showUpgrade,setShowUpgrade
         }}>
             {children}
         </AppContext.Provider>

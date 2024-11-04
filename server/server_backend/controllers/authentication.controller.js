@@ -49,6 +49,10 @@ async function login(req, res) {
         if (user.status === "inactive") {
             return res.status(401).json({ status: "Please verify your account!" });
         }
+        if (user.status === "banned") {
+            return res.status(401).json({ status: "You have been banned" });
+        }
+
 
         if (user.status === "banned") {
             return res.status(401).json({ status: "You have been banned" });

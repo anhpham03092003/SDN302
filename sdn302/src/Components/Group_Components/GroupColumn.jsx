@@ -9,7 +9,7 @@ import { IoCheckmark } from 'react-icons/io5';
 import { AppContext } from '../../Context/AppContext';
 import axios from 'axios';
 function GroupColumn({ column }) {
-    const { groups_API, group, setGroup, accessToken, show, setShow, selectedTask, setSelectedTask,currentUserRole } = useContext(AppContext)
+    const { groups_API, group, setGroup, accessToken, show, setShow, selectedTask, setSelectedTask,currentUserRole,showUpgrade,setShowUpgrade } = useContext(AppContext)
 
     const tasks = group.tasks.filter((t) => {
         return t.status == column
@@ -20,6 +20,7 @@ function GroupColumn({ column }) {
     const [addTask, setAddTask] = useState(false)
     const [showDeletion, setShowDeletion] = useState(false)
 
+
     const handleDeleteColumn = async (e) => {
         e.preventDefault();
         if (currentUserRole?.groupRole != "viewer") {
@@ -29,7 +30,7 @@ function GroupColumn({ column }) {
                     headers: { Authorization: `Bearer ${accessToken}` },
                     data: { selectedColumn: column, alternativeColumn },
                 })
-                .then((res) => setGroup(res.data))
+                .then((res) => {setGroup(res.data);setShowDeletion(false)})
                 .catch((err) => console.log(err))
         } else {
             window.alert("You must be group member to add new column!")

@@ -12,7 +12,7 @@ const { getProfile, updateProfile, changePassword,
     getClassification, addClassification, editClassification, deleteClassification,
     getTask, addTask, updateTask, deleteTask,
     getSubTask, addSubTask, updateSubTask, deleteSubTask, getAllUser, banUser,
-    countNormalUsers, countGroups, countPremiumGroups } = require("../controllers/user.controller");
+    countNormalUsers, unbanUser } = require("../controllers/user.controller");
 
 
 
@@ -48,6 +48,8 @@ userRouter.delete("/individual-task/task/:taskId/sub-task/:subTaskId/delete", Au
 
 userRouter.get("/all-users", AuthMiddleware.verifyAccessToken, getAllUser);
 userRouter.put("/ban-user/:id", AuthMiddleware.verifyAccessToken, banUser);
+userRouter.put("/unban-user/:id", AuthMiddleware.verifyAccessToken, unbanUser);
+
 
 userRouter.get("/count-users", countNormalUsers);
 

@@ -19,6 +19,7 @@ const AddMember = ({ show, handleClose }) => {
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
+
       const fetchedUser = response.data;
 
       if (fetchedUser && fetchedUser.account && fetchedUser.account.email === email) {
@@ -26,10 +27,12 @@ const AddMember = ({ show, handleClose }) => {
           (member) => member._id === fetchedUser._id
         );
 
+
         if (isAlreadyMember) {
           alert('Member already exists in the group');
           return;
         }
+
 
         const inviteResponse = await axios.post(`${groups_API}/${groupId}/invite`, {
           email,
