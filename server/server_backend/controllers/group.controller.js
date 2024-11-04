@@ -980,7 +980,14 @@ const GroupController = {
     updatePremium,
     countGroups,
     countPremiumGroups,
-    getAllGroups
+    getAllGroups,
+    addComment,
+    editComment,
+    deleteComment,
+    getAllComments,
+    createColumn,
+    editColumn,
+    deleteColumn
 }
 
 module.exports = GroupController;
