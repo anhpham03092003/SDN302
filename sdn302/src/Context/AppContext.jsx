@@ -11,6 +11,7 @@ const AppProvider = ({ children }) => {
     // api
     const groups_API = "http://localhost:9999/groups"
     const authentication_API = `http://localhost:9999/authentication`;
+     const users_API = "http://localhost:9999/users"
     //parameter
     const [groups, setGroups] = useState([]);
     const [group, setGroup] = useState()
@@ -31,6 +32,11 @@ const AppProvider = ({ children }) => {
     }, [accessToken]);
 
 
+    useEffect(() => {
+        axios.get(`${users_API}/get-profile`, { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then((res) => { setUser(res.data) })
+    }, [accessToken]);
+   
     //fuction
     const handleLogout = () => {
         localStorage.removeItem('token');

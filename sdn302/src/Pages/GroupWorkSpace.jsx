@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import GroupSideBar from '../Components/Group_Components/GroupSideBar';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useParams,useNavigate  } from 'react-router-dom';
 import { FaUserPlus } from 'react-icons/fa6';
 import { GrMoreVertical } from 'react-icons/gr';
 import AddMember from '../Components/Group_Components/AddMember'; // Import AddMember
@@ -10,29 +10,39 @@ import axios from 'axios';
 
 function GroupWorkSpace() {
   const {groupId}=  useParams();
-  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole,showUpgrade,setShowUpgrade,setShow} = useContext(AppContext);
-  const navigate = useNavigate();
-  useEffect(()=>{
-    axios.get(`${groups_API}/${groupId}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
-    .then((res)=>{setGroup(res.data)})
-    .catch((err) => console.error(err));
-  },[])
+  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole,currentUserRole,user,showUpgrade,setShowUpgrade,setShow } = useContext(AppContext);
+  const navigate = useNavigate(); 
+  
+    // Fetch group data and user role
+    useEffect(() => {
+      axios.get(`${groups_API}/${groupId}/get-group`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then((res) => { setGroup(res.data); })
+        .catch((err) => console.error(err));
+  
+      axios.get(`${groups_API}/user/${groupId}/get-user-role`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then((res) => { setCurrentUserRole(res.data); })
+        .catch((err) => console.error(err));
+  
+      axios.get(`${groups_API}/${groupId}/get-member`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then((res) => { 
+          setGroupMembers(res.data.memberInfo);
+        })
+        .catch((err) => console.error(err));
+    }, [groupId, groups_API, accessToken, setGroup, setGroupMembers, setCurrentUserRole]);
+  
+    // Check if the logged-in user is a member of the group
+    useEffect(() => {
+      const isMember = groupMembers.some(member => member?.userId === user?.userId); // Check if the user is a member
+      console.log(user?.userId);
+      if (!isMember) {
+        navigate('/not-authorized'); // Redirect if not a member
+      }
+    }, [groupMembers, user, navigate]);
 
-  useEffect(()=>{
-    axios.get(`${groups_API}/user/${groupId}/get-user-role`,{headers:{ Authorization: `Bearer ${accessToken}`}})
-    .then((res)=>{setCurrentUserRole(res.data)})
-},[]);
 
-  useEffect(() => {
-    axios.get(`${groups_API}/${groupId}/get-member`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then((res) => { 
-      setGroupMembers(res.data.memberInfo);  // Assuming `memberInfo` contains an array of members
-    })
-    .catch((err) => console.error(err));
-  }, []);
+
   const [showAddMemberModal, setShowAddMemberModal] = useState(false); // State to control modal visibility
+
 
   const handleShow = () => setShowAddMemberModal(true);
   const handleClose = () => setShowAddMemberModal(false);
@@ -46,7 +56,7 @@ function GroupWorkSpace() {
         <Col md={10}>
           <Row className="group-header background-color-third vh-12">
             <Col md={6} className="align-content-center text-start">
-              <h5>{group?.groupName}</h5>
+              <h5>{group?.groupName}{}</h5>
             </Col>
             <Col md={6} className="align-content-center text-end">
               <Button className="rounded-0" onClick={handleShow}>

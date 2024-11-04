@@ -8,52 +8,43 @@ import { useNavigate } from 'react-router-dom';
 
 function CreateGroup() {
     const navigate = useNavigate();
-    const { groups_API } = useContext(AppContext);
+    const { groups_API, setGroups } = useContext(AppContext);
     const [message, setMessage] = useState({ type: null, text: '' });
 
     // Validation schema
     const SignupSchema = Yup.object().shape({
         groupName: Yup.string()
             .required('Required')
+            .min(3, 'Group name must be at least 3 characters')
             .max(15, 'Group name cannot exceed 15 characters'),
-        groupCode: Yup.string()
-            .required('Required')
-            .max(6, 'Group code cannot exceed 6 characters'),
     });
 
-    // Check if group name or code already exists
+    // Check if group name already exists
     const checkGroupExistence = async (values) => {
         try {
-            const response = await axios.post(`${groups_API}/check-existence`, values);
-            return response.data; // Expecting { groupNameExists: boolean, groupCodeExists: boolean }
+            const response = await axios.post(`${groups_API}/check-existence`, { groupName: values.groupName });
+            return response.data; // Expecting { groupNameExists: boolean }
         } catch (error) {
             console.error("Error checking group existence:", error);
-            throw new Error('Unable to check group existence.'); // Propagate error as necessary
+            throw new Error('Unable to check group existence.');
         }
     };
-
+    
     const handleSubmit = async (values, { setErrors, setSubmitting }) => {
         setSubmitting(true);
         try {
-            // Check if the group name or code already exists
+            // Check if the group name already exists
             const existenceCheck = await checkGroupExistence(values);
-            const { groupNameExists, groupCodeExists } = existenceCheck;
+            const { groupNameExists } = existenceCheck;
 
-            // Set errors based on the existence of group name or code
+            // Set errors if the group name exists
             if (groupNameExists) {
                 setErrors({ groupName: 'Group name already exists.' });
-            }
-            if (groupCodeExists) {
-                setErrors({ groupCode: 'Group code already exists.' });
-            }
-
-            // If either exists, exit early
-            if (groupNameExists || groupCodeExists) {
                 setSubmitting(false);
                 return;
             }
 
-            // If they don't exist, create the group
+            // If it doesn't exist, create the group
             const response = await axios.post(`${groups_API}/create`, values, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -61,9 +52,10 @@ function CreateGroup() {
             });
             const joinedGroup = response.data.group;
 
-            // Only navigate if the group is created successfully
+            // Only navigate and update groups if the group is created successfully
             if (joinedGroup) {
                 console.log("Group created successfully:", response.data);
+                setGroups((prevGroups) => [...prevGroups, joinedGroup]); // Add the new group to setGroups
                 navigate(`/groups/${joinedGroup._id}`);
             } else {
                 setErrors({ general: 'Group creation failed. Please try again.' });
@@ -77,7 +69,7 @@ function CreateGroup() {
                 setErrors({ general: 'An error occurred. Please try again.' });
             }
         } finally {
-            setSubmitting(false); // Ensure submitting state is reset
+            setSubmitting(false);
         }
     };
 
@@ -88,7 +80,6 @@ function CreateGroup() {
                     <Formik
                         initialValues={{
                             groupName: '',
-                            groupCode: '',
                         }}
                         validationSchema={SignupSchema}
                         onSubmit={handleSubmit}
@@ -102,13 +93,6 @@ function CreateGroup() {
                                     <Field id="groupName" name="groupName" placeholder="Enter group name..." className="form-control" />
                                     <p className='text-danger fw-bolder'>
                                         <ErrorMessage name="groupName" />
-                                    </p>
-                                </div>
-                                <div className='form-group my-3'>
-                                    <label htmlFor="groupCode" className='form-label'>Group code</label>
-                                    <Field id="groupCode" name="groupCode" placeholder="Enter group code..." className="form-control" />
-                                    <p className='text-danger fw-bolder'>
-                                        <ErrorMessage name="groupCode" />
                                     </p>
                                 </div>
                                 {errors.general && <p className='text-danger fw-bolder'>{errors.general}</p>}
