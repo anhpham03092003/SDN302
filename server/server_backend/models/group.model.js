@@ -21,6 +21,7 @@ const groupSchema = new mongoose.Schema({
         taskName: {
             type: String,
             required: [true,"Task name is required"],
+            unique:false,
             maxlength: 50 // Limit task name to 50 characters
         },
         description: {
@@ -42,7 +43,6 @@ const groupSchema = new mongoose.Schema({
         },
         status: {
             type: String,
-            enum: ['todo', 'inprogress', 'done'],
             required: true
         },
         createdAt: {
@@ -67,12 +67,6 @@ const groupSchema = new mongoose.Schema({
             status: {
                 type: String,
                 required: true,
-                validate: {
-                    validator: function(value) {
-                        return this.classifications.includes(value); 
-                    },
-                    message: props => `${props.value} is not a valid status!`
-                }
             },
             createdAt: {
                 type: Date,

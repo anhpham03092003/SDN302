@@ -9,7 +9,7 @@ userRouter.use(bodyParser.json());
 
 
 const { getProfile, updateProfile, changePassword,
-    getClassification, addClassification, editClassification,
+    getClassification, addClassification, editClassification, deleteClassification,
     getTask, addTask, updateTask, deleteTask,
     getSubTask, addSubTask, updateSubTask, deleteSubTask, getAllUser, banUser,
     countNormalUsers, countGroups, countPremiumGroups } = require("../controllers/user.controller");
@@ -19,12 +19,14 @@ const { getProfile, updateProfile, changePassword,
 userRouter.get("/get-profile", AuthMiddleware.verifyAccessToken, getProfile);
 
 userRouter.put("/update-profile", AuthMiddleware.verifyAccessToken, updateProfile);
-
+                                                                                                                                                                            
 userRouter.put("/change-password", AuthMiddleware.verifyAccessToken, changePassword);
 
 userRouter.get("/get-classification", AuthMiddleware.verifyAccessToken, getClassification);
 
 userRouter.post("/add-classification", AuthMiddleware.verifyAccessToken, addClassification);
+
+userRouter.delete("/delete-classification", AuthMiddleware.verifyAccessToken, deleteClassification);
 
 userRouter.put("/edit-classification", AuthMiddleware.verifyAccessToken, editClassification);
 
