@@ -35,12 +35,7 @@ function IndividualSpace() {
     const handleAddColumn = () => {
         setShowTempColumn(true); // Hiển thị cột tạm thời khi nhấn nút
     };
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchUserInfo();
-        }, 500);
-        return () => clearInterval(interval);
-    }, []);
+   
     // Hàm xử lý khi lưu cột mới
     const handleSaveColumn = async () => {
         if (newColumnName) {

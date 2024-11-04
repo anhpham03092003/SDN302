@@ -40,12 +40,6 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
         }
     }, [token]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchUserInfo();
-        }, 500);
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         if (userInfo) {
