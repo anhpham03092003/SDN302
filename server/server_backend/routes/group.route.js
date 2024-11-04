@@ -75,7 +75,7 @@ groupRouter.get("/user/:groupId/get-user-role",
 
 //CRUD Column
 groupRouter.post("/:groupId/create-column",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer,GroupMiddleware.overBasicFunction],
     GroupController.createColumn
 )
 
@@ -127,7 +127,7 @@ groupRouter.post(
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/edit",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer],
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer,GroupMiddleware.overBasicFunction],
     GroupController.editSubTask
 )
 

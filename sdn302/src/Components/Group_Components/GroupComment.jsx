@@ -5,45 +5,51 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 function GroupComment({ comment }) {
-    const { user, selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken, groupMembers, setGroupMembers } = useContext(AppContext);
+    const { user, selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken, groupMembers, setGroupMembers, currentUserRole } = useContext(AppContext);
     const { groupId } = useParams();
     const [showEdit, setShowEdit] = useState(false)
     const [newComment, setNewComment] = useState(comment?.content)
     const handleRemoveComment = async () => {
-        if (window.confirm("Remove this comment?")) {
-            await axios.delete(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/comments/${comment._id}/delete`, { headers: { Authorization: `Bearer ${accessToken}` } })
-                .then((res) => {
-                    const updatedComments = selectedTask.comments.filter(comment => comment._id != res.data);
-                    const updatedTasks = group.tasks.map(task =>
-                        task._id == selectedTask._id ? { ...task, comments: updatedComments } : task
-                    );
-                    const updatedGroup = { ...group, tasks: [...updatedTasks] };
-                    setSelectedTask({ ...selectedTask, comments: [...updatedComments] })
-                    setGroup(updatedGroup)
-                })
-                .catch((err) => console.error(err));
+
+        if (currentUserRole?.groupRole != "viewer") {
+            if (window.confirm("Remove this comment?")) {
+                await axios.delete(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/comments/${comment._id}/delete`, { headers: { Authorization: `Bearer ${accessToken}` } })
+                    .then((res) => {
+                        const updatedComments = selectedTask.comments.filter(comment => comment._id != res.data);
+                        const updatedTasks = group.tasks.map(task =>
+                            task._id == selectedTask._id ? { ...task, comments: updatedComments } : task
+                        );
+                        const updatedGroup = { ...group, tasks: [...updatedTasks] };
+                        setSelectedTask({ ...selectedTask, comments: [...updatedComments] })
+                        setGroup(updatedGroup)
+                    })
+                    .catch((err) => console.error(err));
+            }
+        } else {
+            window.alert("You must be group member to add new column!")
         }
     }
 
     const handleEditComment = async () => {
-
-        await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/comments/${comment._id}/edit`, { content: newComment }, { headers: { Authorization: `Bearer ${accessToken}` } })
-            .then((res) => {
-                const newComment = res.data.tasks.find(task => task._id == selectedTask?._id).comments?.find(c => c._id == comment._id)
-                const updatedComments = selectedTask.comments.map(st =>
-                    st._id == comment._id ? { ...st, content: newComment?.content } : st
-                );
-                setSelectedTask({ ...selectedTask, comments: [...updatedComments] })
-                setGroup(res.data)
-            })
-            .catch((err)=>{console.log(err);})
-
-
+        if (currentUserRole?.groupRole != "viewer") {
+            await axios.put(`${groups_API}/${groupId}/tasks/${selectedTask?._id}/comments/${comment._id}/edit`, { content: newComment }, { headers: { Authorization: `Bearer ${accessToken}` } })
+                .then((res) => {
+                    const newComment = res.data.tasks.find(task => task._id == selectedTask?._id).comments?.find(c => c._id == comment._id)
+                    const updatedComments = selectedTask.comments.map(st =>
+                        st._id == comment._id ? { ...st, content: newComment?.content } : st
+                    );
+                    setSelectedTask({ ...selectedTask, comments: [...updatedComments] })
+                    setGroup(res.data)
+                })
+                .catch((err) => { console.log(err); })
+        } else {
+            window.alert("You must be group member to add new column!")
+        }
     }
     return (
         <Row className='d-flex justify-content-start my-1'>
             <Col md={1}>
-                <Image className='w-100' src={"https://as2.ftcdn.net/v2/jpg/04/10/43/77/1000_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg"}></Image>
+                <Image className='w-100' src={"https://as2.ftcdn.net/v2/jpg/04/10/43/77/1000_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg"} roundedCircle></Image>
             </Col>
             <Col md={11} className='d-flex justify-content-between'>
                 <strong className=''>{groupMembers?.find(member => member.id == comment?.user)?.name}</strong>
