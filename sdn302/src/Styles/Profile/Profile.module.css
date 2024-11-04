@@ -120,3 +120,39 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
       margin: 20px 40px;
   }
 }
+
+.imageList {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* Mỗi item hình ảnh */
+.imageItem {
+  margin: 5px;
+}
+
+/* Định dạng cho hình ảnh trong danh sách */
+.imageItem img {
+  border: 2px solid transparent; /* Mặc định không có viền */
+  border-radius: 4px; /* Bo góc cho hình ảnh */
+  transition: border-color 0.3s; /* Hiệu ứng chuyển đổi viền khi chọn */
+}
+
+/* Hiển thị viền khi hình ảnh được chọn */
+.imageItem img:hover {
+  border-color: #0F67B1; /* Đổi màu viền khi hover */
+}
+
+.avatarContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.avatarImage {
+  width: 250px; /* Set the width of the avatar */
+  height: 250px; /* Set the height of the avatar */
+  border-radius: 50%; /* Makes the avatar circular */
+  border: 2px solid gray; /* Add a circular border */
+  object-fit: cover; /* Ensures the image covers the entire area without distortion */
+}
