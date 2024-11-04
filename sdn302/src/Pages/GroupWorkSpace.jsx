@@ -10,7 +10,7 @@ import axios from 'axios';
 
 function GroupWorkSpace() {
   const {groupId}=  useParams();
-  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole,currentUserRole,user} = useContext(AppContext);
+  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole,currentUserRole,user,showUpgrade,setShowUpgrade,setShow } = useContext(AppContext);
   const navigate = useNavigate(); 
   
     // Fetch group data and user role

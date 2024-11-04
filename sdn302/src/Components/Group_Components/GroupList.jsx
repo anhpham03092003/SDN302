@@ -63,7 +63,7 @@ function GroupList() {
 
   useEffect(() => {
   }, [groups]);
-console.log(groups);
+
 
   return (
     <Container>

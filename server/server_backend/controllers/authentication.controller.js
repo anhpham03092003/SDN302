@@ -46,9 +46,13 @@ async function login(req, res) {
             return res.status(404).json({ status: "User not found!" });
         }
 
-        if (user.status !== "active") {
+        if (user.status === "inactive") {
             return res.status(401).json({ status: "Please verify your account!" });
         }
+        if (user.status === "banned") {
+            return res.status(401).json({ status: "You have been banned" });
+        }
+
 
         const isMatch = await bcrypt.compare(password, user.account.password);
         if (!isMatch) {

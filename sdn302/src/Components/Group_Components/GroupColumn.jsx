@@ -20,6 +20,7 @@ function GroupColumn({ column }) {
     const [addTask, setAddTask] = useState(false)
     const [showDeletion, setShowDeletion] = useState(false)
 
+
     const handleDeleteColumn = async (e) => {
         e.preventDefault();
         if (currentUserRole?.groupRole != "viewer") {
@@ -29,7 +30,7 @@ function GroupColumn({ column }) {
                     headers: { Authorization: `Bearer ${accessToken}` },
                     data: { selectedColumn: column, alternativeColumn },
                 })
-                .then((res) => setGroup(res.data))
+                .then((res) => {setGroup(res.data);setShowDeletion(false)})
                 .catch((err) => console.log(err))
         } else {
             window.alert("You must be group member to add new column!")

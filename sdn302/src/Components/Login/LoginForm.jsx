@@ -47,11 +47,14 @@ function LoginForm() {
   const onSubmit = async (event) => {
     event.preventDefault();
 
+
     try {
       const result = await loginUser(username, password);
-      // Check successful login
+
+
       if (result.status === "Login successful!" && result.token) {
         localStorage.setItem('token', result.token);
+
 
         // Set user information in context
         setUser(result.user);
@@ -61,19 +64,28 @@ function LoginForm() {
         setMessage('Login failed');
       }
     } catch (error) {
+      console.error("Login error:", error); // In thông tin lỗi vào console để kiểm tra
+
+
       if (error.response && error.response.data) {
-        if (error.response.data.message === "Please verify your account!") {
+        const { status, message } = error.response.data;
+
+
+        if (status === "Please verify your account!") {
           setMessage("Please verify your account! Check your email for the verification link.");
-        } else if (error.response.data.message === "Username or password is incorrect") {
-          setMessage('Username or password is incorrect');
+        } else if (status === "User not found!") {
+          setMessage("Username or password is incorrect");
+        } else if (status === "You have been banned") {
+          setMessage("You have been banned");
         } else {
-          setMessage('An unexpected error occurred');
+          setMessage("An unexpected error occurred 1");
         }
       } else {
-        setMessage('An unexpected error occurred');
+        setMessage("An unexpected error occurred 2");
       }
     }
   };
+
 
 
   return (
