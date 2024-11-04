@@ -59,7 +59,7 @@ function IndividualSubTask({ subtask, taskId , onUpdateSubTask }) {
                     },
                 }
             );
-            onUpdateSubTask('delete');
+            onUpdateSubTask({ _id: subtask._id, action: 'delete' });
             console.log('Subtask deleted successfully');
         } catch (error) {
             console.error('Error deleting subtask:', error);

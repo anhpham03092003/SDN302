@@ -40,14 +40,12 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
         }
     }, [token]);
 
-
-    // Tạo danh sách task cho cột này
     useEffect(() => {
         if (userInfo) {
             const filteredTasks = userInfo.individualTasks.filter((task) => task.status === column);
             setTasks(filteredTasks);
         }
-    }, [userInfo, column]);
+    }, [userInfo]);
     const handleEditColumnName = async () => {
         try {
             const response = await axios.put(
@@ -152,16 +150,24 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
                 task._id === updatedTask._id ? updatedTask : task
             );
             setUserInfo({ ...userInfo, individualTasks: updatedTasks });
+    
+            const filteredTasks = updatedTasks.filter((task) => task.status === column);
+            setTasks(filteredTasks);
+    
             await fetchUserInfo(); 
-           
         } else {
-            const updatedTasks = userInfo.individualTasks.filter(task => task._id !== updatedTask._id);
-            setUserInfo({ ...userInfo, individualTasks: updatedTasks });
-            await fetchUserInfo();
-            
+            // If the task was deleted
+            const filteredTasks = userInfo.individualTasks.filter(task => task._id !== updatedTask._id);
+            setUserInfo({ ...userInfo, individualTasks: filteredTasks });
+
+            const updatedTasks = filteredTasks.filter((task) => task.status === column);
+            setTasks(updatedTasks);
+    
+            await fetchUserInfo(); 
         }
         onDataChange(); 
     };
+    
     
 
 
