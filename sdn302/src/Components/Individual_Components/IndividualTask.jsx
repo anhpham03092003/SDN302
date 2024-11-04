@@ -9,10 +9,6 @@ function IndividualTask({task}) {
                 <Col md={9} className='text-start'><p className='m-0'>{task?.taskName}</p></Col>
                 <Col md={3} className='text-end'><FaPen className='item-hover'/></Col>
             </Row>
-            <Row>
-                <Col><p className='m-0 text-start'><FaRegCheckSquare/>   0/12</p></Col>
-
-            </Row>
         </Container>
     )
 }

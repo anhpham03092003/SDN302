@@ -4,14 +4,13 @@ import { FaRegSquareCheck, FaRegTrashCan, FaSquareCheck } from 'react-icons/fa6'
 import { GrTasks } from 'react-icons/gr';
 import axios from 'axios';
 
-function IndividualSubTask({ subtask, taskId }) {
-    const [isDone, setIsDone] = useState(subtask.status);
+function IndividualSubTask({ subtask, taskId , onUpdateSubTask }) {
+    const [isDone, setIsDone] = useState(subtask.status === 'done');
     const [priority, setPriority] = useState(subtask.priority || 'medium');
     const [subtaskName, setSubtaskName] = useState(subtask.subName);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // State for delete confirmation modal
     const token = localStorage.getItem('token');
 
-    // Function to call API to update the subtask
     const updateSubTask = async (updatedData) => {
         try {
             await axios.put(
@@ -23,37 +22,33 @@ function IndividualSubTask({ subtask, taskId }) {
                     },
                 }
             );
+            onUpdateSubTask({ ...subtask, ...updatedData });
             console.log('Subtask updated successfully');
         } catch (error) {
             console.error('Error updating subtask:', error);
         }
     };
 
-    // Handle priority change
     const handlePriorityChange = (e) => {
         const newPriority = e.target.value;
         setPriority(newPriority);
         updateSubTask({ priority: newPriority });
     };
 
-    // Toggle the status of the subtask
     const toggleIsDone = () => {
         const newStatus = !isDone ? 'done' : 'inprogress';
         setIsDone(!isDone);
         updateSubTask({ status: newStatus });
     };
 
-    // Update the subtask name on blur
     const handleNameBlur = () => {
         updateSubTask({ subName: subtaskName });
     };
 
-    // Handle delete subtask confirmation
     const handleRemoveSubTask = () => {
-        setShowDeleteConfirm(true); // Show the confirmation modal
+        setShowDeleteConfirm(true); 
     };
 
-    // Confirm deletion of the subtask
     const confirmDeleteSubTask = async () => {
         try {
             await axios.delete(
@@ -64,11 +59,12 @@ function IndividualSubTask({ subtask, taskId }) {
                     },
                 }
             );
+            onUpdateSubTask('delete');
             console.log('Subtask deleted successfully');
         } catch (error) {
             console.error('Error deleting subtask:', error);
         } finally {
-            setShowDeleteConfirm(false); // Hide the confirmation modal
+            setShowDeleteConfirm(false); 
         }
     };
 
@@ -99,7 +95,7 @@ function IndividualSubTask({ subtask, taskId }) {
                     </select>
                 </Col>
                 <Col md={2} className='align-self-center text-end'>
-                    {isDone ? (
+                    {!isDone  ? (
                         <FaRegSquareCheck className='mx-1 item-hover' onClick={toggleIsDone} />
                     ) : (
                         <FaSquareCheck className='mx-1 item-hover' onClick={toggleIsDone} />
