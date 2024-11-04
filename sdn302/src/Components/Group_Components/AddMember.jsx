@@ -35,6 +35,7 @@ const AddMember = ({ show, handleClose }) => {
           role,
           action: 'inviteMember'
         });
+        console.log('Member Added:', inviteResponse.data.error.status);
 
         // Kiểm tra nếu phản hồi có lỗi, lấy thông báo lỗi từ API
         if (inviteResponse.data.error.status === 400) {
@@ -52,6 +53,8 @@ const AddMember = ({ show, handleClose }) => {
       }
     } catch (error) {
       console.error('Error:', error.response ? error.response.data : error.message);
+      alert('User with the provided email not found');
+
     }
   };
 

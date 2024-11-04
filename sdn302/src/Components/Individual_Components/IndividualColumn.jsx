@@ -8,7 +8,7 @@ import IndividualTaskDetail from './IndividualTaskDetail';
 import { IoCheckmark } from 'react-icons/io5';
 import axios from 'axios';
 
-function IndividualColumn({ column }) {
+function IndividualColumn({ column, updateColumnName, onDataChange  }) {
     const [showTaskModal, setShowTaskModal] = useState(false); // for creating task
     const [showTaskDetail, setShowTaskDetail] = useState(false); // for task details
     const [currentTask, setCurrentTask] = useState(null);
@@ -19,7 +19,8 @@ function IndividualColumn({ column }) {
     const [description, setDescription] = useState('');
     const [deadline, setDeadline] = useState('');
     const token = localStorage.getItem('token');
-
+    const [tasks, setTasks] = useState([]);
+    const isOtherColumn = column === "other";
     const fetchUserInfo = async () => {
         try {
             const response = await axios.get('http://localhost:9999/users/get-profile', {
@@ -39,8 +40,14 @@ function IndividualColumn({ column }) {
         }
     }, [token]);
 
-    const tasks = userInfo?.individualTasks.filter((task) => task.status === column);
 
+    // Tạo danh sách task cho cột này
+    useEffect(() => {
+        if (userInfo) {
+            const filteredTasks = userInfo.individualTasks.filter((task) => task.status === column);
+            setTasks(filteredTasks);
+        }
+    }, [userInfo, column]);
     const handleEditColumnName = async () => {
         try {
             const response = await axios.put(
@@ -58,8 +65,9 @@ function IndividualColumn({ column }) {
             );
             console.log("Classification updated successfully:", response.data);
             setEditColumn(false);
-            fetchUserInfo();
-            
+            setNewColumnName(newColumnName);
+            updateColumnName(column, newColumnName);
+            await fetchUserInfo();
         } catch (error) {
             console.error("Error updating classification:", error);
         }
@@ -89,54 +97,120 @@ function IndividualColumn({ column }) {
 
             if (response.status === 201) {
                 console.log('Task created successfully:', response.data);
-                await fetchUserInfo(); // Refresh user info to include the new task
-                handleCloseTaskModal(); // Close modal
+                await fetchUserInfo(); // Cập nhật danh sách sau khi tạo task mới
+                handleCloseTaskModal();
             }
         } catch (error) {
             console.error("Error creating task:", error);
         }
     };
 
+    const deleteClassification = async () => {
+        const classification = column;
+        
+        try {
+            const response = await axios.delete(
+                `http://localhost:9999/users/delete-classification`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    data: { classification },
+                }
+            );
+    
+            if (response.status === 200) {
+                console.log("Classification deleted successfully:", response.data);
+                onDataChange();
+                await fetchUserInfo(); 
+            } else {
+                console.error("Error deleting classification:", response.data);
+            }
+        } catch (error) {
+            console.error("Error deleting classification:", error);
+        }
+    };
+    
     const handleRemoveTask = () => {
-        if (window.confirm("Remove this column?")) {
-            // Handle column removal logic here
+        if (window.confirm("Remove this column, yor task will be moved to 'Other'?")) {
+            deleteClassification();
         }
     };
 
     const handleCloseTaskModal = () => {
-        setShowTaskModal(false);
         setTaskName(''); // Clear the task name
         setDescription(''); // Clear the description
         setDeadline(''); // Clear the deadline
+        console.log("Modal closing... Current showTaskModal:", showTaskModal);
+        setShowTaskModal(false);
     };
+
+    const handleUpdateTask = async (updatedTask) => {
+        if (updatedTask) {
+            const updatedTasks = userInfo.individualTasks.map((task) =>
+                task._id === updatedTask._id ? updatedTask : task
+            );
+            setUserInfo({ ...userInfo, individualTasks: updatedTasks });
+            await fetchUserInfo(); 
+           
+        } else {
+            const updatedTasks = userInfo.individualTasks.filter(task => task._id !== updatedTask._id);
+            setUserInfo({ ...userInfo, individualTasks: updatedTasks });
+            await fetchUserInfo();
+            
+        }
+        onDataChange(); 
+    };
+    
+
+
 
     return (
         <Container fluid className='py-1'>
             <Row className='my-2 d-flex justify-content-between'>
                 <Col md={10} className='text-start'>
-                    {editColumn === false ? (
-                        <p className='m-0 p-1 rounded-1 background-hover fw-bold' onClick={() => setEditColumn(true)}>
+                    {!isOtherColumn ? (
+                        editColumn ? (
+                            <Row className='d-flex justify-content-between'>
+                                <Col md={8}>
+                                    <input
+                                        type="text"
+                                        name='columnName'
+                                        className='w-100'
+                                        value={newColumnName}
+                                        onChange={(e) => setNewColumnName(e.target.value)}
+                                        required
+                                    />
+                                </Col>
+                                <Col
+                                    md={2}
+                                    className='background-hover bg-white border border-1 border-black'
+                                    onClick={handleEditColumnName}
+                                >
+                                    <IoCheckmark />
+                                </Col>
+                                <Col
+                                    md={2}
+                                    className='background-hover bg-white border border-1 border-black'
+                                    onClick={() => setEditColumn(false)}
+                                >
+                                    <IoMdClose />
+                                </Col>
+                            </Row>
+                        ) : (
+                            <p
+                                className='m-0 p-1 rounded-1 background-hover fw-bold'
+                                onClick={() => setEditColumn(true)}
+                            >
+                                {column}
+                            </p>
+                        )
+                    ) : (
+                        // Always display "other" as non-editable
+                        <p className='m-0 p-1 rounded-1 fw-bold'>
                             {column}
                         </p>
-                    ) : (
-                        <Row className='d-flex justify-content-between'>
-                            <Col md={8}>
-                                <input
-                                    type="text"
-                                    name='columnName'
-                                    className='w-100'
-                                    value={newColumnName}
-                                    onChange={(e) => setNewColumnName(e.target.value)}
-                                    required
-                                />
-                            </Col>
-                            <Col md={2} className='background-hover bg-white border border-1 border-black' onClick={handleEditColumnName}>
-                                <IoCheckmark />
-                            </Col>
-                            <Col md={2} className='background-hover bg-white border border-1 border-black' onClick={() => setEditColumn(false)}>
-                                <IoMdClose />
-                            </Col>
-                        </Row>
                     )}
                 </Col>
                 <Col md={2} className='text-end item-hover p-1'><IoMdMore /></Col>
@@ -158,7 +232,9 @@ function IndividualColumn({ column }) {
                     </p>
                 </Col>
                 <Col md={3} className='text-end p-1'>
-                    <FaRegTrashCan className='item-hover' onClick={handleRemoveTask} />
+                    {!isOtherColumn && (
+                        <FaRegTrashCan className='item-hover' onClick={handleRemoveTask} />
+                    )}
                 </Col>
             </Row>
 
@@ -171,29 +247,41 @@ function IndividualColumn({ column }) {
                     <Form>
                         <Form.Group className="mb-3">
                             <Form.Label>Task Name</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                placeholder="Enter task name" 
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter task name"
                                 value={taskName}
                                 onChange={(e) => setTaskName(e.target.value)}
+                                required
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Description</Form.Label>
-                            <Form.Control 
-                                as="textarea" 
-                                rows={3} 
-                                placeholder="Enter task description" 
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder="Enter task description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
+                                required
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Deadline</Form.Label>
-                            <Form.Control 
-                                type="date" 
+                            <Form.Control
+                                type="date"
                                 value={deadline}
-                                onChange={(e) => setDeadline(e.target.value)}
+                                onChange={(e) => {
+                                    const selectedDate = new Date(e.target.value);
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+                                    if (selectedDate >= today) {
+                                        setDeadline(e.target.value);
+                                    } else {
+                                        alert("Please select a date that is today or in the future.");
+                                    }
+                                }}
+                                required
                             />
                         </Form.Group>
                     </Form>
@@ -210,10 +298,11 @@ function IndividualColumn({ column }) {
 
             {/* Task Detail Modal */}
             {currentTask && (
-                <IndividualTaskDetail 
-                    show={showTaskDetail} 
-                    setShow={setShowTaskDetail} 
-                    task={currentTask} 
+                <IndividualTaskDetail
+                    show={showTaskDetail}
+                    setShow={setShowTaskDetail}
+                    task={currentTask}
+                    onUpdateTask={handleUpdateTask}
                 />
             )}
         </Container>

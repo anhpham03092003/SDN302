@@ -5,7 +5,7 @@ import { IoMdMenu } from 'react-icons/io';
 import IndividualSubTask from './IndividualSubTask';
 import axios from 'axios';
 
-function IndividualTaskDetail({ show, setShow, task }) {
+function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
     const token = localStorage.getItem('token');
     const [userInfo, setUserInfo] = useState(null);
     const [description, setDescription] = useState(task.description || '');
@@ -17,7 +17,8 @@ function IndividualTaskDetail({ show, setShow, task }) {
     const [subtaskName, setSubtaskName] = useState('');
     const [subtaskPriority, setSubtaskPriority] = useState('medium');
     const [subtaskStatus, setSubtaskStatus] = useState('inprogress');
-
+    const [dateError, setDateError] = useState('');
+    const [subtasks, setSubtasks] = useState(task.subTasks || []);
     const fetchUserInfo = async () => {
         try {
             const response = await axios.get('http://localhost:9999/users/get-profile', {
@@ -44,6 +45,8 @@ function IndividualTaskDetail({ show, setShow, task }) {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            const updatedTask = response.data;
+            onUpdateTask(updatedTask);
             console.log('Task updated successfully:', response.data);
         } catch (error) {
             console.error('Error updating task:', error);
@@ -52,25 +55,38 @@ function IndividualTaskDetail({ show, setShow, task }) {
 
     const handleFieldChange = (field, value) => {
         const updatedData = { [field]: value };
-
-        switch (field) {
-            case 'taskName':
-                setTaskName(value);
-                break;
-            case 'description':
-                setDescription(value);
-                break;
-            case 'deadline':
-                setTaskDate(value);
-                break;
-            case 'status':
-                setCurrentStatus(value);
-                break;
-            default:
-                return;
-        }
-
-        updateTask(updatedData);
+        setTimeout(() => {
+            switch (field) {
+                case 'taskName':
+                    setTaskName(value);
+                    updateTask(updatedData);
+                    break;
+                case 'description':
+                    setDescription(value);
+                    updateTask(updatedData);
+                    break;
+                case 'deadline':
+                    // Kiểm tra tính hợp lệ của ngày
+                    const currentDate = new Date();
+                    const selectedDate = new Date(value);
+                    
+                    if (selectedDate < currentDate.setHours(0, 0, 0, 0)) {
+                        setDateError('Ngày phải lớn hơn hoặc bằng ngày hiện tại.');
+                        alert('Deadline cannot be in the past.');
+                    } else {
+                        setDateError(''); 
+                        setTaskDate(value);
+                        updateTask(updatedData);
+                    }
+                    break;
+                case 'status':
+                    setCurrentStatus(value);
+                    updateTask(updatedData);
+                    break;
+                default:
+                    return;
+            }
+        }, 500); 
     };
 
     const handleAddSubtask = async () => {
@@ -91,20 +107,23 @@ function IndividualTaskDetail({ show, setShow, task }) {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
+            console.log('Response:', response.data);
             if (response.status === 201) {
+                setSubtasks(prevSubtasks => [...prevSubtasks, newSubtask]);
                 console.log('Subtask added successfully:', response.data);
                 setSubtaskName('');
                 setSubtaskPriority('medium');
                 setSubtaskStatus('inprogress');
-                fetchUserInfo();
+                
             }
+
         } catch (error) {
             console.error('Error adding subtask:', error);
         }
     };
 
     const handleDeleteTask = async () => {
+        
         try {
             const response = await axios.delete(`http://localhost:9999/users/individual-task/task/${task._id}/delete`, {
                 headers: {
@@ -113,11 +132,29 @@ function IndividualTaskDetail({ show, setShow, task }) {
             });
 
             if (response.status === 200) {
+                onUpdateTask('delete');
                 console.log('Task deleted successfully');
-                setShow(false); 
+                setShowDeleteConfirm(false);
+                setShow(false);
             }
         } catch (error) {
             console.error('Error deleting task:', error);
+        }
+    };
+
+    const handleUpdateSubTask = (updatedSubTask) => {
+        if (updatedSubTask == 'delete') {
+            // Xóa subtask
+            setSubtasks((prevSubtasks) =>
+                prevSubtasks.filter((subtask) => subtask._id !== updatedSubTask._id)
+            );
+        } else {
+            // Cập nhật subtask
+            setSubtasks((prevSubtasks) =>
+                prevSubtasks.map((subtask) =>
+                    subtask._id === updatedSubTask._id ? updatedSubTask : subtask
+                )
+            );
         }
     };
 
@@ -137,6 +174,7 @@ function IndividualTaskDetail({ show, setShow, task }) {
                             onChange={(e) => handleFieldChange('taskName', e.target.value)}
                             className='form-control'
                             placeholder='Task Name'
+                            required
                         />
                     </Modal.Title>
                 </Modal.Header>
@@ -155,6 +193,7 @@ function IndividualTaskDetail({ show, setShow, task }) {
                                             value={taskDate}
                                             onChange={(e) => handleFieldChange('deadline', e.target.value)}
                                             className='ms-2 form-control'
+                                            required
                                         />
                                     </Col>
                                     <Col md={2} className='text-end'>
@@ -185,14 +224,15 @@ function IndividualTaskDetail({ show, setShow, task }) {
                                         required
                                         value={description}
                                         onChange={(e) => handleFieldChange('description', e.target.value)} 
+                                        
                                     />
                                 </Row>
                                 <Row className='mb-3'>
                                     <h5 className='mb-3'><FaList /> SubTask</h5>
                                     <Row className='ms-4'>
-                                        {task.subTasks?.map((subtask, index) => (
+                                        {subtasks.map((subtask, index) => (
                                             <Col md={12} key={index}>
-                                                <IndividualSubTask subtask={subtask} taskId={task._id} />
+                                                <IndividualSubTask subtask={subtask} taskId={task._id} onUpdateSubTask={handleUpdateSubTask} />
                                             </Col>
                                         ))}
                                     </Row>

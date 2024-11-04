@@ -178,5 +178,10 @@ groupRouter.post('/:groupId/invite',
 
 groupRouter.get('/confirm-invite', GroupController.confirmInvite);
 
+groupRouter.get(
+    "/get-all-groups",
+    GroupController.getAllGroups
+)
+
 
 module.exports = groupRouter
