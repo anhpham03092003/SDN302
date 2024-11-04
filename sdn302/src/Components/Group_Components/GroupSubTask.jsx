@@ -12,7 +12,7 @@ import { IoMdClose } from 'react-icons/io'
 function GroupSubTask({ subTask }) {
 
   const { groupId } = useParams();
-  const { selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken, groupMembers, setGroupMembers, editSubTask, currentUserRole } = useContext(AppContext)
+  const { selectedTask, setSelectedTask, groups_API, group, setGroup, accessToken, groupMembers, setGroupMembers, editSubTask, currentUserRole,showUpgrade,setShowUpgrade } = useContext(AppContext)
   const [inputSubTask, setInputSubTask] = useState(false);
   const [searchMember, setSearchMember] = useState("");
   const filterMembers = groupMembers.filter((m) => m.name.toUpperCase().includes(searchMember.toUpperCase()))
@@ -41,8 +41,8 @@ function GroupSubTask({ subTask }) {
 
     if (currentUserRole?.groupRole != "viewer") {
 
-      if (group.isPremium == false && group.classifications.length >= 5) {
-        window.alert("You must upgrade group!")
+      if (group.isPremium == false) {
+        setShowUpgrade(true)
       } else {
         try {
           const res = await editSubTask("assignee", memberId, groupId, subTask)
@@ -65,8 +65,8 @@ function GroupSubTask({ subTask }) {
   const handleStatusSubTask = async (status) => {
     if (currentUserRole?.groupRole != "viewer") {
 
-      if (group.isPremium == false && group.classifications.length >= 5) {
-        window.alert("You must upgrade group!")
+      if (group.isPremium == false ) {
+        setShowUpgrade(true)
       } else {
         try {
           const res = await editSubTask("status", status, groupId, subTask)
@@ -89,8 +89,8 @@ function GroupSubTask({ subTask }) {
 
     if (currentUserRole?.groupRole != "viewer") {
 
-      if (group.isPremium == false && group.classifications.length >= 5) {
-        window.alert("You must upgrade group!")
+      if (group.isPremium == false ) {
+        setShowUpgrade(true)
       } else {
         try {
           const res = await editSubTask("priority", priority, groupId, subTask)

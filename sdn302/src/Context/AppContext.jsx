@@ -19,6 +19,7 @@ const AppProvider = ({ children }) => {
     const [selectedTask, setSelectedTask] = useState();
     const [show, setShow] = useState(false);
     const [groupMembers, setGroupMembers] = useState([]);
+    const [showUpgrade,setShowUpgrade]=useState(false)
     const [currentUserRole, setCurrentUserRole] = useState(null);
 
 
@@ -97,7 +98,8 @@ const AppProvider = ({ children }) => {
             editTask,
             editSubTask,
             handleLogout,
-            checkTokenExpiration
+            checkTokenExpiration,
+            showUpgrade,setShowUpgrade
         }}>
             {children}
         </AppContext.Provider>

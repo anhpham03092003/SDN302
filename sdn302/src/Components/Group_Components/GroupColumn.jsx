@@ -9,7 +9,7 @@ import { IoCheckmark } from 'react-icons/io5';
 import { AppContext } from '../../Context/AppContext';
 import axios from 'axios';
 function GroupColumn({ column }) {
-    const { groups_API, group, setGroup, accessToken, show, setShow, selectedTask, setSelectedTask,currentUserRole } = useContext(AppContext)
+    const { groups_API, group, setGroup, accessToken, show, setShow, selectedTask, setSelectedTask,currentUserRole,showUpgrade,setShowUpgrade } = useContext(AppContext)
 
     const tasks = group.tasks.filter((t) => {
         return t.status == column

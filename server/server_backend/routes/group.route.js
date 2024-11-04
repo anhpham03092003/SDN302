@@ -127,7 +127,7 @@ groupRouter.post(
 )
 groupRouter.put(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/edit",
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer,GroupMiddleware.overBasicFunction],
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer,GroupMiddleware.restrictFunction],
     GroupController.editSubTask
 )
 

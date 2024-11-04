@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import GroupSideBar from '../Components/Group_Components/GroupSideBar';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { FaUserPlus } from 'react-icons/fa6';
 import { GrMoreVertical } from 'react-icons/gr';
 import AddMember from '../Components/Group_Components/AddMember'; // Import AddMember
@@ -10,8 +10,8 @@ import axios from 'axios';
 
 function GroupWorkSpace() {
   const {groupId}=  useParams();
-  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole} = useContext(AppContext);
-  
+  const {groups_API,group,setGroup,accessToken,setGroupMembers,groupMembers,setCurrentUserRole,showUpgrade,setShowUpgrade,setShow} = useContext(AppContext);
+  const navigate = useNavigate();
   useEffect(()=>{
     axios.get(`${groups_API}/${groupId}/get-group`,{headers:{ Authorization: `Bearer ${accessToken}`}})
     .then((res)=>{setGroup(res.data)})
@@ -63,6 +63,29 @@ function GroupWorkSpace() {
 
       {/* AddMember Modal */}
       <AddMember show={showAddMemberModal} handleClose={handleClose} />
+      <Modal
+                show={showUpgrade}
+                size="md"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header className='background-color-quadra' closeButton onHide={() => { setShowUpgrade(false) }}>
+                    <Modal.Title><h5 className='text-white   fw-bolder'>Need more?</h5></Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                      <Container>
+                          <Row>Buy membership to unlock the restrictions</Row>  
+                      </Container>
+                </Modal.Body>
+                <Modal.Footer>
+                      <Container>
+                          <Row>
+                            <Col md={7}></Col>  
+                            <Col md={2}><Button className=' bg-secondary border-0' onClick={()=>setShowUpgrade(false)}>Cancel</Button></Col>  
+                            <Col md={2}><Button className=' btn-membership border-0'onClick={()=>{setShow(false);setShowUpgrade(false);navigate(`membership`)}} >Upgrade</Button></Col>  
+                          </Row>  
+                      </Container>
+                </Modal.Footer>
+            </Modal>
     </Container>
   );
 }
