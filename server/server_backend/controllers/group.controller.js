@@ -3,10 +3,6 @@ const bcrypt = require("bcrypt")
 const morgan = require("morgan")
 const createHttpErrors = require("http-errors");
 
-
-
-
-
 // Create new group
 
 async function createGroup(req, res, next) {
@@ -951,6 +947,16 @@ const countPremiumGroups = async (req, res, next) => {
     }
 };
 
+// Get all groups from the database
+async function getAllGroups(req, res, next) {
+    try {
+        const groups = await db.Groups.find();
+        res.status(200).json(groups); 
+    } catch (error) {
+        next(error); 
+    }
+}
+
 const GroupController = {
     getAllTask,
     createTask,
@@ -974,13 +980,7 @@ const GroupController = {
     updatePremium,
     countGroups,
     countPremiumGroups,
-    createColumn,
-    editColumn,
-    deleteColumn,
-    getAllComments,
-    addComment,
-    editComment,
-    deleteComment
+    getAllGroups
 }
 
 module.exports = GroupController;

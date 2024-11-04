@@ -171,5 +171,10 @@ groupRouter.get(
     GroupController.countPremiumGroups
 )
 
+groupRouter.get(
+    "/get-all-groups",
+    GroupController.getAllGroups
+)
+
 
 module.exports = groupRouter
