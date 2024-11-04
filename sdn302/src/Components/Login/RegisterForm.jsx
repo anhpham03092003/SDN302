@@ -30,14 +30,23 @@ function RegisterForm() {
   };
 
   const handleRegister = async (event) => {
-
     event.preventDefault();
 
+
+    if (username.length < 6 || username.includes(' ')) {
+      setMessage("Username must be at least 6 characters and contain no spaces.");
+      return;
+    }
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters.");
+      return;
+    }
 
 
     try {
       const response = await registerUser(username, password, email, rePassword, phoneNumber);
-      console.log('Registration successful', response);
+
+
       setAlertMessage("A verification email has been sent. Please check your inbox.");
       setTimeout(() => {
         navigate('/login/loginForm');
@@ -45,10 +54,12 @@ function RegisterForm() {
     } catch (error) {
       console.error('Registration failed', error);
       if (error.response && error.response.data) {
-        setMessage(error.response.data.message); // Hiển thị thông báo lỗi từ server
+        setMessage(error.response.data.message);
       }
     }
   };
+
+
 
   return (
     <div>

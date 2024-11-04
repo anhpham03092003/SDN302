@@ -5,6 +5,7 @@ const db = require("../models/index");
 const { GroupController } = require("../controllers");
 const { AuthMiddleware, GroupMiddleware } = require("../middlewares");
 
+
 groupRouter.use(bodyParser.json());
 // Groups premium
 groupRouter.post("/updatePremium",
@@ -17,25 +18,30 @@ groupRouter.post("/create",
     GroupController.createGroup
 )
 
+
 groupRouter.get("/get-group",
     AuthMiddleware.verifyAccessToken,
     GroupController.getAllGroup
 )
+
 
 groupRouter.get("/:groupId/get-group",
     AuthMiddleware.verifyAccessToken,
     GroupController.getGroupDetail
 )
 
+
 groupRouter.put("/:groupId/edit",
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup],
     GroupController.editGroupDetail
 )
 
+
 groupRouter.delete("/:groupId/delete",
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isOwner],
     GroupController.deleteGroup
 )
+
 
 // join group by code
 groupRouter.post("/join-by-code",
@@ -43,11 +49,13 @@ groupRouter.post("/join-by-code",
     GroupController.joinGroupByCode
 )
 
+
 // out group
 groupRouter.delete("/:groupId/out",
     AuthMiddleware.verifyAccessToken,
     GroupController.outGroup
 )
+
 
 // get member of group
 groupRouter.get("/:groupId/get-member",
@@ -55,11 +63,13 @@ groupRouter.get("/:groupId/get-member",
     GroupController.getGroupMember
 )
 
+
 // set group member role
 groupRouter.put("/:groupId/member/:memberId/set-role",
     AuthMiddleware.verifyAccessToken,
     GroupController.setGroupMemberRole
 )
+
 
 // delete group member for owner
 groupRouter.delete("/:groupId/member/:memberId/delete",
@@ -67,28 +77,36 @@ groupRouter.delete("/:groupId/member/:memberId/delete",
     GroupController.deleteGroupMember
 )
 
+
 // get user id
 groupRouter.get("/user/:groupId/get-user-role",
     AuthMiddleware.verifyAccessToken,
     GroupController.getUserRole
 )
 
+
 //CRUD Column
 groupRouter.post("/:groupId/create-column",
 
-    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer,GroupMiddleware.overBasicFunction],
+
+    [AuthMiddleware.verifyAccessToken,GroupMiddleware.isInGroup,GroupMiddleware.isNotViewer,GroupMiddleware.isOverColumn],
     GroupController.createColumn
 )
+
 
 groupRouter.put("/:groupId/edit-column",
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.editColumn
 )
 
+
 groupRouter.delete("/:groupId/delete-column",
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteColumn
 )
+
+
+
 
 
 
@@ -98,6 +116,7 @@ groupRouter.get(
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup],
     GroupController.getAllTask
 )
+
 
 groupRouter.post(
     "/:groupId/tasks/create",
@@ -114,6 +133,7 @@ groupRouter.delete(
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteTask
 )
+
 
 //Subtask
 groupRouter.get(
@@ -132,11 +152,13 @@ groupRouter.put(
     GroupController.editSubTask
 )
 
+
 groupRouter.delete(
     "/:groupId/tasks/:taskId/subTasks/:subTaskId/delete",
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
     GroupController.deleteSubTask
 )
+
 
 // Comment
 groupRouter.get(
@@ -155,6 +177,7 @@ groupRouter.put(
     GroupController.editComment
 )
 
+
 groupRouter.delete(
     "/:groupId/tasks/:taskId/comments/:commentId/delete",
     [AuthMiddleware.verifyAccessToken, GroupMiddleware.isInGroup, GroupMiddleware.isNotViewer],
@@ -162,27 +185,35 @@ groupRouter.delete(
 )
 
 
+
+
 groupRouter.get(
     "/count",
     GroupController.countGroups
 )
+
 
 groupRouter.get(
     "/count-premium",
     GroupController.countPremiumGroups
 )
 
+
 groupRouter.post('/:groupId/invite',
-    [GroupMiddleware.overBasicFunction],
+    [GroupMiddleware.isOverMember],
     GroupController.inviteUserToGroup
 );
 
+
 groupRouter.get('/confirm-invite', GroupController.confirmInvite);
+
 
 groupRouter.get(
     "/get-all-groups",
     GroupController.getAllGroups
 )
+
+
 
 
 module.exports = groupRouter

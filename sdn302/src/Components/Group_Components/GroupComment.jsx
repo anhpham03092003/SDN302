@@ -72,7 +72,7 @@ function GroupComment({ comment }) {
                     </input>
                 </Col>
             }
-            {comment?.user == user._id &&
+            {comment?.user == user?._id &&
                 <Row>
 
                     {showEdit == false ?

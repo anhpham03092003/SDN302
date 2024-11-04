@@ -99,7 +99,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask   }) {
             const newSubtask = {
                 subName: subtaskName,
                 priority: subtaskPriority,
-                status: 'inprogress',
+                status: subtaskStatus,
             };
 
             const response = await axios.post(`http://localhost:9999/users/individual-task/task/${task._id}/sub-task/add`, newSubtask, {

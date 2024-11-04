@@ -4,17 +4,22 @@ const morgan = require("morgan");
 const bcrypt = require('bcrypt');
 const db = require('../models');
 
+
 async function isInGroup(req, res, next) {
     try {
         const { groupId } = req.params;
         const { id } = req.payload;
 
+
         const groupMember = await db.Users.findOne({ _id: id, groups: { $in: groupId } });
+
 
         if (!groupMember) {
             // throw createError.Unauthorized("The user is not in group")
             return res.status(400).json({ error: { status: 400, message: "The user is not in group" } })
-            return res.status(400).json({ error: { status: 400, message: "The user is not in group" } })
+            // return res.status(400).json({ error: { status: 400, message: "The user is not in group" } })
+
+
 
 
         }
@@ -27,6 +32,9 @@ async function isInGroup(req, res, next) {
 
 
 
+
+
+
 async function isNotViewer(req, res, next) {
     try {
         const { groupId } = req.params;
@@ -35,12 +43,15 @@ async function isNotViewer(req, res, next) {
             // throw createError.NotFound("Not found Id")
             return res.status(404).json({ error: { status: 404, message: "Not found Id" } })
 
+
         }
         const group = await db.Groups.findOne({ _id: groupId });
+
 
         if (group.members.find(m => m._id == id).groupRole == "viewer") {
             // throw createError.Unauthorized("Group viewer can not edit")
             return res.status(400).json({ error: { status: 400, message: "Group viewer can not edit" } })
+
 
         }
         next();
@@ -50,11 +61,13 @@ async function isNotViewer(req, res, next) {
     }
 }
 
+
 async function isMember(req, res, next) {
     try {
         const { groupId } = req.params;
         const { id } = req.payload;
         const group = await db.Groups.findOne({ _id: groupId });
+
 
         if (group.members.find(m => m._id == id).groupRole != "member") {
             // throw createError.Unauthorized("The user is not group member")
@@ -67,15 +80,18 @@ async function isMember(req, res, next) {
     }
 }
 
+
 async function isOwner(req, res, next) {
     try {
         const { groupId } = req.params;
         const { id } = req.payload;
         const group = await db.Groups.findOne({ _id: groupId });
 
+
         if (group.members.find(m => m._id == id).groupRole != "owner") {
             // throw createError.Unauthorized("The user is not group owner")
             return res.status(400).json({ error: { status: 400, message: "The user is not group owner" } })
+
 
         }
         next();
@@ -85,7 +101,8 @@ async function isOwner(req, res, next) {
     }
 }
 
-async function overBasicFunction(req, res, next) {
+
+async function isOverColumn(req, res, next) {
     try {
         const { groupId } = req.params;
         const group = await db.Groups.findOne({ _id: groupId });
@@ -95,23 +112,12 @@ async function overBasicFunction(req, res, next) {
                 // throw createError[400]("You must upgrade group to create more column task!")
                 return res.status(400).json({ error: { status: 400, message: "You must upgrade group to create more column task!" } })
 
-            }
-            if (group.members.length >= 5) {
-                // throw createError[400]("You must upgrade group to invite more member!")
-                return res.status(400).json({ error: { status: 400, message: "You must upgrade group to invite more member!" } })
 
             }
-            // if(req.body){
-            //     req.body.assignee =""
-            //     req.body.priority =""
-            //     req.body.status=""
-            //     // throw createError[400]("You must upgrade group to unlock this function!")
-            // return res.status(400).json({ error: { status: 400, message: "You must upgrade group to unlock functions!" } })
-            // }
-            // next();
-            // return;
+
 
         }
+
 
         next();
         return;
@@ -119,6 +125,35 @@ async function overBasicFunction(req, res, next) {
         next(error)
     }
 }
+async function isOverMember(req, res, next) {
+    try {
+        const { groupId } = req.params;
+        const group = await db.Groups.findOne({ _id: groupId });
+        const isPremium = group.isPremium;
+
+
+        const action = req.body.action;
+
+
+        if (!isPremium) {
+            if (action === "inviteMember") {
+                if (group.members.length >= 5) {
+                    throw createError[400]("You must upgrade group to invite more members!");
+                }
+            } else if (action === "addTask") {
+                if (group.classifications.length >= 3) {
+                    throw createError[400]("You must upgrade group to create more columns for tasks!");
+                }
+            }
+        }
+
+
+        next();
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 async function restrictFunction(req, res, next) {
     try {
@@ -133,7 +168,10 @@ async function restrictFunction(req, res, next) {
             return res.status(400).json({ error: { status: 400, message: "You must upgrade group to unlock functions!" } })
 
 
+
+
         }
+
 
         next();
     } catch (error) {
@@ -143,11 +181,15 @@ async function restrictFunction(req, res, next) {
 
 
 
+
+
+
 module.exports = {
     isInGroup,
     isMember,
     isOwner,
     isNotViewer,
-    overBasicFunction,
+    isOverColumn,
+    isOverMember,
     restrictFunction
 }

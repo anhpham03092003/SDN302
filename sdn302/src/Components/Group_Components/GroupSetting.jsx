@@ -6,7 +6,7 @@ import axios from 'axios';
 import { HiDotsHorizontal } from "react-icons/hi";
 
 function GroupSetting() {
-  const { group, setGroup, groupMembers, groups_API, accessToken, currentUserRole } = useContext(AppContext);
+  const { group, setGroup, groupMembers, groups_API, accessToken, currentUserRole,groups,setGroups } = useContext(AppContext);
   const { groupId } = useParams();
   const [groupName, setGroupName] = useState('');
   const [groupCode, setGroupCode] = useState('');
@@ -52,31 +52,34 @@ function GroupSetting() {
 
   const deleteGroup = async () => {
     if (window.confirm("Are you sure you want to delete this group? This action cannot be undone.")) {
-      try {
-        await axios.delete(`${groups_API}/${groupId}/delete`, {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        setMessage({ type: 'success', text: 'Group deleted successfully!' });
-        navigate('/groups'); 
-      } catch (error) {
-        setMessage({ type: 'error', text: 'Failed to delete group. Please try again later.' });
-      }
+        try {
+            await axios.delete(`${groups_API}/${groupId}/delete`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            setMessage({ type: 'success', text: 'Group deleted successfully!' });
+            setGroups(groups.filter(g => g._id !== groupId)); // Remove deleted group from list
+            navigate('/groups'); 
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Failed to delete group. Please try again later.' });
+        }
     }
-  };
+};
 
-  const leaveGroup = async () => {
+const leaveGroup = async () => {
     if (window.confirm("Are you sure you want to leave this group? You will lose access to group information.")) {
-      try {
-        await axios.delete(`${groups_API}/${groupId}/out`, {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        setMessage({ type: 'success', text: 'Left the group successfully!' });
-        navigate('/groups'); 
-      } catch (error) {
-        setMessage({ type: 'error', text: 'Failed to leave group. Please try again later.' });
-      }
+        try {
+            await axios.delete(`${groups_API}/${groupId}/out`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            setMessage({ type: 'success', text: 'Left the group successfully!' });
+            setGroups(groups.filter(g => g._id !== groupId)); // Remove left group from list
+            navigate('/groups'); 
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Failed to leave group. Please try again later.' });
+        }
     }
-  };
+};
+
 
   return (
     <>

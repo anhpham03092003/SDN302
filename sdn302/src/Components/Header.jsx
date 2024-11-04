@@ -12,6 +12,8 @@ function Header() {
         handleLogout(); // Gọi hàm logout từ AppContext
         navigate('/'); // Điều hướng đến trang chủ
     };
+    console.log(user);
+    
 
     return (
         <Container fluid className={styles.headerContainer}>

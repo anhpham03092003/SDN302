@@ -52,36 +52,45 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path='*' element={<NotAuthorized />} />  
+        {/* theem 1 trang notFound doi vao day */}
+       
         <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />}>
+        {!accessToken &&<Route path="/login" element={<Login />}>
           <Route path="loginForm" element={<LoginForm />} />
           <Route path="registerForm" element={<RegisterForm />} />
           <Route path="forgotPass" element={<ForgotPass />} />
           <Route path="verifyAccount/:id/:token" element={<VerifyAccount />} />
-        </Route>
+        </Route>}
         <Route path="resetPassword/:id/:token" element={<Reset />} />
 
 
-        <Route path="/profile" element={<ProfilePage />}>
+
+
+        {accessToken &&<Route path="/profile" element={<ProfilePage />}>
           <Route path="profileInfo" element={<ProfileInfo />} />
           <Route path="editProfile" element={<EditProfile />} />
           <Route path="changePassword" element={<ChangePassword />} />
-        </Route>
+        </Route>}
 
-        <Route path="/admin" element={<Admin />}>
+
+        {accessToken &&<Route path="/admin" element={<Admin />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="userManagement" element={<UserManagementPage />} />
-        </Route>
+        </Route>}
 
-        <Route path="/individualSpace" element={<IndividualSpacePage />}>
-        </Route>
 
-        <Route path="/not-authorized" element={<NotAuthorized />} />
+        {accessToken &&<Route path="/individualSpace" element={<IndividualSpacePage />}>
+        </Route>}
+       
+
+
 
 
         {accessToken && <Route path="/groups"  >
           <Route index element={<GroupListPage />} />
           <Route path="create" element={<CreateGroup />} />
+
 
           <Route path=":groupId" element={<GroupWorkSpace />} >
             <Route index element={<GroupSpace />} />
@@ -92,17 +101,15 @@ function App() {
           </Route>
         </Route>}
 
-        <Route path="/admin" element={<Admin />}>
+
+        {accessToken &&<Route path="/admin" element={<Admin />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="userManagement" element={<UserManagementPage />} />
-        </Route>
+        </Route>}
 
-        <Route path="/individualSpace" element={<IndividualSpacePage />}>
-        </Route>
-
-        <Route path="/not-authorized" element={<NotAuthorized />} />
 
       </Routes>
+
     </div >
 
   );
