@@ -45,8 +45,9 @@ groupRouter.delete("/:groupId/delete",
 
 // join group by code
 groupRouter.post("/join-by-code",
-    AuthMiddleware.verifyAccessToken,
+  [  AuthMiddleware.verifyAccessToken,GroupMiddleware.isOverMemberByCode],
     GroupController.joinGroupByCode
+    
 )
 
 

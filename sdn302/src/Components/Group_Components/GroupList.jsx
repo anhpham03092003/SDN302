@@ -9,6 +9,7 @@ import axios from 'axios';
 
 function GroupList() {
   const { groups, setGroups, accessToken, groups_API } = useContext(AppContext);
+  
   const [groupCode, setGroupCode] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,8 +34,9 @@ function GroupList() {
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
-      const joinedGroup = response.data.group;
+      const joinedGroup = response?.data.group;
       setGroups((prevGroups) => [...prevGroups, joinedGroup]);
+      
 
       if (joinedGroup?._id) {
         navigate(`/groups/${joinedGroup._id}`);
@@ -44,14 +46,15 @@ function GroupList() {
     } catch (error) {
       if (error.response) {
         if (error.response.status === 400) {
-          setMessage("You are already a member of this group");
+          setMessage(error.response.data.error.message);
+          console.log(error);
+          
         } else if (error.response.status === 404) {
           setMessage("Group not found");
         } else {
           setMessage("An error occurred. Please try again.");
         }
-      } else {
-        setMessage("An error occurred. Please try again.");
+      
       }
     }
   };
@@ -61,9 +64,45 @@ function GroupList() {
     joinGroupByCode();
   };
 
-  useEffect(() => {
-  }, [groups]);
+  useEffect(() => {}, [groups]);
 
+
+  if (!groups || groups.length === 0) {
+    return (
+      <Container className="text-center mt-4">
+        <h5>You do not have groups.</h5>
+        <Button variant="primary" onClick={() => setShowModal(true)} className="mt-3">
+          Join Group
+        </Button>
+
+        {/* Join Group Modal */}
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Join Group</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleJoinSubmit}>
+              <Form.Group controlId="groupCode">
+                <Form.Label>Group Code</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter group code"
+                  value={groupCode}
+                  onChange={(e) => setGroupCode(e.target.value)}
+                  required
+                />
+                {message && <Alert variant="warning" className="mt-2">{message}</Alert>}
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button variant="primary" type="submit" onClick={handleJoinSubmit}>Join Group</Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -74,7 +113,8 @@ function GroupList() {
             <Col md={3} className="mb-3" key={group?._id}>
               <Link to={`/groups/${group?._id}`} className={styles.card}>
                 <Card className="text-center" style={{ position: 'relative' }}>
-                  <Card.Img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group?.groupName} className={styles.cardImage} />
+                  {/* Use the imageGroup from the group data */}
+                  <Card.Img src={group?.imageGroup || "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"} alt={group?.groupName} className={styles.cardImage} />
                   <div className={styles.cardTitle}>{group?.groupName}</div>
                 </Card>
               </Link>
@@ -82,6 +122,7 @@ function GroupList() {
           ) : null
         )}
       </Row>
+
       <Row>
         <Col md={6}>
           <InputGroup>
@@ -97,6 +138,7 @@ function GroupList() {
           <Button variant="primary" onClick={() => setShowModal(true)}>Join Group</Button>
         </Col>
       </Row>
+
       <h4 className={styles.container}><FaRegListAlt /> All Groups</h4>
       <div className={styles.allGroupsContainer}>
         <Row className="ms-2">
@@ -104,7 +146,8 @@ function GroupList() {
             group ? (
               <Col md={5} className="mb-2" key={group?._id}>
                 <Link to={`/groups/${group?._id}`} className={styles.allGroupItem}>
-                  <img src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg" alt={group?.groupName} className={styles.allGroupImage} />
+                  {/* Use the imageGroup from the group data */}
+                  <img src={group.imageGroup || "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"} alt={group?.groupName} className={styles.allGroupImage} />
                   <span className={styles.allGroupTitle}>{group?.groupName}</span>
                 </Link>
               </Col>

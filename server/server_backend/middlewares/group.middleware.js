@@ -152,8 +152,37 @@ async function isOverMember(req, res, next) {
     } catch (error) {
         next(error)
     }
-}
+};
+async function isOverMemberByCode(req, res, next) {
+    try {
+        const { groupCode } = req.body;
+        const group = await db.Groups.findOne({ groupCode: groupCode });
+        const isPremium = group.isPremium;
+        const {id} = req.payload;
+        const isMember = group.members.some(member => member._id.toString() === id);
 
+
+
+
+        console.log(isMember);
+        
+        if (!isPremium) {
+            if (isMember){
+                return res.status(400).json({ error: { status: 400, message: "You have already in this group! "} })
+            }
+                else if (group.members.length >= 5) {
+                    // throw createError[400]("You must upgrade group to invite more members!");
+                    return res.status(400).json({ error: { status: 400, message: "You must upgrade group to invite more members! "} })
+                }
+       
+        }
+
+
+        next();
+    } catch (error) {
+        next(error)
+    }
+}
 
 async function restrictFunction(req, res, next) {
     try {
@@ -191,5 +220,6 @@ module.exports = {
     isNotViewer,
     isOverColumn,
     isOverMember,
-    restrictFunction
+    restrictFunction,
+    isOverMemberByCode
 }

@@ -40,6 +40,7 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
         }
     }, [token]);
 
+
     useEffect(() => {
         if (userInfo) {
             const filteredTasks = userInfo.individualTasks.filter((task) => task.status === column);

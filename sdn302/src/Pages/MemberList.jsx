@@ -111,7 +111,7 @@ function MemberList() {
             <th style={{ width: '50px' }}>#</th>
             <th style={{ width: '200px' }}>Name</th>
             <th style={{ width: '150px' }}>Role</th>
-            <th style={{ width: '150px' }}>Number of Tasks</th>
+            {/* <th style={{ width: '150px' }}>Number of Tasks</th> */}
             <th style={{ width: '150px' }}>Actions</th>
           </tr>
         </thead>
@@ -184,11 +184,11 @@ function MemberList() {
                   )
                 )}
               </td>
-              <td>{member.tasks}</td>
+              {/* <td>{member.tasks}</td> */}
               <td>
-                <Button variant="link">
+                {/* <Button variant="link">
                   <BsEyeFill title="View" className="text-primary" />
-                </Button>
+                </Button> */}
                 {currentUserRole?.groupRole === 'owner' && member?.groupRole !== 'owner' && (
                   <Button
                     variant="link"

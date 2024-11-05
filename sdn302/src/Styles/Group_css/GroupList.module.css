@@ -91,4 +91,35 @@
   top: 50%;
   left: 70%;
 }
-  
+
+.cardImage{
+  width: 100%;            /* Đảm bảo ảnh chiếm hết chiều ngang của phần tử chứa */
+  height: 170px;          /* Chiều cao cố định cho tất cả ảnh */
+  object-fit: cover;      /* Giữ tỷ lệ và cắt ảnh để vừa khung */
+  border-radius: 8px;  
+  position: relative;   /* Tùy chọn: bo góc nếu cần */
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* Màu đen với độ mờ 40% */
+  border-radius: 8px;
+}
+
+.groupName {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); /* Hiệu ứng bóng chữ để nổi bật hơn */
+  z-index: 2;
+  padding: 0 5px;
+  text-align: center;
+}

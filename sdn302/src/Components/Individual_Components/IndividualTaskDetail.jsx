@@ -54,7 +54,12 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
             console.error('Error updating task:', error);
         }
     };
-
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchUserInfo();
+        }, 500);
+        return () => clearInterval(interval);
+    }, []);
     const handleFieldChange = (field, value) => {
         const updatedData = { [field]: value };
         setTimeout(() => {
