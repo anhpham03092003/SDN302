@@ -57,7 +57,7 @@ function LoginForm() {
 
         // Set user information in context
         setUser(result.user);
-        navigate('/home');
+        navigate('/');
         console.log('Login Successfully');
       } else {
         setMessage('Login failed');

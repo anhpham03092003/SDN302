@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Group from './Pages/Group';
@@ -26,16 +26,29 @@ import EditProfile from './Components/Profile/EditProfile';
 import ChangePassword from './Components/Profile/ChangePassword';
 import GroupSetting from './Components/Group_Components/GroupSetting';
 import NotAuthorized from './Pages/NotAuthorized';
+import NotFound from './Pages/NotFound';
+
+//hook
+import useGroupAccess from './Components/Hook_Components/useGroupAccess.jsx';
 
 import './App.css';
 import AppProvider, { AppContext } from './Context/AppContext'; // Import AppContext
 
 import AdminDashboard from './Pages/AdminDashboard';
 
+const GroupWorkspaceWrapper = () => {
+  const hasAccess = useGroupAccess();
+  const navigate = useNavigate();
+  if (hasAccess === false)
+    navigate('/not-found');
+  return null;
+
+  return <GroupWorkSpace />;
+};
 
 function App() {
-  const { checkTokenExpiration } = useContext(AppContext); // Lấy hàm checkTokenExpiration từ context
-  const { accessToken } = useContext(AppContext)
+  const { checkTokenExpiration, accessToken, user } = useContext(AppContext); // Lấy hàm checkTokenExpiration từ context
+  const location = useLocation();
 
   useEffect(() => {
     checkTokenExpiration();
@@ -52,47 +65,38 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path='*' element={<NotAuthorized />} />  
-        {/* theem 1 trang notFound doi vao day */}
-       
-        <Route path="/home" element={<Home />} />
-        {!accessToken &&<Route path="/login" element={<Login />}>
-          <Route path="loginForm" element={<LoginForm />} />
-          <Route path="registerForm" element={<RegisterForm />} />
-          <Route path="forgotPass" element={<ForgotPass />} />
-          <Route path="verifyAccount/:id/:token" element={<VerifyAccount />} />
-        </Route>}
+        <Route path="/not-authorized" element={<NotAuthorized />} />
+        <Route path="/not-found" element={<NotFound />} />
+
+        {!accessToken && (
+          <Route path="/login" element={<Login />}>
+            <Route path="loginForm" element={<LoginForm />} />
+            <Route path="registerForm" element={<RegisterForm />} />
+            <Route path="forgotPass" element={<ForgotPass />} />
+            <Route path="verifyAccount/:id/:token" element={<VerifyAccount />} />
+          </Route>
+        )}
+
         <Route path="resetPassword/:id/:token" element={<Reset />} />
 
-
-
-
-        {accessToken &&<Route path="/profile" element={<ProfilePage />}>
+        <Route path="/profile" element={accessToken && user ? <ProfilePage /> : <Navigate to="/not-found" replace />} >
           <Route path="profileInfo" element={<ProfileInfo />} />
           <Route path="editProfile" element={<EditProfile />} />
           <Route path="changePassword" element={<ChangePassword />} />
-        </Route>}
+        </Route>
 
 
-        {accessToken &&<Route path="/admin" element={<Admin />}>
+        <Route path="/admin" element={accessToken && user?.role === 'admin' ? <Admin /> : <Navigate to="/not-authorized" replace />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="userManagement" element={<UserManagementPage />} />
-        </Route>}
+        </Route>
 
-
-        {accessToken &&<Route path="/individualSpace" element={<IndividualSpacePage />}>
-        </Route>}
-       
-
-
-
+        <Route path="/individualSpace" element={accessToken && user ? <IndividualSpacePage /> : <Navigate to="/not-found" replace />} />
 
         {accessToken && <Route path="/groups"  >
           <Route index element={<GroupListPage />} />
           <Route path="create" element={<CreateGroup />} />
-
-
-          <Route path=":groupId" element={<GroupWorkSpace />} >
+          <Route path=":groupId" element={<GroupWorkspaceWrapper />}>
             <Route index element={<GroupSpace />} />
             <Route path="membership" element={<BuyMembership />} />
             <Route path="memberList" element={<MemberList />} />
@@ -101,29 +105,9 @@ function App() {
           </Route>
         </Route>}
 
-
-        {accessToken &&<Route path="/admin" element={<Admin />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="userManagement" element={<UserManagementPage />} />
-        </Route>}
-
-
       </Routes>
-
-    </div >
-
+    </div>
   );
 }
-
-// // Bọc App trong BrowserRouter và AppProvider
-// function indexApp() {
-//   return (
-//     <BrowserRouter>
-//       <AppProvider>
-//         <App />
-//       </AppProvider>
-//     </BrowserRouter>
-//   );
-// }
 
 export default App;
