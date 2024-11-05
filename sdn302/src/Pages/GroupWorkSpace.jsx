@@ -31,13 +31,13 @@ function GroupWorkSpace() {
     }, [groupId, groups_API, accessToken, setGroup, setGroupMembers, setCurrentUserRole]);
   
     // Check if the logged-in user is a member of the group
-    useEffect(() => {
-      const isMember = groupMembers.some(member => member?.userId === user?.userId); // Check if the user is a member
-      console.log(user?.userId);
-      if (!isMember) {
-        navigate('/not-authorized'); // Redirect if not a member
-      }
-    }, [groupMembers, user, navigate]);
+    // useEffect(() => {
+    //   const isMember = groupMembers.some(member => member?.userId === user?.userId); // Check if the user is a member
+    //   console.log(user?.userId);
+    //   if (!isMember) {
+    //     navigate('/not-authorized'); // Redirect if not a member
+    //   }
+    // }, [groupMembers, user, navigate]);
 
 
 

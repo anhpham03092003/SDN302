@@ -6,22 +6,34 @@ import axios from 'axios';
 import { HiDotsHorizontal } from "react-icons/hi";
 
 function GroupSetting() {
-  const { group, setGroup, groupMembers, groups_API, accessToken, currentUserRole,groups,setGroups } = useContext(AppContext);
+  const { group, setGroup, groupMembers, groups_API, accessToken, currentUserRole, groups, setGroups } = useContext(AppContext);
   const { groupId } = useParams();
   const [groupName, setGroupName] = useState('');
   const [groupCode, setGroupCode] = useState('');
   const [message, setMessage] = useState({ type: null, text: '' });
-  const [showMenu, setShowMenu] = useState(false); 
+  const [showMenu, setShowMenu] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
+  const [showImageModal, setShowImageModal] = useState(false); // State for modal visibility
   const navigate = useNavigate();
 
   const owner = groupMembers?.find(member => member.groupRole === 'owner');
+
+  // Predefined list of images
+  const imageOptions = [
+    "https://bucket-image.inkmaginecms.com/version/mobile/1/image/2024/07/4d272377-993c-471f-aa41-f3a3c859695e.png",
+    "https://assets.teenvogue.com/photos/63b4a6386ce4660478f4d4a1/16:9/w_2560%2Cc_limit/NewJeans%2520Official%2520Photo%2520(1).jpg",
+    "https://bloganchoi.com/wp-content/uploads/2022/08/new-jeans-1-2.jpg",
+    "https://www.voguehk.com/media/2023/11/NewJeans-How-Sweet-MV-1800x1200.jpeg",
+    "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg",
+  ];
 
   useEffect(() => {
     if (group) {
       setGroupName(group.groupName);
       setGroupCode(group.groupCode);
+      setSelectedImage(group.imageGroup);
     }
-  }, [group]); 
+  }, [group]);
 
   const editGroupDetail = async () => {
     if (groupName.length > 15) {
@@ -32,14 +44,20 @@ function GroupSetting() {
       setMessage({ type: 'error', text: 'Group code cannot exceed 6 characters!' });
       return;
     }
-    const updatedData = { groupName, groupCode };
+    const updatedData = { groupName, groupCode, imageGroup: selectedImage };
     try {
       const response = await axios.put(
         `${groups_API}/${groupId}/edit`,
         updatedData,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
-      setGroup(response.data);  
+
+      // Update the group in context state
+      setGroup(response.data);
+      setGroups((prevGroups) =>
+        prevGroups.map((g) => (g._id === groupId ? response.data : g))
+      );
+
       setMessage({ type: 'success', text: 'Group updated successfully!' });
     } catch (error) {
       if (error.response && error.response.status === 409) {
@@ -52,34 +70,33 @@ function GroupSetting() {
 
   const deleteGroup = async () => {
     if (window.confirm("Are you sure you want to delete this group? This action cannot be undone.")) {
-        try {
-            await axios.delete(`${groups_API}/${groupId}/delete`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-            setMessage({ type: 'success', text: 'Group deleted successfully!' });
-            setGroups(groups.filter(g => g._id !== groupId)); // Remove deleted group from list
-            navigate('/groups'); 
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to delete group. Please try again later.' });
-        }
+      try {
+        await axios.delete(`${groups_API}/${groupId}/delete`, {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        setMessage({ type: 'success', text: 'Group deleted successfully!' });
+        setGroups(groups.filter(g => g._id !== groupId));
+        navigate('/groups'); 
+      } catch (error) {
+        setMessage({ type: 'error', text: 'Failed to delete group. Please try again later.' });
+      }
     }
-};
+  };
 
-const leaveGroup = async () => {
+  const leaveGroup = async () => {
     if (window.confirm("Are you sure you want to leave this group? You will lose access to group information.")) {
-        try {
-            await axios.delete(`${groups_API}/${groupId}/out`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-            setMessage({ type: 'success', text: 'Left the group successfully!' });
-            setGroups(groups.filter(g => g._id !== groupId)); // Remove left group from list
-            navigate('/groups'); 
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to leave group. Please try again later.' });
-        }
+      try {
+        await axios.delete(`${groups_API}/${groupId}/out`, {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        setMessage({ type: 'success', text: 'Left the group successfully!' });
+        setGroups(groups.filter(g => g._id !== groupId));
+        navigate('/groups'); 
+      } catch (error) {
+        setMessage({ type: 'error', text: 'Failed to leave group. Please try again later.' });
+      }
     }
-};
-
+  };
 
   return (
     <>
@@ -88,10 +105,17 @@ const leaveGroup = async () => {
         <div className={styles.iconContainer}>
           <img
             className={styles.img}
-            src="https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"
+            src={selectedImage || "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"}
             alt="Project icon"
           />
-          <button className={styles.changeIconButton}>Change icon</button>
+          {currentUserRole?.groupRole === 'owner' && (
+            <button 
+              className={styles.changeIconButton} 
+              onClick={() => setShowImageModal(true)} // Open modal
+            >
+              Change image
+            </button>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="project-lead">Group owner</label>
@@ -111,7 +135,7 @@ const leaveGroup = async () => {
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             className={styles.input}
-            disabled={currentUserRole?.groupRole !== 'owner'} // Disable if not owner
+            disabled={currentUserRole?.groupRole !== 'owner'}
           />
         </div>
         <div className={styles.formGroup}>
@@ -122,7 +146,7 @@ const leaveGroup = async () => {
             value={groupCode}
             onChange={(e) => setGroupCode(e.target.value)}
             className={styles.input}
-            disabled={currentUserRole?.groupRole !== 'owner'} // Disable if not owner
+            disabled={currentUserRole?.groupRole !== 'owner'}
           />
         </div>
         {message.text && (
@@ -146,6 +170,30 @@ const leaveGroup = async () => {
           ) : (
             <button onClick={leaveGroup} className={styles.menuItem}>Leave Group</button>
           )}
+        </div>
+      )}
+
+      {/* Modal for image selection */}
+      {showImageModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowImageModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h2>Select an Icon</h2>
+            <div className={styles.imageGrid}>
+              {imageOptions.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Option ${index + 1}`}
+                  className={styles.optionImage}
+                  onClick={() => {
+                    setSelectedImage(image);
+                    setShowImageModal(false); // Close modal after selection
+                  }}
+                />
+              ))}
+            </div>
+            <button className={styles.closeButton} onClick={() => setShowImageModal(false)}>Close</button>
+          </div>
         </div>
       )}
     </>

@@ -43,6 +43,7 @@ async function createGroup(req, res, next) {
             groupCode,
             classifications: defaultClassifications,
             members,
+            imageGroup: 'https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg'
         });
 
         const nGroup = await newGroup.save();
@@ -113,7 +114,7 @@ async function editGroupDetail(req, res, next) {
     try {
         const { groupId } = req.params;
         const { id } = req.payload;
-        const { groupName, groupCode, groupRole } = req.body;
+        const { groupName, groupCode, imageGroup, groupRole } = req.body;
 
         const group = await db.Groups.findOne({ _id: groupId });
         if (!group) {
@@ -127,7 +128,7 @@ async function editGroupDetail(req, res, next) {
 
         const updateGroup = {};
 
-        // If the member is 'owner', allow editing of all attributes except classifications
+        // If the member is 'owner', allow editing of all attributes including imageGroup
         if (member.groupRole === 'owner') {
             if (groupName) updateGroup.groupName = groupName;
 
@@ -143,11 +144,16 @@ async function editGroupDetail(req, res, next) {
                 }
                 updateGroup.groupCode = groupCode;
             }
-        }
+
+            // Allow updating the imageGroup
+            if (imageGroup) {
+                updateGroup.imageGroup = imageGroup;
+            }
+        } 
         // If the member is 'member', restrict editing to only groupRole validation
         else if (member.groupRole === 'member') {
-            if (groupName || groupCode) {
-                throw createHttpErrors(403, "Only the group owner can edit the group name and group code");
+            if (groupName || groupCode || imageGroup) {
+                throw createHttpErrors(403, "Only the group owner can edit the group name, group code, and image");
             }
         }
 
@@ -162,7 +168,28 @@ async function editGroupDetail(req, res, next) {
 }
 
 
+
 // delete group by group id
+
+// async function deleteGroup(req, res, next) {
+//     try {
+//         const { groupId } = req.params;
+//         const { id } = req.payload;
+//         const group = await db.Groups.findOne({ _id: groupId });
+
+//         if (!group) {
+//             throw createHttpErrors(404, "Group not found");
+//         }
+//         const isOwner = group.members.some(member => member._id.toString() === id && member.groupRole === 'owner');
+//         if (!isOwner) {
+//             throw createHttpErrors(403, "Only the group owner can delete this group");
+//         }
+//         await db.Groups.deleteOne({ _id: groupId });
+//         res.status(200).json({ message: "Group deleted successfully" });
+//     } catch (error) {
+//         next(error);
+//     }
+// }
 
 async function deleteGroup(req, res, next) {
     try {
@@ -173,10 +200,20 @@ async function deleteGroup(req, res, next) {
         if (!group) {
             throw createHttpErrors(404, "Group not found");
         }
+        
+        // Check if the user is the owner of the group
         const isOwner = group.members.some(member => member._id.toString() === id && member.groupRole === 'owner');
         if (!isOwner) {
             throw createHttpErrors(403, "Only the group owner can delete this group");
         }
+        
+        // Remove group from all users in the group
+        await db.Users.updateMany(
+            { groups: groupId }, // Find users with the groupId in their groups array
+            { $pull: { groups: groupId } } // Remove the groupId from their groups array
+        );
+
+        // Delete the group
         await db.Groups.deleteOne({ _id: groupId });
         res.status(200).json({ message: "Group deleted successfully" });
     } catch (error) {
@@ -184,43 +221,54 @@ async function deleteGroup(req, res, next) {
     }
 }
 
+
+
 // join group by code
 async function joinGroupByCode(req, res, next) {
     try {
         const { groupCode } = req.body;
-        const { id } = req.payload;
+        const { id } = req.payload; // The user's ID from the payload
         const group = await db.Groups.findOne({ groupCode });
-        
+
+        // Check if the group exists
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
-        
+
+        // Check if the user is already a member of the group
         const isMember = group.members.some(member => member._id.toString() === id);
         if (isMember) {
-            return res.status(400).json({ message: "You are already a member of this group" });
+            return res.status(400).json({error: { status: 400, message: "You are already a member of this group" }});
         }
 
+        // Add the user to the group
         group.members.push({
             _id: id,
             groupRole: 'member'
         });
 
+        // Save the updated group
         await group.save();
-        
-        const user = await db.Users.findById(id);
-        if (!user) {
+
+        // Update the user's groups using findOneAndUpdate
+        const updatedUser = await db.Users.findOneAndUpdate(
+            { _id: id },
+            { $addToSet: { groups: group._id } }, // Using $addToSet to avoid duplicates
+            { new: true } 
+        );
+
+        // Check if the user update was successful
+        if (!updatedUser) {
             return res.status(404).json({ message: "User not found" });
         }
-        
-        user.groups.push(group._id);
-        await user.save();
 
-        return res.status(200).json({ message: "Joined the group successfully", group });
+        return res.status(200).json({ message: "Joined the group successfully", group, updatedUser });
 
     } catch (error) {
         next(error);
     }
 }
+
 
 // out group for member
 async function outGroup(req, res, next) {
@@ -244,6 +292,11 @@ async function outGroup(req, res, next) {
         // Xóa thành viên khỏi danh sách
         group.members = group.members.filter(member => member._id.toString() !== id);
         await group.save();
+        await db.Users.updateMany(
+            { groups: groupId }, // Find users with the groupId in their groups array
+            { $pull: { groups: groupId } } // Remove the groupId from their groups array
+        );
+
         res.status(200).json("You have successfully left the group");
     } catch (error) {
         next(error);

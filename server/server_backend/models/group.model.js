@@ -14,6 +14,10 @@ const groupSchema = new mongoose.Schema({
         required: [true,"Group code is required"],
         maxlength: 6 // Group code should be unique and max 6 characters
     },
+    imageGroup: {
+        type: String, // Store URL or path to the group image
+        default: null // Set default to null if no image is provided
+    },
     classifications: [{
         type: String // Add classifications array (add more detail based on your needs)
     }],
