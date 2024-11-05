@@ -8,7 +8,7 @@ import IndividualTaskDetail from './IndividualTaskDetail';
 import { IoCheckmark } from 'react-icons/io5';
 import axios from 'axios';
 
-function IndividualColumn({ column, updateColumnName, onDataChange  }) {
+function IndividualColumn({ column, updateColumnName, onDataChange }) {
     const [showTaskModal, setShowTaskModal] = useState(false); // for creating task
     const [showTaskDetail, setShowTaskDetail] = useState(false); // for task details
     const [currentTask, setCurrentTask] = useState(null);
@@ -20,6 +20,7 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
     const [deadline, setDeadline] = useState('');
     const token = localStorage.getItem('token');
     const [tasks, setTasks] = useState([]);
+    const [updateCount, setUpdateCount] = useState(0);
     const isOtherColumn = column === "other";
     const fetchUserInfo = async () => {
         try {
@@ -29,6 +30,7 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
                 },
             });
             setUserInfo(response.data);
+            console.log('User information:', response.data);
         } catch (error) {
             console.error('Error fetching user information:', error);
         }
@@ -42,11 +44,18 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
 
 
     useEffect(() => {
-        if (userInfo) {
+        if (userInfo && Array.isArray(userInfo.individualTasks)) {
+            console.log("Column:", column);
+            userInfo.individualTasks.forEach(task => {
+                console.log("Task Status:", task.status);
+            });
             const filteredTasks = userInfo.individualTasks.filter((task) => task.status === column);
+            console.log("Nhiệm vụ đã lọc:", filteredTasks);
             setTasks(filteredTasks);
         }
-    }, [userInfo]);
+    }, [userInfo, column]);
+    
+
     const handleEditColumnName = async () => {
         try {
             const response = await axios.put(
@@ -106,7 +115,7 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
 
     const deleteClassification = async () => {
         const classification = column;
-        
+
         try {
             const response = await axios.delete(
                 `http://localhost:9999/users/delete-classification`,
@@ -118,11 +127,11 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
                     data: { classification },
                 }
             );
-    
+
             if (response.status === 200) {
                 console.log("Classification deleted successfully:", response.data);
                 onDataChange();
-                await fetchUserInfo(); 
+                await fetchUserInfo();
             } else {
                 console.error("Error deleting classification:", response.data);
             }
@@ -130,7 +139,7 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
             console.error("Error deleting classification:", error);
         }
     };
-    
+
     const handleRemoveTask = () => {
         if (window.confirm("Remove this column, yor task will be moved to 'Other'?")) {
             deleteClassification();
@@ -151,11 +160,11 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
                 task._id === updatedTask._id ? updatedTask : task
             );
             setUserInfo({ ...userInfo, individualTasks: updatedTasks });
-    
+
             const filteredTasks = updatedTasks.filter((task) => task.status === column);
             setTasks(filteredTasks);
-    
-            await fetchUserInfo(); 
+
+            await fetchUserInfo();
         } else {
             // If the task was deleted
             const filteredTasks = userInfo.individualTasks.filter(task => task._id !== updatedTask._id);
@@ -163,14 +172,30 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
 
             const updatedTasks = filteredTasks.filter((task) => task.status === column);
             setTasks(updatedTasks);
-    
-            await fetchUserInfo(); 
-        }
-        onDataChange(); 
-    };
-    
-    
 
+            await fetchUserInfo();
+        }
+        onDataChange();
+    };
+
+
+    
+    const handleTaskClick = (task) => {
+        setCurrentTask(task); 
+        setShowTaskDetail(true); 
+    };
+
+    const handleUpdateCount = () => {
+        setUpdateCount(prevCount => prevCount + 1);
+    };
+
+    useEffect(() => {
+        if (updateCount > 0) {
+            fetchUserInfo();
+            setUpdateCount(0);
+        }
+        
+    }, [updateCount]);
 
 
     return (
@@ -224,11 +249,11 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
             </Row>
 
             {tasks?.map((task) => (
-                <Row key={task._id} className='my-2' onClick={() => {
-                    setCurrentTask(task);
-                    setShowTaskDetail(true);
-                }}>
-                    <IndividualTask task={task} />
+                <Row key={task._id} className='my-2'>
+                    <IndividualTask 
+                        task={task} 
+                        onClick={() => handleTaskClick(task)} 
+                    />
                 </Row>
             ))}
 
@@ -308,8 +333,8 @@ function IndividualColumn({ column, updateColumnName, onDataChange  }) {
                 <IndividualTaskDetail
                     show={showTaskDetail}
                     setShow={setShowTaskDetail}
-                    task={currentTask}
-                    onUpdateTask={handleUpdateTask}
+                    task={currentTask} 
+                    onUpdateCount={handleUpdateCount}
                 />
             )}
         </Container>

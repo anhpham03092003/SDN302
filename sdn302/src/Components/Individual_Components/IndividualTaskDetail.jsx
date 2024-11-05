@@ -5,7 +5,7 @@ import { IoMdMenu } from 'react-icons/io';
 import IndividualSubTask from './IndividualSubTask';
 import axios from 'axios';
 
-function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
+function IndividualTaskDetail({ show, setShow, task, onUpdateCount }) {
     const token = localStorage.getItem('token');
     const [userInfo, setUserInfo] = useState(null);
     const [description, setDescription] = useState(task.description || '');
@@ -20,7 +20,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
     const [dateError, setDateError] = useState('');
     const [subtasks, setSubtasks] = useState(task.subTasks || []);
 
-    console.log(subtasks)
+    
     const fetchUserInfo = async () => {
         try {
             const response = await axios.get('http://localhost:9999/users/get-profile', {
@@ -40,6 +40,17 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
         }
     }, [token]);
 
+    useEffect(() => {
+        if (task) {
+            setTaskName(task.taskName || '');
+            setDescription(task.description || '');
+            setCurrentStatus(task.status || '');
+            setTaskDate(task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '');
+            setSubtasks(task.subTasks || []);
+        }
+    }, [task]);
+    console.log(taskName)
+
     const updateTask = async (updatedData) => {
         try {
             const response = await axios.put(`http://localhost:9999/users/individual-task/task/${task._id}/edit`, updatedData, {
@@ -47,19 +58,14 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const updatedTask = response.data;
-            onUpdateTask(updatedTask);
+            onUpdateCount();
+            console.log(onUpdateCount)
             console.log('Task updated successfully:', response.data);
         } catch (error) {
             console.error('Error updating task:', error);
         }
     };
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchUserInfo();
-        }, 500);
-        return () => clearInterval(interval);
-    }, []);
+    
     const handleFieldChange = (field, value) => {
         const updatedData = { [field]: value };
         setTimeout(() => {
@@ -89,11 +95,13 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
                 case 'status':
                     setCurrentStatus(value);
                     updateTask(updatedData);
+                    
                     break;
                 default:
                     return;
             }
         }, 500);
+        updateTask(updatedData);
     };
 
     const handleAddSubtask = async () => {
@@ -139,7 +147,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
             });
 
             if (response.status === 200) {
-                onUpdateTask('delete');
+               
                 console.log('Task deleted successfully');
                 setShowDeleteConfirm(false);
                 setShow(false);
@@ -151,9 +159,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
 
     const handleUpdateSubTask = (updatedSubTask) => {
         if (updatedSubTask.action === 'delete') {
-            setSubtasks((prevSubtasks) =>
-                prevSubtasks.filter((subtask) => subtask._id !== updatedSubTask._id)
-            );
+            setSubtasks((prevSubtasks) => prevSubtasks.filter((subtask) => subtask._id !== updatedSubTask._id));
         } else {
             setSubtasks((prevSubtasks) =>
                 prevSubtasks.map((subtask) =>
@@ -162,6 +168,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
             );
         }
     };
+    
     return (
         <>
             <Modal
@@ -235,7 +242,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateTask }) {
                                     <h5 className='mb-3'><FaList /> SubTask</h5>
                                     <Row className='ms-4'>
                                         {subtasks.map((subtask, index) => (
-                                            <Col md={12} key={index}>
+                                            <Col md={12} key={subtask._id}>
                                                 <IndividualSubTask subtask={subtask} taskId={task._id} onUpdateSubTask={handleUpdateSubTask} />
                                             </Col>
                                         ))}
