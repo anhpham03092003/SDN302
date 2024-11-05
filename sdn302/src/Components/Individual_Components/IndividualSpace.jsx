@@ -49,10 +49,14 @@ function IndividualSpace() {
                         },
                     }
                 );
+                setUserInfo(prev => ({
+                    ...prev,
+                    classifications: [...prev.classifications, newColumnName],
+                }));
                 setNewColumnName('');
-                fetchUserInfo(); 
-                setShowTempColumn(false); 
                 
+                setShowTempColumn(false); 
+                await fetchUserInfo();
             } catch (error) {
                 console.error('Error adding new column:', error);
             }
@@ -90,7 +94,7 @@ function IndividualSpace() {
             }, []).map((row, rowIndex) => (
                 <Row className='flex-nowrap mt-3 ms-2' key={rowIndex}>
                     {row.map((column, colIndex) => (
-                        <Col md={3} className='mx-2 background-color-secondary' key={colIndex}>
+                        <Col md={3} className='mx-2 background-color-secondary' key={`${column}-${colIndex}` }>
                             <IndividualColumn column={column} updateColumnName={updateColumnName} onDataChange={fetchUserInfo} />
                         </Col>
                     ))}
