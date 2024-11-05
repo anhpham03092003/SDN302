@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Form, Modal, InputGroup, FormControl, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Modal, InputGroup, FormControl, Alert, Badge } from 'react-bootstrap';
 import { MdTimelapse } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../Styles/Group_css/GroupList.module.css';
@@ -25,6 +25,8 @@ function GroupList() {
     group?.groupName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  console.log(sortedGroups?.isPremium);
+  
   // Join group by code
   const joinGroupByCode = async () => {
     try {
@@ -37,7 +39,6 @@ function GroupList() {
       const joinedGroup = response?.data.group;
       setGroups((prevGroups) => [...prevGroups, joinedGroup]);
       
-
       if (joinedGroup?._id) {
         navigate(`/groups/${joinedGroup._id}`);
       }
@@ -66,10 +67,9 @@ function GroupList() {
 
   useEffect(() => {}, [groups]);
 
-
   if (!groups || groups.length === 0) {
     return (
-      <Container className="text-center mt-4">
+      <Container className="text-center mt-4 ">
         <h5>You do not have groups.</h5>
         <Button variant="primary" onClick={() => setShowModal(true)} className="mt-3">
           Join Group
@@ -113,9 +113,11 @@ function GroupList() {
             <Col md={3} className="mb-3" key={group?._id}>
               <Link to={`/groups/${group?._id}`} className={styles.card}>
                 <Card className="text-center" style={{ position: 'relative' }}>
-                  {/* Use the imageGroup from the group data */}
                   <Card.Img src={group?.imageGroup || "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"} alt={group?.groupName} className={styles.cardImage} />
-                  <div className={styles.cardTitle}>{group?.groupName}</div>
+                  <div className={styles.cardTitle}>
+                    {group?.groupName}
+                    {group?.isPremium && <Badge bg="warning" text="dark" className={styles.isPremium}>Premium</Badge>}
+                  </div>
                 </Card>
               </Link>
             </Col>
@@ -146,9 +148,11 @@ function GroupList() {
             group ? (
               <Col md={5} className="mb-2" key={group?._id}>
                 <Link to={`/groups/${group?._id}`} className={styles.allGroupItem}>
-                  {/* Use the imageGroup from the group data */}
                   <img src={group.imageGroup || "https://blog.delivered.co.kr/wp-content/uploads/2024/04/NEWJEANS.jpg"} alt={group?.groupName} className={styles.allGroupImage} />
-                  <span className={styles.allGroupTitle}>{group?.groupName}</span>
+                  <span className={styles.allGroupTitle}>
+                    {group?.groupName}
+                    {group?.isPremium && <Badge bg="warning" text="dark" className="ms-2">Premium</Badge>}
+                  </span>
                 </Link>
               </Col>
             ) : null
