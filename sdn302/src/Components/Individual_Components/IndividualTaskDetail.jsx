@@ -151,6 +151,7 @@ function IndividualTaskDetail({ show, setShow, task, onUpdateCount }) {
                 console.log('Task deleted successfully');
                 setShowDeleteConfirm(false);
                 setShow(false);
+                onUpdateCount();
             }
         } catch (error) {
             console.error('Error deleting task:', error);
